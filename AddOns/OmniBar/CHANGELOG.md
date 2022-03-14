@@ -1,0 +1,1 @@
+- Update for Burning Crusade Classic 2.5.2

@@ -1,0 +1,35 @@
+## Interface: 20502
+## Title: OmniBar
+## Notes: Tracks enemy cooldowns
+## Title-zhTW: |cffFF0000[PVP]|r 敵方技能監控 (條列)
+## Notes-zhTW: OmniBar |n監控敵人的技能冷卻時間，可以建立多組技能圖示列，擺在畫面上的任何位置。|n|cffffd200使用方法：|r從Esc>介面設定>插件>PVP技能條，進行設定。
+## DefaultState: disabled
+## Version: v12.9
+## Author: Jordon
+## SavedVariables: OmniBarDB
+## OptionalDeps: Masque, LibStub, CallbackHandler-1.0, Ace3, LibDualSpec-1.0
+## X-Curse-Project-ID: 85814
+## X-Wago-ID: BO678XK3
+## X-WoWI-ID: 23235
+
+#@no-lib-strip@
+Libs\LibStub\LibStub.lua
+Libs\CallbackHandler-1.0\CallbackHandler-1.0.xml
+Libs\AceAddon-3.0\AceAddon-3.0.xml
+Libs\AceDB-3.0\AceDB-3.0.xml
+Libs\AceDBOptions-3.0\AceDBOptions-3.0.xml
+Libs\AceEvent-3.0\AceEvent-3.0.xml
+Libs\AceHook-3.0\AceHook-3.0.xml
+Libs\AceGUI-3.0\AceGUI-3.0.xml
+Libs\AceConfig-3.0\AceConfig-3.0.xml
+Libs\AceLocale-3.0\AceLocale-3.0.xml
+Libs\LibDualSpec-1.0\LibDualSpec-1.0.lua
+#@end-no-lib-strip@
+
+Locales\Locales.xml
+OmniBar.xml
+Retail.lua
+Classic.lua
+BurningCrusade.lua
+OmniBar.lua
+Options.lua

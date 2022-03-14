@@ -1,0 +1,18 @@
+## Interface: 20502
+## Title: NameplateCooldowns [TBC]
+## Notes: Shows the cooldowns of enemy players above their nameplates
+## Title-zhTW: |cffFF0000[PVP]|r 敵方技能監控 (血條)
+## Notes-zhTW: NameplateCooldowns |n在血條上方顯示敵人的技能冷卻時間。|n|cffffd200使用方法：|r從Esc>介面設定>插件>PVP血條技能，進行設定。
+## DefaultState: disabled
+## SavedVariables: NameplateCooldownsAceDB
+## Version: 20501.9-release
+## X-Curse-Project-ID: 66866
+## X-Wago-ID: 0mNwjlGo
+
+embeds.xml
+src\constants.lua
+src\utilities.lua
+locales\localizations.xml
+src\default-spells.lua
+src\database.lua
+NameplateCooldowns.lua

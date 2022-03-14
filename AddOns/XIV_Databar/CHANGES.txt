@@ -1,0 +1,176 @@
+Changes since tag b2.0.16
+
+commit 985895b71aa1d8fcbe9075d3b065624622aebca7
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Wed Oct 31 01:13:13 2018 +0100
+
+    Hotfix annoying BNet bug with CoD players
+
+commit dc0f4bf735292a67c5d497d16646abb580cd2991
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Thu Aug 16 20:25:51 2018 +0200
+
+    thinking of modifying tradeskill error when tradeskill learn/unlearn
+
+commit 1af2e768045a40dce756100a751b5edcb4e1d729
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Tue Aug 7 22:50:41 2018 +0200
+
+    removed the artifactknoledge API
+
+commit 371aab76a971e9e38942a5c024389a6b3c2f20a4
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Mon Aug 6 21:53:30 2018 +0200
+
+    Update LibArtifact, fixed bug guildFrame
+
+commit ccdb40ff56f965d91e3ff9301e968cbd065bcf41
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Tue Jul 24 21:27:35 2018 +0200
+
+    Fixed chatMenu toggle
+
+commit ccdb40ff56f965d91e3ff9301e968cbd065bcf41
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Tue Jul 24 21:27:35 2018 +0200
+
+    Fixed chatMenu toggle
+
+commit 8d6793062ec1198bd5f013bd4b427c38248875df
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Mon Jul 23 22:19:49 2018 +0200
+
+    Fixed the text of the dalaran hearthstone
+
+commit 0d8fb335a166a1c3d91818834cbfc23167c64aa6
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Mon Jul 23 22:19:02 2018 +0200
+
+    Added option to hide Bnet app friends in social tooltip
+
+commit 4e137ac85096631f7a92df4c06ac61553af83725
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Sun Jul 22 21:17:18 2018 +0200
+
+    Fixed some port options and currency module with possible nil value
+
+commit 3b8117986543c63596c60fd5c31f59c59e34be49
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Sun Jul 22 15:54:40 2018 +0200
+
+    Fix currency lists and talent overflow
+
+commit 3b8117986543c63596c60fd5c31f59c59e34be49
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Sun Jul 22 15:54:40 2018 +0200
+
+    Fix currency lists and talent overflow
+
+commit 0592bed54119836a414e827b2850c987d01d1853
+Author: linus4123 <linus4123@gmail.com>
+Date:   Fri Jul 20 02:41:44 2018 -0400
+
+    Update deDE.lua
+
+commit f4cbcf73921db11486b76e1678992ad9d3ac5b6b
+Author: linus4123 <linus4123@gmail.com>
+Date:   Fri Jul 20 02:37:43 2018 -0400
+
+    Modified a few expressions for better understandability
+
+commit 5c8c547fc707f136beafd418292ff246d5a22aef
+Author: Mikeprod <Mikeprod@users.noreply.github.com>
+Date:   Thu Jul 19 08:24:57 2018 +0200
+
+    Untested hotfixes inf value talent.lua
+
+commit 92d2a04470ae4d872cda754bb5ef80d7213c43a5
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Wed Jul 18 18:26:58 2018 +0200
+
+    reenabled system and travel modules
+
+commit 441e47fabbf8f2d1e443642cc8ffccaac01d59a7
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Wed Jul 18 17:42:21 2018 +0200
+
+    MAJ Ace3 and hotfixing databar
+
+commit 553ddc6cf1003e4739b16146bfdffef58d09dae8
+Author: Morgan Foley <hipolipolopigus@gmail.com>
+Date:   Thu Dec 21 03:33:00 2017 +1300
+
+    Use a native implementation of time construction in `GetServerTimeString`
+
+commit 08eb416c6494e728c2402d62099129676ac3277d
+Author: Morgan Foley <hipolipolopigus@gmail.com>
+Date:   Sun Dec 17 16:09:06 2017 +1300
+
+    Fix "Use Server Time" reliability, consolidate Server Time string resolution into new function
+
+commit b78bc364f3de8d8df3abb7bb8f417928e2de8818
+Author: Mikeprod <Mikeprod@users.noreply.github.com>
+Date:   Fri Nov 3 19:27:32 2017 +0100
+
+    Link to lib databroker
+
+commit 531cf7a7e3a7588bda46fad6b6b8d140368b8d3a
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Tue Oct 3 20:04:22 2017 +0200
+
+    Update LibArtifact + fixing #48 + improving #37
+
+commit c684722596797f0bb4a504096a9a76b640fa2661
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Tue Aug 29 21:44:54 2017 +0200
+
+    update Ace3 for 7.3
+
+commit 0286dd4eed52d791524c102067e128d57806d7e7
+Author: Mikeprod <Mikeprod@users.noreply.github.com>
+Date:   Tue Aug 29 21:16:34 2017 +0200
+
+    Update XIV_Databar.toc
+
+commit cbc2196672b90af2a9f3e7a759e00cba508abc65
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Sun Jul 23 13:15:51 2017 +0200
+
+    update libartifact
+
+commit 183ebe2ad1e90367958a092501e34405ab52b1ab
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Sun Jul 9 19:17:56 2017 +0200
+
+    Added short gold values in tooltip and fixed bugs with artifact bar
+
+commit 930ee46673e37bc37fe99279caad43796f42530d
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Mon Jul 3 20:11:41 2017 +0200
+
+    Fix error with gold strings with too big values
+
+commit 42c850c187906dbd403e733de63abc51d61f5dc5
+Author: Mikeprod <Mikeprod@users.noreply.github.com>
+Date:   Mon Jul 3 13:25:50 2017 +0200
+
+    Update frFR.lua
+
+commit 20d1e4a6a45bd74c7c422233e5aadea797d88b10
+Author: Merathilis <neo0608@gmail.com>
+Date:   Mon Jul 3 10:51:24 2017 +0200
+
+    Add locale support for the recent gold changes.
+
+commit 20d1e4a6a45bd74c7c422233e5aadea797d88b10
+Author: Merathilis <neo0608@gmail.com>
+Date:   Mon Jul 3 10:51:24 2017 +0200
+
+    Add locale support for the recent gold changes.
+
+commit 75cc6adff4dd38c73a13d9e4fedb8d71538f7b2c
+Author: Mikeprod <mikeprod.tm@gmail.com>
+Date:   Sun Jul 2 16:35:00 2017 +0200
+
+    Added daily and session gold status
+

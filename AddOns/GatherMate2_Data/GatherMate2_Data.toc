@@ -1,0 +1,17 @@
+## Interface: 20502
+## Notes: GatherMate2 data fetched from Wowhead
+## Title: GatherMate2Data
+## Title-zhTW: |cffFFFF99[專業]|r 採集助手-新資料庫
+## Notes-zhTW: WoWGatheringNodes |n採集助手的資料庫，包含暗影之境新地圖的採集資料。|n|cffffd200使用方法：|r從Esc>介面>插件>專業-採集>匯入資料>匯入WoWGatheringNodes，將草礦等各種採集點的資料匯入使用。
+## DefaultState: disabled
+## Dependencies: GatherMate2
+## Author: kagaro, Xinhuan, Spinx, Marrtin
+## Version: v2021-09-01
+## LoadOnDemand: 1
+## Dependencies: GatherMate2
+
+MiningData.lua
+HerbalismData.lua
+FishData.lua
+TreasureData.lua
+GatherMateData.lua

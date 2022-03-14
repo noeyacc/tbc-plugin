@@ -1,0 +1,22 @@
+lightweight tag 5382a7182c3a10421b6343bfceb5a8e157366208 r50
+Author:	GitHub <noreply@github.com>
+Date:	Wed May 19 13:49:50 2021 -0700
+
+commit 5382a7182c3a10421b6343bfceb5a8e157366208
+Author: Jaslm <70230626+Jaslm@users.noreply.github.com>
+Date:   Wed May 19 13:49:50 2021 -0700
+
+    Add TOC files for burning crusade and original classic servers
+
+commit 10a8c8281bb0428c1cc450a1fafdd538cf05267f
+Author: Jaslm <70230626+Jaslm@users.noreply.github.com>
+Date:   Wed May 19 13:43:52 2021 -0700
+
+    Fix TOC
+
+commit e45681c5bfe0f07c86c6719c5822948c18e8884d
+Author: Jaslm <70230626+Jaslm@users.noreply.github.com>
+Date:   Wed May 19 13:43:34 2021 -0700
+
+    Update TOC
+

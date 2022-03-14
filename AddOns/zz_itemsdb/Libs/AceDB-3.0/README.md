@@ -1,0 +1,1 @@
+Local git copy of AceDB-3.0 - https://repos.wowace.com/wow/ace3/trunk/AceDB-3.0

@@ -1,0 +1,23 @@
+## Interface: 20501
+#@non-debug@
+## Title: Atlas |r|cFF0099FF[Burning Crusade]|r
+## Title-zhCN: Atlas |r|cFF0099FF[燃烧的远征]|r
+## Notes: Burning Crusade Instances' Maps
+## Notes-zhCN: 燃烧的远征副本地图
+## Title-zhTW: |cff4DFF4D[地圖]|r 副本地圖-燃燒的遠征
+## Notes-zhTW: Atlas |r|cFF0099FF[Burning Crusade]|r |n燃燒的遠征副本地圖模組。
+## DefaultState: disabled
+#@end-non-debug@
+## Version: v1.49.00
+## Author: arith, Dynaletik, dubcat
+## X-Date: 2021-05-23T7:36:10Z
+## X-Credits: Dan Gilbert, Lothaer
+## X-Email: atlas.addon at gmail.com
+## X-Website: http://www.atlasmod.com
+## X-Category: Map
+## RequiredDeps: Atlas
+
+Locale\Locales.xml
+Core.lua
+Data.lua
+ClassicData.lua

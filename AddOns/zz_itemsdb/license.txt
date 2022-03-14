@@ -1,0 +1,6 @@
+The following license excludes the libraries (Libs) included. See the libraries directory or website.
+ 
+This AddOn is public domain. That means you can change it, rename it or paint it yellow.
+My name (Rilgamon) is valid only for WoWInterface.com and curse.com.
+If you use/offer this addon on another website please remove my name.
+If you want to give me credit you can replace it with a link to my profile on WoWInterface.com.

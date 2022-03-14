@@ -1,0 +1,19 @@
+## Interface: 20502
+## Version: 1.4.5
+## Title: MailLogger
+## Author: Aoikaze
+## SavedVariables: MailLoggerDB
+## Notes-zhCN: 邮件、交易自动记录
+## Notes: Automatic Log Mails & Trades.
+## Title-zhTW: |cffFFFF99[商人]|r 交易記錄
+## Notes-zhTW: MailLogger |n自動記錄與玩家交易，以及郵件的物品內容。方便查看交易歷史記錄。|n|cffffd200使用方法：|r左鍵點小地圖按鈕查看交易記錄，右鍵點小地圖按鈕打開設定選項。
+## OptionalDeps: TitanClassic
+
+Locale.lua
+Core.lua
+Events.lua
+Config.lua
+GUI.lua
+Calendar.lua
+MinimapIcon.lua
+Command.lua

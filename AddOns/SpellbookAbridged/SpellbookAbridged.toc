@@ -1,0 +1,17 @@
+## Interface: 20502
+## Title: Spellbook Abridged
+## Notes: A Spellbook Filter to reduce clutter from multiple ranks of the same spell.
+## Title-zhTW: |cff0099FF[介面]|r 法術書等級簡化
+## Notes-zhTW: Spellbook Abridged |n在法術書上方新增選項可以隱藏低等級的法術，只顯示出相同法術的最高等級。|n勾選 "自動升級按鈕" 的話，學習到較高等級的法術時，會自動將快捷列上的法術按鈕提升為新學會的最高等級法術，以避免忘記替換技能。
+## Author: LBXZero
+## Version: 2.6.4a Beta
+## SavedVariablesPerCharacter: SpellBookAbridgedOptions
+
+SpellbookAbridged.xml
+
+# Special Disclaimer	
+#
+# This Beta is the same addon as 2.6.4a but with the parts that lock out the Spellbook from Combat removed.
+# Due to the nature of how secure functions and taint work, I do not guarantee anything if the Spellbook is
+# open during combat.  The Spellbook was locked out during combat for a reason, so any complaints in this 
+# variant are not valid.

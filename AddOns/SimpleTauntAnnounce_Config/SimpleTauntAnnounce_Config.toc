@@ -1,0 +1,11 @@
+## Interface: 20502
+## Title: Simple Taunt Announce Config
+## Notes: Configuration panel for STA
+## Title-zhTW: |cffFF7373[職業]|r 嘲諷通報-設定選項
+## Notes-zhTW: Simple Taunt Announce Config |n嘲諷通報的設定選項。|n|cffffd200使用方法：|r從Esc>介面設定>插件>通報-嘲諷，進行設定。
+## DefaultState: disabled
+## Author: BeathsCurse (Bowmore - Silvermoon EU)
+## Dependencies: SimpleTauntAnnounce
+## LoadOnDemand: 1
+
+ConfigurationPanel.lua

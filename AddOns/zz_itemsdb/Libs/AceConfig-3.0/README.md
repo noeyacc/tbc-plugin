@@ -1,0 +1,1 @@
+Local git copy of AceConfig-3.0 - https://repos.wowace.com/wow/ace3/trunk/AceConfig-3.0

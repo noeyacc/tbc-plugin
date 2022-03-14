@@ -1,0 +1,11 @@
+## Interface: 20502
+## Title: Method Raid Tools [Storage]
+## SavedVariables: VExRT
+## Notes: Required for data migration
+## Title-zhTW: |cffFF7F00[團隊]|r MRT 團隊工具包-舊資料
+## Notes-zhTW: Method Raid Tools - Storage |n用來合併 ExRT 的舊記錄。
+## DefaultState: disabled
+## Version: 4560
+
+# deprecated after addon rebranding
+# used for variables migration

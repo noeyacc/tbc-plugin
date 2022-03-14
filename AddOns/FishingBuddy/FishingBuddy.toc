@@ -1,0 +1,40 @@
+## Interface: 20502
+## Globe: check-classic
+## Title: Fishing Buddy (Crusade)
+## Version: 0.7.8
+## X-Curse-Project-ID: 500433
+## X-WoWI-ID: 26108
+## Notes: Help with fishing related tasks -- clothing, fish information, etc.
+## Title-zhTW: |cffFFFF99[專業]|r 釣魚夥伴
+## Notes-zhTW: Fishing Buddy (Classic) |n幫忙處理釣魚的相關工作、漁具、魚類資訊...等等。|n|cffffd200使用方法：|r點小地圖按鈕。
+## DefaultState: disabled
+## Author: Sutorix=AT=hotmail.com
+## OptionalDeps: FB_Debugging, myAddOns, Titan, TownsfolkTracker
+## SavedVariables: FishingBuddy_Info
+## SavedVariablesPerCharacter: FishingBuddy_Player, FBODF_PlayerInfo
+## X-Date: July 21, 2005
+## X-Help: FBConstants.HELPMSG
+Libs\Libs.xml
+localization.enUS.lua
+localization.zhCN.lua
+localization.zhTW.lua
+
+FishingSetup.lua
+FishingBuddy.xml
+FishingDatabase.lua
+FishingBuddyAPI.lua
+FishingBuddyFrame.xml
+FishingOptionsFrame.lua
+FishingScrollMenu.xml
+FishingLocationsFrame.xml
+FishingOutfitManager.lua
+FishingOutfitter.xml
+FishingBuddyMinimap.lua
+FishingWatcher.xml
+FishingSchools.lua
+FishingAbout.lua
+FishingPlans.lua
+FishingPlans\Plans.xml
+FishingFluff.xml
+FB_Broker.lua
+FishingOutfitFrame.xml

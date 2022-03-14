@@ -1,0 +1,9 @@
+## Interface: 20501
+## Title: itemsdb
+## X-Curse-Project-ID: 290291
+## X-WoWI-ID: 24579
+## X-Repository: https://git.grml.de/rilgamon/zz_itemsdb.git
+## OptionalDeps: zzLib, Ace3, BrokerPack
+## SavedVariables: zz_itemsdbDB
+Libs\embeds.xml
+pack.xml
