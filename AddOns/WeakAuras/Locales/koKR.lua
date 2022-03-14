@@ -1303,6 +1303,8 @@ L["Trigger:"] = "활성 조건:"
 --[[Translation missing --]]
 L["Trivial (Low Level)"] = "Trivial (Low Level)"
 L["True"] = "참"
+--[[Translation missing --]]
+L["Trying to repair broken conditions in %s likely caused by a WeakAuras bug."] = "Trying to repair broken conditions in %s likely caused by a WeakAuras bug."
 L["Twin Emperors"] = "쌍둥이 제왕"
 L["Type"] = "유형"
 L["Unaffected"] = "영향 받지 않음"

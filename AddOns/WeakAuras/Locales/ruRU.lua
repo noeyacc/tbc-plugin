@@ -1117,6 +1117,7 @@ L["Trigger Update"] = "При изменении состояния тригге
 L["Trigger:"] = "Триггер:"
 L["Trivial (Low Level)"] = "Тривиальный (низкий уровень)"
 L["True"] = "Истина"
+L["Trying to repair broken conditions in %s likely caused by a WeakAuras bug."] = "Попытка восстановить поврежденные условия в индикации %s, причиной которых стал баг аддона."
 L["Twin Emperors"] = "Императоры-близнецы"
 L["Type"] = "Тип"
 L["Unaffected"] = "Незадействованные"

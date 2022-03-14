@@ -1470,6 +1470,8 @@ L["Trigger:"] = "Déclencheur :"
 L["Trivial (Low Level)"] = "Trivial (Low Level)"
 L["True"] = "Vrai"
 --[[Translation missing --]]
+L["Trying to repair broken conditions in %s likely caused by a WeakAuras bug."] = "Trying to repair broken conditions in %s likely caused by a WeakAuras bug."
+--[[Translation missing --]]
 L["Twin Emperors"] = "Twin Emperors"
 L["Type"] = "Type"
 L["Unaffected"] = "Non-affecté"

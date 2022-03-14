@@ -5,7 +5,7 @@
 ## DefaultState: enabled
 ## RequiredDeps: DBM-Core
 ## Author: Iceoven
-## Version: 69e13d1
+## Version: 19223cb
 ## X-DBM-Voice: 1
 ## X-DBM-Voice-Name: VEM English Female
 ## X-DBM-Voice-ShortName: VEM

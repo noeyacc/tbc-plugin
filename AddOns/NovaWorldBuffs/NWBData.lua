@@ -35,7 +35,7 @@ end
 
 function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 	--if (NWB.isDebug) then
-	--	return;
+		--return;
 	--end
 	if (distribution == "GUILD" and commPrefix == NWB.commPrefix) then
 		--Temp bug fix test.
@@ -1189,6 +1189,7 @@ end
 
 --Add received data to our database.
 --This is super ugly for layered stuff, but it's meant to work with all diff versions at once, will be cleaned up later.
+local maxLayerTime = 43200;
 function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 	local deserializeResult, data = NWB.serializer:Deserialize(dataReceived);
 	if (not deserializeResult) then
@@ -1251,12 +1252,13 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 			end
 		end
 		for layer, vv in NWB:pairsByKeys(data.layers) do
-			--Temp fix, this can be removed soon.
-			if (type(vv) ~= "table" or (((not vv.rendTimer or vv.rendTimer == 0) and (not vv.onyTimer or vv.onyTimer == 0)
-					 and (not vv.nefTimer or vv.nefTimer == 0) and (not vv.onyNpcDied or vv.onyNpcDied == 0)
-					  and (not vv.nefNpcDied or vv.nefNpcDied == 0) and (not vv.lastSeenNPC or vv.lastSeenNPC == 0)
-					  and (not vv.terokTowers or vv.terokTowers == 0) and (not vv.hellfireRep or vv.hellfireRep == 0))
-					  or NWB.data.layersDisabled[layer])) then
+			--Temp fix, some of this can be removed soon.
+			if (type(vv) ~= "table" or not vv.lastSeenNPC or GetServerTime() - vv.lastSeenNPC > maxLayerTime or
+					(((not vv.rendTimer or vv.rendTimer == 0) and (not vv.onyTimer or vv.onyTimer == 0)
+					and (not vv.nefTimer or vv.nefTimer == 0) and (not vv.onyNpcDied or vv.onyNpcDied == 0)
+					and (not vv.nefNpcDied or vv.nefNpcDied == 0) and (not vv.lastSeenNPC or vv.lastSeenNPC == 0)
+					and (not vv.terokTowers or vv.terokTowers == 0) and (not vv.hellfireRep or vv.hellfireRep == 0))
+					or NWB.data.layersDisabled[layer])) then
 				--Do nothing if all timers are 0, this is to fix a bug in last version with layerMaps causing old layer data
 				--to bounce back and forth between users, making it so layers with no timers keep being created after server
 				--restart and won't disappear.

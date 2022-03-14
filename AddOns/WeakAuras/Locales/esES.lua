@@ -1799,6 +1799,8 @@ L["Trigger:"] = "Desencadenador:"
 L["Trivial (Low Level)"] = "Trivial (Low Level)"
 L["True"] = "Verdadero"
 --[[Translation missing --]]
+L["Trying to repair broken conditions in %s likely caused by a WeakAuras bug."] = "Trying to repair broken conditions in %s likely caused by a WeakAuras bug."
+--[[Translation missing --]]
 L["Twin Emperors"] = "Twin Emperors"
 L["Type"] = "Tipo"
 --[[Translation missing --]]

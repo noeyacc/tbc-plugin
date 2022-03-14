@@ -2003,6 +2003,8 @@ L["Trivial (Low Level)"] = "Trivial (Low Level)"
 --[[Translation missing --]]
 L["True"] = "True"
 --[[Translation missing --]]
+L["Trying to repair broken conditions in %s likely caused by a WeakAuras bug."] = "Trying to repair broken conditions in %s likely caused by a WeakAuras bug."
+--[[Translation missing --]]
 L["Twin Emperors"] = "Twin Emperors"
 --[[Translation missing --]]
 L["Type"] = "Type"

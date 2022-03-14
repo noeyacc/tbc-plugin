@@ -2,24 +2,11 @@
 	ALA@163UI
 --]]--
 
-----------------------------------------------------------------
-local noop = function() end
-local C_ChatInfo = {
-	RegisterAddonMessagePrefix = noop,
-	IsAddonMessagePrefixRegistered = noop,
-	GetRegisteredAddonMessagePrefixes = noop,
-	SendAddonMessage = noop,
-};
-local RegisterAddonMessagePrefix = noop
-local IsAddonMessagePrefixRegistered = noop
-local GetRegisteredAddonMessagePrefixes = noop
-local SendAddonMessage = noop
-----------------------------------------------------------------
+local __version = 5;
 
-
-local __version = 4;
-
+local _G = _G;
 _G.__ala_meta__ = _G.__ala_meta__ or {  };
+local __ala_meta__ = _G.__ala_meta__;
 local __instlib = __ala_meta__.__instlib
 if __instlib ~= nil and __instlib.__minor >= __version then
 	return;
@@ -28,22 +15,6 @@ local __instlib = __instlib or CreateFrame('FRAME');
 __instlib.__minor = __version;
 __ala_meta__.__instlib = __instlib;
 
-local _G = _G;
-do
-	-- if __instlib.__fenv == nil then
-	-- 	__instlib.__fenv = setmetatable({  },
-	-- 			{
-	-- 				__index = _G,
-	-- 				__newindex = function(t, key, value)
-	-- 					rawset(t, key, value);
-	-- 					print("instlib assign global", key, value);
-	-- 					return value;
-	-- 				end,
-	-- 			}
-	-- 		);
-	-- end
-	-- setfenv(1, __instlib.__fenv);
-end
 
 -->			upvalue
 local setmetatable, tinsert, next = setmetatable, tinsert, next;

@@ -28,7 +28,7 @@ L:SetGeneralLocalization{
 }
 
 L:SetWarningLocalization{
-	WarnPhase		= "%s 阶段",
+	WarnPhase		= "%s 阶段"
 }
 
 L:SetTimerLocalization{
@@ -36,9 +36,9 @@ L:SetTimerLocalization{
 }
 
 L:SetOptionLocalization{
-	WarnPhase		= "为下一次阶段显示警告",
+	WarnPhase		= "为下一次阶段显示警报",
 	TimerPhase		= "为下一次阶段显示计时器",
-	KiteIcon		= "为注视的目标设置标记"
+	KiteIcon		= "为凝视的目标设置标记"
 }
 
 L:SetMiscLocalization{
@@ -50,13 +50,30 @@ L:SetMiscLocalization{
 }
 
 -------------------------
---  Shape of Akama  --
+--  Shade of Akama  --
 -------------------------
 L = DBM:GetModLocalization("Akama")
 
 L:SetGeneralLocalization{
 	name = "阿卡玛之影"
 }
+
+L:SetWarningLocalization({
+	warnAshtongueDefender	= "灰舌防御者",
+	warnAshtongueSorcerer	= "灰舌巫师"
+})
+
+L:SetTimerLocalization({
+	timerAshtongueDefender	= "灰舌防御者: %s",
+	timerAshtongueSorcerer	= "灰舌巫师: %s"
+})
+
+L:SetOptionLocalization({
+	warnAshtongueDefender	= "显示警报：灰舌防御者",
+	warnAshtongueSorcerer	= "显示警报：灰舌巫师",
+	timerAshtongueDefender	= "显示 灰舌防御者 计时器",
+	timerAshtongueSorcerer	= "显示 灰舌巫师 计时器"
+})
 
 -------------------------
 --  Teron Gorefiend  --
@@ -73,9 +90,6 @@ L:SetTimerLocalization{
 
 L:SetOptionLocalization{
 	TimerVengefulSpirit		= "为死亡之影显示持续时间"
-}
-
-L:SetMiscLocalization{
 }
 
 ----------------------------
@@ -101,12 +115,12 @@ L:SetWarningLocalization{
 }
 
 L:SetTimerLocalization{
-	TimerMana		= "法力吸取"
+	TimerMana		= "法力为零"
 }
 
 L:SetOptionLocalization{
-	WarnMana		= "在第2阶段显示法力吸取警告",
-	TimerEnrage		= "显示法力吸取计时器"
+	WarnMana		= "显示第2阶段零法力警报",
+	TimerMana		= "显示第2阶段法力值为 零 的计时器"
 }
 
 L:SetMiscLocalization{
@@ -131,7 +145,11 @@ L:SetTimerLocalization{
 }
 
 L:SetOptionLocalization{
-	timerAura	= "为致命吸引显示计时器"
+	timerAura	= "显示棱彩光环计时器",
+	FAHelper	= "为致命吸引设置跑位方案。团队领袖选择方案，前题都使用DBM。",
+	North		= "星星在左/西, 大饼在右/东, 菱形在上/北",
+	South		= "星星在左/西, 大饼在右/东, 菱形在下/南",
+	None		= "不会显示箭头, 信息框将显示数字而不是方向"
 }
 
 ----------------------
@@ -148,7 +166,7 @@ L:SetWarningLocalization{
 }
 
 L:SetOptionLocalization{
-	Immune			= "当玛兰德法术和近战免疫时显示警告"
+	Immune			= "当玛兰德法术和物理近战免疫显示警报"
 }
 
 L:SetMiscLocalization{
@@ -180,8 +198,8 @@ L:SetTimerLocalization{
 }
 
 L:SetOptionLocalization{
-	WarnHuman		= "为人形阶段显示警告",
-	WarnDemon		= "为恶魔阶段显示警告",
+	WarnHuman		= "为人形阶段显示警报",
+	WarnDemon		= "为恶魔阶段显示警报",
 	TimerNextHuman	= "显示下一次人形阶段计时器",
 	TimerNextDemon	= "显示下一次恶魔阶段计时器",
 	RangeFrame		= "为3阶段和4阶段显示10码距离提示"

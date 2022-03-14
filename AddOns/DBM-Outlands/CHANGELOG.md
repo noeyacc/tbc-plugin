@@ -1,58 +1,57 @@
 # <DBM> Outlands
 
-## [2.5.25](https://github.com/DeadlyBossMods/DBM-TBC-Classic/tree/2.5.25) (2022-01-27)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-TBC-Classic/compare/2.5.24...2.5.25) [Previous Releases](https://github.com/DeadlyBossMods/DBM-TBC-Classic/releases)
+## [2.5.26](https://github.com/DeadlyBossMods/DBM-TBC-Classic/tree/2.5.26) (2022-02-01)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-TBC-Classic/compare/2.5.25...2.5.26) [Previous Releases](https://github.com/DeadlyBossMods/DBM-TBC-Classic/releases)
 
-- - Make default voice pack options VEM instead of none. - Removed the reminder messages for having a voice pack installed but disabled (since it'll be expected that not everyone wants to use them and it's no longer something users install themselves) - Disabled the reminder message for having a voice pack selected in options that's disabled, if the selected pack is VEM. We want users who disable the module instead of the menu to also be viable path to disabling VEM. Likewise, if users re-enable vem, for the most part it'll just start working again since we didn't tell them to go into GUI and change it to none.  
-- Add DBM-VPVEM package  
-- Update localization.ru.lua (#49) Added and translated missing phrases.  
-- Typo fix  
-- missed that  
-- Update koKR (#48)  
-- Fix netherspite gtfo spellId. Closes #91  
-- forgot to set defaults table.  
-- create a controller wrapper vibrate function and throttle it to once per 2 seconds to prevent multiple calls to api happening within a fixed period of time, hopefully avoid api breaking and blizzard vibrating forever.  
-- Maybe this will work  
-- bump classic alpha cycle  
-- prep new classic release  
-- luacheck for last  
-- add search tags  
-- Update localization.ru.lua (#44)  
-- Fix Luacheck  
-- Update zhTW (#47)  
-- Update localization.cn.lua (#90)  
-- Update localization.cn.lua (#89)  
-- Update koKR (#46)  
-- Update koKR (BCC) (#87)  
-- Council Update  
-     - Consolidate the 3 gtfo warnings into one  
-     - fixed interrupt object to also use newer cooldown checking tech and not just the old focus/target filter stuff.  
-- .  
-- our lua check blows  
-- fix last  
-- Shahraz update  
-     - Added Fatal Attraction infoframe and arrow helper with dropdown to control it  
-     - Tweaked how icons work for FA to work better with helper  
-     - Applied mod syncing to Prismatic auras to ensure they aren't missed if not targetting boss (provided that someone else in raid, still is)  
-- Fix Lua Errors  
-- fix rearrangement errors  
-- Black Temple Update 2:  
-     - Fixed bad logic bugs on bloodboil, which will fix timer accuracy for rage  
-     - Changed infoframe to use unit aura (higher cpu) scan since stacks don't appear in combat log for bloodboil  
-     - Added breath announce to bloodboil  
-     - Disabled shock interrupt bar on RoS, since it has no CD in TBC. Also made interrupt warning off by default for same reason (and if you do turn it on it'll now honor interrupt antispam tech from core)  
-     - Improved cpu usage of RoS mod  by no longer using SPELL\_DAMAGE/SPELL\_MISSED events to start a timer (apparently the success event was unhidden years ago)  
-     - Added a very approx timer for death debuff on gorefiend. It has to be noted here that there is still a variation to consider here.  
-- clarify help message  
-- Bar desaturating was turning bars white  
-- First Black temple update:  
-     - Blizzard elected not to have supremus' fixate debuff in combat log, so have to revert back to the old ways of scaning bosses target and localized triggers.  
-     - Fixed najentus infoframe to display correct health status since it's much larger in classic vs retail.  
-- Hyjal Update:  
-    Fixed a bug where mark of Kazrogal timer never decreased by 5 seconds per cast and count was displayed wrong (args were messed up)  
-    Also added optional (off by default) stomp tomer to kazrogal that isn't super helpful (thus the default)  
-    Added auto range check to archimonde for burst target  
-    Slightly adjusted silence timer on azgalor (still a crappy timer)  
-    Adjusted DnD timer on rage to fit in line with data from PTR  
-- Account for fact that M+ can now be in form of under leveled timewalking content...that isn't flagged as timewalking content (because it's index 8). Should no longer treat legion timewalking M+ as trivial content.  
-- prep next cycle  
+- slightly darken gui to improve readability of it. prep new tags  
+- Cleanup for specWarnGTFO merging checks  
+- bloodboil tweaks since DOSE is broken, can't stack warn (well not without aura checks but not worth the effort  
+- fine, no count3  
+- Fix args for UnitAura/UnitBuff/UnitDebuff  
+- Update localization.cn.lua (#65) Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
+- Update localization.ru.lua (#66)  
+- Not sure how that got removed  
+- Update localization.ru.lua (#63) Add phrase.  
+- Update localization.cn.lua (#64)  
+- Update koKR (#60)  
+- Update localization.ru.lua (#62) Minor fixes.  
+- Update zhTW (GUI) (#61)  
+- further clarify this option isn't for ALL raid leaders, just niche Raid leading situations.  
+- Fix all non functional onsync nil checks by accounting for fact sender is inserted at end (basically, check if sender is nil at expected location it should be if other args aren't missing)  
+- catch more spellid call failures in a more friendly error  
+- further tighten check in case any malicious actors are sending fake syncs with invalid args  
+- Fix two nil errors  
+- Add advanced Voice pack option to disable the mute filter (this causes alerts to play both the original sound and voice pack sound, an atypical preference some apparently liked from the old configuration so it was brought back as advanced optoin)  
+- Update localization.ru.lua (#59)  
+- Cleaner syntax for DBM:AddMsg frame check Also fixed range frame not hiding properly.  
+- Update commonlocal.ru.lua (#58) Missing phrases and their translation.  
+- Update zhTW (BlackTemple) (#96)  
+- Update localization.cn.lua (#95)  
+- Update localization.cn.lua (#94)  
+- factor in that all descriptions don't use html (pretty sure lines don't, not sure what else)  
+- Fix html parsing errors if spell names contain & in them  
+- Update localization.cn.lua (#93)  
+- Update localization.cn.lua (#92)  
+- Update koKR (#57) Co-authored-by: Adam <MysticalOS@users.noreply.github.com>  
+- Update localization.cn.lua (#56) Co-authored-by: Mini Dragon <projecteurs@gmail.com>  
+- Update zhTW (GUI) (#54)  
+- Make VEM on by default only in english speaking locale  
+- Pull even better revision of VEM  
+- update comment (also to force push vem update to alphas  
+- Update commonlocal.cn.lua (#53)  
+- Since blizzard is making 5 stage fights the new norm, make it so AI timers can now be supported for up to 5 stages instead of only 4  
+- tweak option default, really do think by default it should replace all (but custom). All tested and working great though. This will give some knobs to work with.  
+- better  
+- acftually still miss the pre commit hook.  
+- Update commonlocal.tw.lua (#52)  
+- Update zhTW (GUI) (#51)  
+- Update koKR (#50)  
+- Fix Pepega  
+- Update README to remove VEM from soundpacks and update support link to demo  
+- tweak set icon method so it honors solo raid when using unitId (of course this also means seticon still not a valid method for brawlers guild)  
+- Fix naming on SWFilterDisabled  
+- Forgot to bump SWFilterDisabed  
+- aggregate council GTFOs so they don't all display at once and feel spammy  
+- correct fixate warning with a diff temp spellId, blizz didn't get 41951 re-added in time for launch, rip.  
+- Fixed bug where two of akama's timers were missing counts (but were expecting them)  
+- bump alphas for next cycle  
