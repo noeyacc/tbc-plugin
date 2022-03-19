@@ -2,8 +2,16 @@
 	<Script file="LibBabble.lua"/>
 	
 	<Script file="Atlas-enUS.lua"/>
+	<Script file="Atlas-ruRU.lua"/>
+	<Script file="Atlas-deDE.lua"/>
+	<Script file="Atlas-frFR.lua"/>
 	<Script file="Atlas-zhCN.lua"/>
+	<Script file="Atlas-esES.lua"/>
+	<Script file="Atlas-esMX.lua"/>
 	<Script file="Atlas-zhTW.lua"/>
+	<Script file="Atlas-ptBR.lua"/>
+	<Script file="Atlas-itIT.lua"/>
+	<Script file="Atlas-koKR.lua"/>
 
 	<Script file="Atlas_GlobalStrings.lua"/>
 </Ui>

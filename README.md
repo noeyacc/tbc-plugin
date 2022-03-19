@@ -75,6 +75,7 @@
 - 戰場目標框架 [BattleGroundEnemies](https://www.curseforge.com/wow/addons/battlegroundenemies)
 - 戰場資訊增強 [BattleInfo](https://www.curseforge.com/wow/addons/battleinfo)
 - 敵方技能冷卻監控 [OmniBar](https://www.curseforge.com/wow/addons/omnibar)
+- 嗜血音樂 [EnhBloodlust](https://www.curseforge.com/wow/addons/enhbloodlust)
 <!-- - 目標/隊友施法條 ClassicCastbars -->
 
 #### 介面增強
@@ -103,6 +104,8 @@
 #### 地圖任務
 
 - 副本地圖（含相關模組）[Atlas](https://www.curseforge.com/wow/addons/atlas)
+  - 經典版副本地圖 [Atlas Classic WoW](https://www.curseforge.com/wow/addons/atlas-classicwow)
+  - 燃燒版本副本地圖 [Atlas Burning Crusade](https://www.curseforge.com/wow/addons/atlas-burningcrusade)
 - 世界地圖增強 [Leatrix Maps](https://www.curseforge.com/wow/addons/leatrix-maps-bcc)
 - 地圖標記 [Handy Notes](https://www.curseforge.com/wow/addons/handynotes)
 - 性感小地圖 [Sexy Map](https://www.curseforge.com/wow/addons/sexymap)
@@ -146,7 +149,7 @@
 - 環形快捷列 [OPie](https://www.curseforge.com/wow/addons/opie)
 - 任務清單 [Kaliel's Tracker](https://www.curseforge.com/wow/addons/kaliels-tracker-classic)
 
-- 嗜血音樂 [EnhBloodlust](https://www.curseforge.com/wow/addons/enhbloodlust)
+
 - 地板傷害警報 [GTFO](https://www.curseforge.com/wow/addons/gtfo)
 - 目標指示箭頭 TargetNameplateIndicator
 - 血條距離微調 SilverPlateTweaks
