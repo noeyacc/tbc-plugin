@@ -13,8 +13,8 @@ local config = EnhBloodlustConfig;
 config.spells = {2825, 32182, 80353, 90355}
 
 config.sound = {
-    "Interface\\AddOns\\EnhBloodlust\\bloodlust_mid.mp3",
-    "Interface\\AddOns\\EnhBloodlust\\bloodlust_short.mp3"
+    "Interface\\AddOns\\EnhBloodlust\\Bloodlust_阿肆_熱愛105°C的你_40s.mp3",
+    -- "Interface\\AddOns\\EnhBloodlust\\bloodlust_short.mp3"
 }
 config.length = 40;
 
