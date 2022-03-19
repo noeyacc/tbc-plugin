@@ -1,21 +1,19 @@
-# [3.7.8](https://github.com/WeakAuras/WeakAuras2/tree/3.7.8) (2022-01-27)
+# [3.7.13](https://github.com/WeakAuras/WeakAuras2/tree/3.7.13) (2022-03-03)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.7.7...3.7.8)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.7.12...3.7.13)
 
 ## Highlights
 
- - Bug fixes 
+  
 
 ## Commits
 
-Translit (1):
+asakawa (1):
 
-- additional WA logo textures (#3451)
+- Add a detailed tooltip to the Unit setting in bufftrigger2 (#3509)
 
-mrbuds (4):
+mrbuds (2):
 
-- fix cast trigger for tbc 2.5.3 #3448
-- Fixing transmission and add a 5mn expiration timer on linked auras
-- fix glow in templates
-- fix bad order of aurabar foreground when importing old version, #3449
+- increase boss units up to boss10 "prototype pantheon" & "generals boss in nathria" has more than 5 boss units
+- fix iconPicker with spellCache change
 

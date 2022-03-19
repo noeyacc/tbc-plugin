@@ -1,5 +1,18 @@
 # Dominos Changelog
 
+## 9.2.2
+
+* Fixed some packaging issues
+
+## 9.2.1
+
+* Fixed a loading error for Classic
+
+## 9.2.0
+
+* Update TOCs for client versions 9.2.0 and 1.14.2
+* Add the ability to choose the Pet bar as the possess bar in TBC Classic
+
 ## 9.1.7
 
 * Fixed a bug causing channeling spells to not appear on the castbar

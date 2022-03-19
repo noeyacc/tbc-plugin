@@ -181,7 +181,7 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 			NWB:doNpcWalkingMsg(type, layer, sender);
 		end
 	end
-	if (tonumber(remoteVersion) < 2.16) then
+	if (tonumber(remoteVersion) < 2.23) then
 		if (cmd == "requestData" and distribution == "GUILD") then
 			if (not NWB:getGuildDataStatus()) then
 				NWB:sendSettings("GUILD");
@@ -617,6 +617,7 @@ function NWB:createData(distribution, noLogs)
 	if (NWB.isTBC and NWB.data.terokFaction and NWB.data.terokTowers and tonumber(NWB.data.terokTowers)
 			and NWB.data.terokTowers > GetServerTime() and NWB.data.terokTowers < GetServerTime() + 20700) then
 		data.terokTowers = NWB.data.terokTowers;
+		data.terokTowersTime = NWB.data.terokTowersTime;
 		data.terokFaction = NWB.data.terokFaction;
 	end
 	--if (NWB.isTBC and NWB.data.hellfireRep and tonumber(NWB.data.hellfireRep) and NWB.data.hellfireRep > GetServerTime()
@@ -806,7 +807,7 @@ function NWB:createDataLayered(distribution, noLayerMap, noLogs, type)
 			end
 		end
 		if (NWB.isTBC and v.terokFaction and v.terokTowers and tonumber(v.terokTowers) and v.terokTowers > GetServerTime()
-				and v.terokTowers < GetServerTime() + 20700 and (not type or type == "terokkar")) then
+				and v.terokTowers < GetServerTime() + 21500 and (not type or type == "terokkar")) then
 			if (not data.layers) then
 				data.layers = {};
 			end
@@ -814,6 +815,7 @@ function NWB:createDataLayered(distribution, noLayerMap, noLogs, type)
 				data.layers[layer] = {};
 			end
 			data.layers[layer].terokTowers = v.terokTowers;
+			data.layers[layer].terokTowersTime = v.terokTowersTime;
 			data.layers[layer].terokFaction = v.terokFaction;
 			foundTimer = true;
 		end
@@ -1080,6 +1082,7 @@ function NWB:createSettings(distribution)
 			["guild10"] = NWB.db.global.guild10,
 			["guild1"] = NWB.db.global.guild1,
 			["guildNpcWalking"] = NWB.db.global.guildNpcWalking,
+			["guildTerok10"] = NWB.db.global.guildTerok10,
 		};
 	end
 	--data['faction'] = NWB.faction;
@@ -1131,6 +1134,7 @@ NWB.validKeys = {
 	["dragon3"] = true,
 	["dragon4"] = true,
 	["terokTowers"] = true,
+	["terokTowersTime"] = true,
 	["terokFaction"] = true,
 	["hellfireRep"] = true,
 	["tbcHD"] = true,
@@ -1156,6 +1160,7 @@ local validSettings = {
 	["guild10"] = true,
 	["guild1"] = true,
 	["guildNpcWalking"] = true,
+	["guildTerok10"] = true,
 };
 
 function NWB:extractSettings(dataReceived, sender, distribution)
@@ -1190,6 +1195,7 @@ end
 --Add received data to our database.
 --This is super ugly for layered stuff, but it's meant to work with all diff versions at once, will be cleaned up later.
 local maxLayerTime = 43200;
+local lastHasNewData = 0;
 function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 	local deserializeResult, data = NWB.serializer:Deserialize(dataReceived);
 	if (not deserializeResult) then
@@ -1358,8 +1364,38 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 											if (enableLogging) then
 												NWB:timerLog(k, v, layer, nil, nil, distribution);
 											end
+											if (k == "terokTowers" or k == "terokTowersTime") then
+												--Handle terokkar tower timers seperately so we can set timestamps that are older than current.
+												--Tower cooldowns are unreliable and can drift +/- ~10mins.
+												--So we update if the time it was recorded at is newer even if the actual tower timer is older.
+												if (k ~= "terokTowersTime") then
+													if (not NWB.data.layers[layer].terokTowersTime) then
+														NWB.data.layers[layer].terokTowersTime = 0;
+													end
+													if (NWB.data.layers[layer][k] and v ~= 0 and vv.terokTowersTime and vv.terokTowersTime ~= 0
+															and vv.terokTowersTime > NWB.data.layers[layer].terokTowersTime
+															and v > GetServerTime() and v < GetServerTime() + 21700
+															and v > NWB.data.layers[layer][k] - 1800
+															and NWB:validateCloseTimestamps(layer, k, v)) then
+														if (v < NWB.data.layers[layer][k] - 300) then
+															NWB:debug("New backwards timer from:", sender, v, NWB.data.layers[layer][k] - v);
+														elseif (vv.terokTowersTime > GetServerTime() - 21700
+																and vv.terokTowersTime < GetServerTime() + 21700) then
+															if (vv.terokFaction) then
+																NWB.data.layers[layer].terokFaction = vv.terokFaction;
+															end
+															NWB.data.layers[layer][k] = v;
+															NWB.data.layers[layer].terokTowersTime = vv.terokTowersTime;
+															if (GetServerTime() - lastHasNewData > 300) then
+																hasNewData = true;
+																lastHasNewData = GetServerTime();
+															end
+															--NWB:debug("New terok timer from:", sender, v, vv.terokTowersTime);
+														end
+													end
+												end
 											--Make sure the key exists, stop a lua error in old versions if we add a new timer type.
-											if (NWB.data.layers[layer][k] and v ~= 0 and v > NWB.data.layers[layer][k]
+											elseif (NWB.data.layers[layer][k] and v ~= 0 and v > NWB.data.layers[layer][k]
 													and NWB:validateTimestamp(v, k, layer) and k ~= "terokFaction") then
 												--NWB:debug("new data", sender, distribution, k, v, "old:", NWB.data.layers[layer][k]);
 												if (NWB.isLayered and string.match(k, "flower") and NWB.data.layers[layer][k]
@@ -1465,8 +1501,37 @@ function NWB:receivedData(dataReceived, sender, distribution, elapsed)
 							NWB.data[k] = 0;
 						end
 					end
+					if (k == "terokTowers" or k == "terokTowersTime") then
+						---Only works for debug version for now, we enable sending the data with this update.
+						---And enable receiving the data with the next update after testing and more people are sending.
+						
+						--Handle terokkar tower timers seperately so we can set timestamps that are older than current.
+						--Tower cooldowns are unreliable and can drift +/- ~10mins.
+						--So we update if the time it was recorded at is newer even if the actual tower timer is older.
+						if (k ~= "terokTowersTime") then
+							if (not NWB.data.terokTowersTime) then
+								NWB.data.terokTowersTime = 0;
+							end
+							if (NWB.data[k] and v ~= 0 and data.terokTowersTime and data.terokTowersTime ~= 0
+									and data.terokTowersTime > NWB.data.terokTowersTime
+									and v > GetServerTime() and v < GetServerTime() + 21700
+									and v > NWB.data[k] - 1800) then
+								if (data.terokTowersTime > GetServerTime() - 21700
+										and data.terokTowersTime < GetServerTime() + 21700) then
+									if (data.terokFaction) then
+										NWB.data.terokFaction = data.terokFaction;
+									end
+									NWB.data[k] = v;
+									NWB.data.terokTowersTime = data.terokTowersTime;
+									if (GetServerTime() - lastHasNewData > 300) then
+										hasNewData = true;
+										lastHasNewData = GetServerTime();
+									end
+								end
+							end
+						end
 					--Make sure the key exists, stop a lua error in old versions if we add a new timer type.
-					if (NWB.data[k] and v ~= 0 and v > NWB.data[k] and NWB:validateTimestamp(v, k) and k ~= "terokFaction"
+					elseif (NWB.data[k] and v ~= 0 and v > NWB.data[k] and NWB:validateTimestamp(v, k) and k ~= "terokFaction"
 							and k ~= "tbcHD" and k ~= "tbcDD" and k ~= "tbcPD") then
 						if ((NWB.isLayered and string.match(k, "flower") and (GetServerTime()) < 1500)
 							or (string.match(k, "flower") and v > (GetServerTime() + 1530))
@@ -1777,6 +1842,8 @@ local shortKeys = {
 	["R"] = "tbcDDT",
 	["S"] = "tbcPD",
 	["T"] = "tbcPDT",
+	["U"] = "terokTowersTime",
+	["V"] = "guildTerok10",
 	["f1"] = "flower1",
 	["f2"] = "flower2",
 	["f3"] = "flower3",
@@ -1995,7 +2062,7 @@ function NWB:timerLog(type, timestamp, layer, who, forceSend, distribution)
 				t.layerNum = NWB:GetLayerNum(layer);
 			end
 			table.insert(NWB.data.timerLog, 1, t);
-			NWB:debug("logging", type, timestamp);
+			--NWB:debug("logging", type, timestamp);
 			if (type == "q") then
 				--New quest hand in received, share with guild.
 				newQuestHandIn = true;
@@ -3188,11 +3255,14 @@ end
 local lastTerokkarUpdate = 0;
 local lastZoneChange = 0;
 local lastPew = 0;
+local lastZone;
+local lastZoneSend = 0;
 local f = CreateFrame("Frame");
 f:RegisterEvent("PLAYER_ENTERING_WORLD");
 f:RegisterEvent("ZONE_CHANGED_NEW_AREA");
 f:RegisterEvent("UPDATE_UI_WIDGET");
 f:RegisterEvent("UPDATE_UI_WIDGET");
+f:RegisterEvent("AREA_POIS_UPDATED");
 f:SetScript('OnEvent', function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD" ) then
 		lastPew = GetServerTime();
@@ -3209,6 +3279,34 @@ f:SetScript('OnEvent', function(self, event, ...)
 			end
 			NWB:getTerokkarData();
 		end
+		--Widget 3112 is capture stage.
+		if (NWB.isDebug and data and data.widgetID == 3112) then
+			local neutral = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(3097);
+			local alliance = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(3118);
+			local horde = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(3119);
+			local captureAlliance = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(3111);
+			local captureHorde = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(3112);
+			if (captureAlliance.state == 1 and captureHorde.state == 1) then
+				NWB:debug("Capture started:", GetServerTime());
+			end
+		end
+	elseif (event == "AREA_POIS_UPDATED") then
+		if (UnitOnTaxi("player")) then
+			lastZone = nil;
+			return;
+		end
+		local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+		--If we came from terokkar to shat then share data we found, this only sends terokkar timer nothing else.
+		if (lastZone == 1952 and zone == 1955) then
+			C_Timer.After(14, function()
+				local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+				if (zone == 1955 and GetServerTime() - lastZoneSend > 120) then
+					NWB:sendData("YELL", nil, nil, true, true, "terokkar");
+					lastZoneSend = GetServerTime();
+				end
+			end)
+		end
+		lastZone = zone;
 	end
 end)
 
@@ -3242,7 +3340,8 @@ function NWB:validateTerokkarRecord(old, new, layer)
 end
 
 local firstTerokkarData = true;
-local lastSendData = 0;
+local lastSendData, lastSelfTimestamp = 0, 0;
+local timestampTemp, GetServerTimeTemp, controlTypeTemp, waitingTerok;
 function NWB:getTerokkarData()
 	if (not NWB.isTBC) then
 		return;
@@ -3296,10 +3395,12 @@ function NWB:getTerokkarData()
 					return;
 				end
 				NWB.data.layers[layer]["terokTowers"] = nil;
+				NWB.data.layers[layer]["terokTowersTime"] = nil;
 				NWB.data.layers[layer]["terokFaction"] = nil;
 			end
 		else
 			NWB.data["terokTowers"] = nil;
+			NWB.data["terokTowersTime"] = nil;
 			NWB.data["terokFaction"] = nil;
 		end
 		return;
@@ -3313,7 +3414,7 @@ function NWB:getTerokkarData()
 	elseif (horde.state == 1 and child:IsShown() and child.widgetID == 3119) then
 		--Horde controlled.
 		controlType = 3;
-	end
+	end	
 	local hours, minutes;
 	if (controlType > 0) then
 		if (controlType == 1) then
@@ -3371,6 +3472,7 @@ function NWB:getTerokkarData()
 			end
 			timestamp = GetServerTime() + (hours * 3600) + (minutes * 60);
 		end
+		--timestamp = math.floor(timestamp + ((timestamp / 60) * 2.7));
 		if (timestamp > 0 and ((hours * 3600) + (minutes * 60)) < 22000) then
 			if (NWB.isLayered) then
 				local layer, layerNum;
@@ -3399,27 +3501,43 @@ function NWB:getTerokkarData()
 					--	diff = "+" .. diff;
 					--end
 					--NWB:debug(timestamp, NWB.data.layers[layer]["terokTowers"], timestamp - NWB.data.layers[layer]["terokTowers"])
-					if (timestamp - NWB.data.layers[layer]["terokTowers"] > 0) then
+					if (timestamp - NWB.data.layers[layer]["terokTowers"] > -1800) then
 						if (NWB:validateTerokkarRecord(NWB.data.layers[layer]["terokTowers"], timestamp, layer)) then
-							--NWB:debug("set terokkar timer layered", timestamp, diff);
 							local lastTimeLeft = 0;
 							local sendData;
-							if (NWB.data.layers[layer]["terokTowers"] - GetServerTime() < 0
-									and not firstTerokkarData and timestamp - GetServerTime() > 20700) then
+							if (NWB.data.layers[layer]["terokTowers"] - GetServerTime() > 0
+									and not firstTerokkarData and timestamp - GetServerTime() < 21500) then
 								sendData = true;
 							end
-							--NWB:debug("set terokkar timer layered2", timestamp, controlType);
-							NWB.data.layers[layer]["terokTowers"] = timestamp;
-							NWB.data.layers[layer]["terokFaction"] = controlType;
-							lastTerokkarUpdate = GetServerTime();
-							if (timestamp - GetServerTime() > 900) then
-								NWB.data.layers[layer]["terokTowers10"] = true;
+							--print(NWB.data.layers[layer]["terokTowers"] - GetServerTime(), firstTerokkarData, timestamp - GetServerTime())
+							--NWB:debug("set terokkar timer layered2", timestamp, controlType, GetServerTime());
+							
+							--Slight delay to try counter a bug with the widget updating more than once at the same time and with diff times.
+							--In observations when the widget gives wrong timer it updates 4 times in the same second.
+							--The first 2 updates in this same second are roughly 565 seconds behind the real timer.
+							--The last 2 updates are the correct time, so if we wait 2 seconds before recording any data it should fix this issue.
+							--We can disable some of the other backwards timer checks for now and see if this fixes the issue.
+							timestampTemp = timestamp;
+							GetServerTimeTemp = GetServerTime();
+							controlTypeTemp = controlType;
+							if (not waitingTerok) then
+								C_Timer.After(2, function()
+									waitingTerok = false
+									NWB.data.layers[layer]["terokTowers"] = timestampTemp;
+									NWB.data.layers[layer]["terokTowersTime"] = GetServerTimeTemp;
+									NWB.data.layers[layer]["terokFaction"] = controlTypeTemp;
+									lastTerokkarUpdate = GetServerTime();
+									if (timestamp - GetServerTime() > 900) then
+										NWB.data.layers[layer]["terokTowers10"] = true;
+									end
+									if (sendData and GetServerTime() - lastSendData > 175) then
+										lastSendData = GetServerTime();
+										NWB:sendData("YELL", nil, nil, true, true, "terokkar");
+										NWB:sendData("GUILD", nil, nil, true, true, "terokkar");
+									end
+								end)
 							end
-							if (sendData and GetServerTime() - lastSendData > 1800) then
-								lastSendData = GetServerTime();
-								NWB:sendData("YELL", nil, nil, true, true, "terokkar");
-								NWB:sendData("GUILD", nil, nil, true, true, "terokkar");
-							end
+							waitingTerok = true;
 						end
 					end
 				end
@@ -3431,6 +3549,7 @@ function NWB:getTerokkarData()
 					sendData = true;
 				end
 				NWB.data["terokTowers"] = timestamp;
+				NWB.data["terokTowersTime"] = GetServerTime();
 				NWB.data["terokFaction"] = controlType;
 				lastTerokkarUpdate = GetServerTime();
 				if (timestamp - GetServerTime() > 900) then
@@ -3446,18 +3565,20 @@ function NWB:getTerokkarData()
 			NWB:debug("too soon after capture");
 		end
 	end
-	firstTerokkarData = false;
+	firstTerokkarData = nil;
 end
 
 function NWB:wipeTerokkarData()
-	if (NWB.db.global.wipeTerokkarData) then
+	if (NWB.db.global.wipeTerokkarData4) then
 		for k, v in pairs(NWB.data.layers) do
 			NWB.data.layers[k].terokTowers = nil;
+			NWB.data.layers[k].terokTowersTime = nil
 			NWB.data.layers[k].terokFaction = nil;
 		end
 		NWB.data.terokTowers = nil;
+		NWB.data.terokTowersTime = nil;
 		NWB.data.terokFaction = nil;
-		NWB.db.global.wipeTerokkarData = false;
+		NWB.db.global.wipeTerokkarData4 = false;
 	end
 end
 
@@ -3614,12 +3735,12 @@ function NWB:createTerokkarMarker(type, data, layer, count)
 					if (button == "RightButton") then
 						if (GetServerTime() - obj.lastChatMsgSay > 5) then
 							obj.lastChatMsgSay = GetServerTime();
-							SendChatMessage("[Terokkar] Towers reset in " .. obj.timerMsg .. ".", "say");
+							SendChatMessage("[NWB] Terokkar Towers reset in " .. obj.timerMsg .. ".", "say");
 						end
 					else
 						if (GetServerTime() - obj.lastChatMsgGuild > 5) then
 							obj.lastChatMsgGuild = GetServerTime();
-							SendChatMessage("[Terokkar] Towers reset in " .. obj.timerMsg .. ".", "guild");
+							SendChatMessage("[NWB] Terokkar Towers reset in " .. obj.timerMsg .. ".", "guild");
 						end
 					end
 				end
@@ -3629,12 +3750,12 @@ function NWB:createTerokkarMarker(type, data, layer, count)
 					if (button == "RightButton") then
 						if (GetServerTime() - obj.lastChatMsgSay > 5) then
 							obj.lastChatMsgSay = GetServerTime();
-							SendChatMessage("[Terokkar] Towers reset in " .. obj.timerMsg .. ".", "say");
+							SendChatMessage("[NWB] Terokkar Towers reset in " .. obj.timerMsg .. ".", "say");
 						end
 					else
 						if (GetServerTime() - obj.lastChatMsgGuild > 5) then
 							obj.lastChatMsgGuild = GetServerTime();
-							SendChatMessage("[Terokkar] Towers reset in " .. obj.timerMsg .. ".", "guild");
+							SendChatMessage("[NWB] Terokkar Towers reset in " .. obj.timerMsg .. ".", "guild");
 						end
 					end
 				end
@@ -3648,8 +3769,8 @@ function NWB:createTerokkarMarker(type, data, layer, count)
 			obj.tooltip.fs:SetPoint("CENTER", 0, 0);
 			obj.tooltip.fs:SetFont(NWB.regionFont, 14);
 			obj.tooltip.fs:SetJustifyH("LEFT")
-			obj.tooltip.fs:SetText("|CffDEDE42Shift Left-Click to send timers to guild chat.\nShift Right-Click to send timers to say.");
-			obj.tooltip:SetWidth(obj.tooltip.fs:GetStringWidth() + 18);
+			obj.tooltip.fs:SetText("Terokkar Towers\n|CffDEDE42Shift Left-Click to send timers to guild chat.\nShift Right-Click to send timers to say.");
+			obj.tooltip:SetWidth(obj.tooltip.fs:GetStringWidth() + 0);
 			obj.tooltip:SetHeight(obj.tooltip.fs:GetStringHeight() + 12);
 			obj.tooltip:Hide();
 			obj:SetScript("OnEnter", function(self)
@@ -3710,12 +3831,12 @@ function NWB:createTerokkarMarker(type, data, layer, count)
 					if (button == "RightButton") then
 						if (GetServerTime() - obj.lastChatMsgSay > 5) then
 							obj.lastChatMsgSay = GetServerTime();
-							SendChatMessage("[Terokkar] Towers reset in " .. obj.timerMsg .. ".", "say");
+							SendChatMessage("[NWB] Terokkar Towers reset in " .. obj.timerMsg .. ".", "say");
 						end
 					else
 						if (GetServerTime() - obj.lastChatMsgGuild > 5) then
 							obj.lastChatMsgGuild = GetServerTime();
-							SendChatMessage("[Terokkar] Towers reset in " .. obj.timerMsg .. ".", "guild");
+							SendChatMessage("[NWB] Terokkar Towers reset in " .. obj.timerMsg .. ".", "guild");
 						end
 					end
 				end
@@ -3725,12 +3846,12 @@ function NWB:createTerokkarMarker(type, data, layer, count)
 					if (button == "RightButton") then
 						if (GetServerTime() - obj.lastChatMsgSay > 5) then
 							obj.lastChatMsgSay = GetServerTime();
-							SendChatMessage("[Terokkar] Towers reset in " .. obj.timerMsg .. ".", "say");
+							SendChatMessage("[NWB] Terokkar Towers reset in " .. obj.timerMsg .. ".", "say");
 						end
 					else
 						if (GetServerTime() - obj.lastChatMsgGuild > 5) then
 							obj.lastChatMsgGuild = GetServerTime();
-							SendChatMessage("[Terokkar] Towers reset in " .. obj.timerMsg .. ".", "guild");
+							SendChatMessage("[NWB] Terokkar Towers reset in " .. obj.timerMsg .. ".", "guild");
 						end
 					end
 				end
@@ -3764,7 +3885,24 @@ function NWB:createTerokkarMarker(type, data, layer, count)
 	end
 end
 
+local hookWorldMap = true;
 function NWB:refreshTerokkarMarkers()
+	--If we're looking at the shat map.
+	if (NWB.db.global.showShatWorldmapMarkersTerok and WorldMapFrame and WorldMapFrame:GetMapID() == 1955) then
+		terokkarMapMarkerTypes = {
+			["towers"] = {x = 93, y = 75, mapID = 1955, icon = "Interface\\worldstateframe\\neutraltower.blp", name = L["rend"]},
+		};
+	else
+		terokkarMapMarkerTypes = {
+			["towers"] = {x = 87, y = 82, mapID = 1952, icon = "Interface\\worldstateframe\\neutraltower.blp", name = L["rend"]},
+		};
+	end
+	if (WorldMapFrame and hookWorldMap) then
+		hooksecurefunc(WorldMapFrame, "OnMapChanged", function()
+			NWB:refreshTerokkarMarkers();
+		end)
+		hookWorldMap = nil;
+	end
 	if (NWB.isLayered) then
 		local count = 0;
 		local offset = 0;

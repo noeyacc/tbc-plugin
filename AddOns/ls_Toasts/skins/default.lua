@@ -6,7 +6,7 @@ local _G = getfenv(0)
 
 -- Mine
 E:RegisterSkin("default", {
-	name = "預設",
+	name = "Default",
 	border = {
 		color = {1, 1, 1},
 		offset = -6,
@@ -103,7 +103,7 @@ E:RegisterSkin("default", {
 })
 
 E:RegisterSkin("default-legacy", {
-	name = "預設 (經典)",
+	name = "Default (Legacy)",
 	template = "default",
 	bg = {
 		default = {

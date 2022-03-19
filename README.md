@@ -21,7 +21,7 @@
 
 ---
 
-### 【插件】
+### 【插件列表】
 
 插件可至 [CurseForge](https://www.curseforge.com/wow/addons?filter-game-version=1738749986%3A73246&filter-sort=4) 查詢下載個人需要的插件。
 

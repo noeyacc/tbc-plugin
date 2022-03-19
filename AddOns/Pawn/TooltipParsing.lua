@@ -54,7 +54,7 @@ PawnSeparatorIgnorePrefixes =
 -- them through the normal gauntlet of expressions.
 PawnNormalizationRegexes =
 {
-	{"^\|c........(.+)$", "%1"}, -- "|cFF 0FF 0Heroic" --> "Heroic"
+	{"^|c........(.+)$", "%1"}, -- "|cFF 0FF 0Heroic" --> "Heroic"
 	{"^([%w%s%.]+) %+(%d+)%%?$", "+%2 %1"}, -- "Stamina +5" --> "+5 Stamina"
 	{L.NormalizationEnchant, "%1"}, -- "Enchanted: +50 Strength" --> "+50 Strength" (ENCHANTED_TOOLTIP_LINE)
 }
@@ -332,7 +332,7 @@ PawnRegexes =
 	{PawnGameConstant(EMPTY_SOCKET_META), "MetaSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_COGWHEEL), "CogwheelSocket", 1, PawnMultipleStatsFixed},
 	{PawnGameConstant(EMPTY_SOCKET_PRISMATIC), "PrismaticSocket", 1, PawnMultipleStatsFixed},
-	{PawnGameConstant(EMPTY_SOCKET_DOMINATION or "^UNUSED$"), "DominationSocket", 1, PawnMultipleStatsFixed},
+	{PawnGameConstant(EMPTY_SOCKET_DOMINATION or "UNUSED")}, -- domination sockets are now ignored
 
 	-- In WoW Classic, crossbows, guns, and wands don't show "Ranged" and instead show the weapon type on the left.
 	{L.Bow, "IsBow", 1, PawnMultipleStatsFixed, "IsRanged", 1, PawnMultipleStatsFixed},

@@ -1,5 +1,5 @@
 ﻿----------------------------------------------------------------------
--- 	Leatrix Plus 2.5.89 (3rd February 2022)
+-- 	Leatrix Plus 2.5.94 (9th March 2022)
 ----------------------------------------------------------------------
 
 --	01:Functions	20:Live			50:RunOnce		70:Logout			
@@ -20,7 +20,7 @@
 	local void
 
 	-- Version
-	LeaPlusLC["AddonVer"] = "2.5.89"
+	LeaPlusLC["AddonVer"] = "2.5.94"
 
 	-- Get locale table
 	local void, Leatrix_Plus = ...
@@ -713,6 +713,49 @@
 
 				},
 
+				-- Screech (sound/spells/)
+				["MuteScreech"] = {
+
+					"screech.ogg#569429",
+
+				},
+
+				-- A'dal
+				["MuteAdal"] = {
+
+					-- sound/creature/naaru/
+					"naruuloopgood.ogg#601649",
+
+					-- sound/doodad/
+					"ancient_d_lights.ogg#567134",
+
+				},
+
+				-- Striders
+				["MuteStriders"] = {
+
+					-- sound/creature/mechastrider/
+					"mechastrideraggro.ogg#555127", 
+					"mechastriderattacka.ogg#555125", 
+					"smechastriderattackb.ogg#555123", 
+					"mechastriderattackc.ogg#555132", 
+					"mechastriderloop.ogg#555124", 
+					"mechastriderwounda.ogg#555128", 
+					"mechastriderwoundb.ogg#555129", 
+					"mechastriderwoundc.ogg#555130", 
+					"mechastriderwoundcrit.ogg#555131",
+
+					-- sound/creature/gnomespidertank/
+					"gnomespidertankfootstepa.ogg#550507",
+					"gnomespidertankfootstepb.ogg#550514", 
+					"gnomespidertankfootstepc.ogg#550501", 
+					"gnomespidertankfootstepd.ogg#550500", 
+					"gnomespidertankwoundd.ogg#550511",
+					"gnomespidertankwounde.ogg#550504",
+					"gnomespidertankwoundf.ogg#550498",
+
+				},
+
 			}
 
 			-- Give table file level scope (its used during logout and for wipe and admin commands)
@@ -742,9 +785,14 @@
 
 			LeaPlusLC:MakeTx(SoundPanel, "Mounts", 140, -72)
 			LeaPlusLC:MakeCB(SoundPanel, "MuteGyrocopters", "Gyrocopters", 140, -92, false, "If checked, gyrocopters will be muted.|n|nThis applies to the engineering flying machine mounts.")
+			LeaPlusLC:MakeCB(SoundPanel, "MuteStriders", "Mechstriders", 140, -112, false, "If checked, mechanostriders will be muted.")
 
 			LeaPlusLC:MakeTx(SoundPanel, "Pets", 264, -72)
 			LeaPlusLC:MakeCB(SoundPanel, "MuteYawns", "Yawns", 264, -92, false, "If checked, yawns from hunter pet cats will be muted.")
+			LeaPlusLC:MakeCB(SoundPanel, "MuteScreech", "Screech", 264, -112, false, "If checked, Screech will be muted.|n|nThis is a spell used by some flying pets.")
+
+			LeaPlusLC:MakeTx(SoundPanel, "Misc", 388, -72)
+			LeaPlusLC:MakeCB(SoundPanel, "MuteAdal", "A'dal", 388, -92, false, "If checked, A'dal in Shattrath City will be muted.")
 
 			-- Set click width for sounds checkboxes
 			for k, v in pairs(muteTable) do
@@ -2784,7 +2832,7 @@
 			editBox:SetSecurityDisablePaste()
 			editBox:SetFont(_G["ChatFrame1"]:GetFont(), 16)
 
-			local introMsg = L["Leatrix Plus needs to be updated with the flight details.  Press CTRL/C to copy the flight details below then paste them into a ticket at github.com/leatrix or a message to leatrix via CurseForge website or an email to flight@leatrix.com.  When your report is received, Leatrix Plus will be updated and you will never see this window again for this flight."] .. "|n|n"
+			local introMsg = L["Leatrix Plus needs to be updated with the flight details.  Press CTRL/C to copy the flight details below then paste them into a message to leatrix via CurseForge website or an email to flight@leatrix.com.  When your report is received, Leatrix Plus will be updated and you will never see this window again for this flight."] .. "|n|n"
 			local startHighlight = string.len(introMsg)
 
 			local function DoHighlight()
@@ -3121,7 +3169,8 @@
 			LeaPlusLC:MakeCB(SideMinimap, "HideMiniAddonButtons", "Hide addon buttons", 16, -172, false, "If checked, addon buttons will be hidden while the pointer is not over the minimap.")
 			LeaPlusLC:MakeCB(SideMinimap, "CombineAddonButtons", "Combine addon buttons", 16, -192, true, "If checked, addon buttons will be combined into a single button frame which you can toggle by right-clicking the minimap.|n|nNote that enabling this option will lock out the 'Hide addon buttons' setting.")
 			LeaPlusLC:MakeCB(SideMinimap, "SquareMinimap", "Square minimap", 16, -212, true, "If checked, the minimap shape will be square.")
-			LeaPlusLC:MakeCB(SideMinimap, "MiniShowBugSack", "Exclude BugSack", 16, -232, true, "If checked, the BugSack addon minimap button will always be visible if you have BugSack installed and the minimap button enabled.")
+			LeaPlusLC:MakeCB(SideMinimap, "ShowWhoPinged", "Show who pinged", 16, -232, false, "If checked, when someone pings the minimap, their name will be shown.  This does not apply to your pings.")
+			LeaPlusLC:MakeCB(SideMinimap, "MiniShowBugSack", "Exclude BugSack", 16, -252, true, "If checked, the BugSack addon minimap button will always be visible if you have BugSack installed and the minimap button enabled.")
 
 			-- Add slider controls
 			LeaPlusLC:MakeTx(SideMinimap, "Scale", 356, -72)
@@ -3132,6 +3181,91 @@
 
 			LeaPlusLC:MakeTx(SideMinimap, "Cluster scale", 356, -192)
 			LeaPlusLC:MakeSL(SideMinimap, "MiniClusterScale", "Drag to set the cluster scale.|n|nNote: Adjusting the cluster scale affects the entire cluster including frames attached to it such as the quest watch frame.|n|nIt will also cause the default UI right-side action bars to scale when you login.  If you use the default UI right-side action bars, you may want to leave this at 100%.", 1, 2, 0.1, 356, -212, "%.2f")
+
+			----------------------------------------------------------------------
+			-- Show who pinged
+			----------------------------------------------------------------------
+
+			do
+
+				-- Create frame
+				local pFrame = CreateFrame("FRAME", nil, Minimap, "BackdropTemplate")
+				pFrame:SetSize(100, 20)
+
+				-- Set position
+				if LeaPlusLC["SquareMinimap"] == "On" then
+					pFrame:SetPoint("BOTTOMRIGHT", Minimap, "BOTTOMRIGHT", 0, -3)
+				else
+					pFrame:SetPoint("BOTTOM", Minimap, "BOTTOM", 0, 2)
+				end
+
+				-- Set backdrop
+				pFrame.bg = {
+					bgFile = "Interface\\Tooltips\\UI-Tooltip-Background",
+					edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
+					insets = {left = 4, top = 4, right = 4, bottom = 4},
+					edgeSize = 16,
+					tile = true,
+				}
+
+				pFrame:SetBackdrop(pFrame.bg)
+				pFrame:SetBackdropColor(0, 0, 0, 0.7)
+				pFrame:SetBackdropBorderColor(0, 0, 0, 0)
+
+				-- Create fontstring
+				pFrame.f = pFrame:CreateFontString(nil, nil, "GameFontNormalSmall")
+				pFrame.f:SetAllPoints()
+				pFrame:Hide()
+
+				-- Set variables
+				local pingTime
+				local lastUnit, lastX, lastY = "player", 0, 0
+
+				-- Show who pinged
+				pFrame:SetScript("OnEvent", function(void, void, unit, x, y)
+
+					-- Do nothing if unit has not changed
+					if UnitIsUnit(unit, "player") or UnitIsUnit(unit, lastUnit) and x == lastX and y == lastY then return end
+					lastUnit, lastX, lastY = unit, x, y
+
+					-- Show name in class color
+					local void, class = UnitClass(unit)
+					if class then
+						local color = CUSTOM_CLASS_COLORS and CUSTOM_CLASS_COLORS[class] or RAID_CLASS_COLORS[class]
+						if color then
+
+							-- Set frame details
+							pFrame.f:SetFormattedText("|cff%02x%02x%02x%s|r", color.r * 255, color.g * 255, color.b * 255, UnitName(unit))
+							pFrame:SetSize(pFrame.f:GetUnboundedStringWidth() + 12, 20)
+
+							-- Hide frame after 5 seconds
+							pFrame:Show()
+							pingTime = GetTime()
+							C_Timer.After(5, function()
+								if GetTime() - pingTime >= 5 then
+								pFrame:Hide()
+								end
+							end)
+
+						end
+					end
+
+				end)
+
+				-- Set event when option is clicked and on startup
+				local function SetPingFunc()
+					if LeaPlusLC["ShowWhoPinged"] == "On" then
+						pFrame:RegisterEvent("MINIMAP_PING")
+					else
+						pFrame:UnregisterEvent("MINIMAP_PING")
+						if pFrame:IsShown() then pFrame:Hide() end
+					end
+				end
+
+				LeaPlusCB["ShowWhoPinged"]:HookScript("OnClick", SetPingFunc)
+				SetPingFunc()
+
+			end
 
 			----------------------------------------------------------------------
 			-- Minimap scale
@@ -10455,6 +10589,7 @@
 				LeaPlusLC:LoadVarChk("MinimapMod", "Off")					-- Enhance minimap
 				LeaPlusLC:LoadVarChk("SquareMinimap", "Off")				-- Square minimap
 				LeaPlusLC:LoadVarChk("MiniShowBugSack", "Off")				-- Exclude BugSack
+				LeaPlusLC:LoadVarChk("ShowWhoPinged", "On")					-- Show who pinged
 				LeaPlusLC:LoadVarChk("CombineAddonButtons", "Off")			-- Combine addon buttons
 				LeaPlusLC:LoadVarChk("HideMiniZoomBtns", "Off")				-- Hide zoom buttons
 				LeaPlusLC:LoadVarChk("HideMiniClock", "Off")				-- Hide the clock
@@ -10690,6 +10825,7 @@
 			LeaPlusDB["MinimapMod"]				= LeaPlusLC["MinimapMod"]
 			LeaPlusDB["SquareMinimap"]			= LeaPlusLC["SquareMinimap"]
 			LeaPlusDB["MiniShowBugSack"]		= LeaPlusLC["MiniShowBugSack"]
+			LeaPlusDB["ShowWhoPinged"]			= LeaPlusLC["ShowWhoPinged"]
 			LeaPlusDB["CombineAddonButtons"]	= LeaPlusLC["CombineAddonButtons"]
 			LeaPlusDB["HideMiniZoomBtns"]		= LeaPlusLC["HideMiniZoomBtns"]
 			LeaPlusDB["HideMiniClock"]			= LeaPlusLC["HideMiniClock"]
@@ -12428,6 +12564,196 @@
 					LeaPlusLC:Print("You cannot do that while in group finder.")
 				end
 				return
+			elseif str == "limit" then
+				-- Sound Limit
+				if not LeaPlusLC.MuteFrame then
+					-- Panel frame
+					local frame = CreateFrame("FRAME", nil, UIParent)
+					frame:SetSize(294, 86); frame:SetFrameStrata("FULLSCREEN_DIALOG"); frame:SetFrameLevel(100); frame:SetScale(2)
+					frame.tex = frame:CreateTexture(nil, "BACKGROUND"); frame.tex:SetAllPoints(); frame.tex:SetColorTexture(0.05, 0.05, 0.05, 0.9)
+					frame.close = CreateFrame("Button", nil, frame, "UIPanelCloseButton"); frame.close:SetSize(30, 30); frame.close:SetPoint("TOPRIGHT", 0, 0); frame.close:SetScript("OnClick", function() frame:Hide() end)
+					frame:ClearAllPoints(); frame:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
+					frame:SetClampedToScreen(true)
+					frame:EnableMouse(true)
+					frame:SetMovable(true)
+					frame:RegisterForDrag("LeftButton")
+					frame:SetScript("OnDragStart", frame.StartMoving)
+					frame:SetScript("OnDragStop", function() frame:StopMovingOrSizing() frame:SetUserPlaced(false) end)
+					frame:Hide()
+					LeaPlusLC:CreateBar("MutePanelMainTexture", frame, 294, 86, "TOPRIGHT", 0.7, 0.7, 0.7, 0.7,  "Interface\\ACHIEVEMENTFRAME\\UI-GuildAchievement-Parchment-Horizontal-Desaturated.png")
+					-- Panel contents
+					LeaPlusLC:MakeTx(frame, "Sound Limit", 16, -12)
+					local endBox = LeaPlusLC:CreateEditBox("SoundEndBox", frame, 116, 10, "TOPLEFT", 16, -32, "SoundEndBox", "SoundEndBox")
+					endBox:SetText(3000000)
+					endBox:SetScript("OnMouseWheel", function(self, delta)
+						local endSound = tonumber(endBox:GetText())
+						if endSound then
+							if delta == 1 then endSound = endSound + LeaPlusLC.SoundByte else endSound = endSound - LeaPlusLC.SoundByte end
+							if endSound < 1 then endSound = 1 elseif endSound >= 3000000 then endSound = 3000000 end
+							endBox:SetText(endSound)
+						else
+							endSound = 100000
+							endBox:SetText(endSound)
+						end
+					end)
+					-- Set limit button
+					frame.btn = LeaPlusLC:CreateButton("muteRangeButton", frame, "SET LIMIT", "TOPLEFT", 16, -72, 0, 25, true, "Click to set the sound file limit.  Use the mousewheel on the editbox along with the step buttons below to adjust the sound limit.  Acceptable range is from 1 to 3000000.  Sound files higher than this limit will be muted.")
+					frame.btn:ClearAllPoints()
+					frame.btn:SetPoint("LEFT", endBox, "RIGHT", 10, 0)
+					frame.btn:SetScript("OnClick", function()
+						local endSound = tonumber(endBox:GetText())
+						if endSound then
+							if endSound > 3000000 then endSound = 3000000 endBox:SetText(endSound) end
+							frame.btn:SetText("WAIT")
+							C_Timer.After(0.1, function()
+								for i = 1, 3000000 do
+									MuteSoundFile(i)
+								end
+								for i = 1, endSound do
+									UnmuteSoundFile(i)
+								end
+								Sound_GameSystem_RestartSoundSystem()
+								frame.btn:SetText("SET LIMIT")
+							end)
+						else
+							frame.btn:SetText("INVALID")
+							frame.btn:EnableMouse(false)
+							C_Timer.After(2, function()
+								frame.btn:SetText("SET LIMIT")
+								frame.btn:EnableMouse(true)
+							end)
+						end
+					end)
+					-- Mute all button
+					frame.MuteAllBtn = LeaPlusLC:CreateButton("muteMuteAllButton", frame, "MUTE ALL", "TOPLEFT", 16, -92, 0, 25, true, "Click to mute every sound in the game.")
+					frame.MuteAllBtn:SetScale(0.5)
+					frame.MuteAllBtn:ClearAllPoints()
+					frame.MuteAllBtn:SetPoint("TOPLEFT", frame.btn, "TOPRIGHT", 20, 0)
+					frame.MuteAllBtn:SetScript("OnClick", function()
+						frame.MuteAllBtn:SetText("WAIT")
+						C_Timer.After(0.1, function()
+							for i = 1, 3000000 do
+								MuteSoundFile(i)
+							end
+							Sound_GameSystem_RestartSoundSystem()
+							frame.MuteAllBtn:SetText("MUTE ALL")
+						end)
+						return
+					end)
+					-- Unmute all button
+					frame.UnmuteAllBtn = LeaPlusLC:CreateButton("muteUnmuteAllButton", frame, "UNMUTE ALL", "TOPLEFT", 16, -92, 0, 25, true, "Click to unmute every sound in the game.")
+					frame.UnmuteAllBtn:SetScale(0.5)
+					frame.UnmuteAllBtn:ClearAllPoints()
+					frame.UnmuteAllBtn:SetPoint("TOPLEFT", frame.MuteAllBtn, "BOTTOMLEFT", 0, -10)
+					frame.UnmuteAllBtn:SetScript("OnClick", function()
+						frame.UnmuteAllBtn:SetText("WAIT")
+						C_Timer.After(0.1, function()
+							for i = 1, 3000000 do
+								UnmuteSoundFile(i)
+							end
+							Sound_GameSystem_RestartSoundSystem()
+							frame.UnmuteAllBtn:SetText("UNMUTE ALL")
+						end)
+						return
+					end)
+					-- Step buttons
+					frame.millionBtn = LeaPlusLC:CreateButton("SoundMillionButton", frame, "1000000", "TOPLEFT", 26, -122, 0, 25, true, "Set the editbox step value to 1000000.")
+					frame.millionBtn:SetScale(0.5)
+
+					frame.hundredThousandBtn = LeaPlusLC:CreateButton("SoundHundredThousandButton", frame, "100000", "TOPLEFT", 16, -112, 0, 25, true, "Set the editbox step value to 100000.")
+					frame.hundredThousandBtn:ClearAllPoints()
+					frame.hundredThousandBtn:SetPoint("LEFT", frame.millionBtn, "RIGHT", 10, 0)
+					frame.hundredThousandBtn:SetScale(0.5)
+
+					frame.tenThousandBtn = LeaPlusLC:CreateButton("SoundTenThousandButton", frame, "10000", "TOPLEFT", 16, -112, 0, 25, true, "Set the editbox step value to 10000.")
+					frame.tenThousandBtn:ClearAllPoints()
+					frame.tenThousandBtn:SetPoint("LEFT", frame.hundredThousandBtn, "RIGHT", 10, 0)
+					frame.tenThousandBtn:SetScale(0.5)
+
+					frame.thousandBtn = LeaPlusLC:CreateButton("SoundThousandButton", frame, "1000", "TOPLEFT", 16, -112, 0, 25, true, "Set the editbox step value to 1000.")
+					frame.thousandBtn:ClearAllPoints()
+					frame.thousandBtn:SetPoint("LEFT", frame.tenThousandBtn, "RIGHT", 10, 0)
+					frame.thousandBtn:SetScale(0.5)
+
+					frame.hundredBtn = LeaPlusLC:CreateButton("SoundHundredButton", frame, "100", "TOPLEFT", 16, -112, 0, 25, true, "Set the editbox step value to 100.")
+					frame.hundredBtn:ClearAllPoints()
+					frame.hundredBtn:SetPoint("LEFT", frame.thousandBtn, "RIGHT", 10, 0)
+					frame.hundredBtn:SetScale(0.5)
+
+					frame.tenBtn = LeaPlusLC:CreateButton("SoundTenButton", frame, "10", "TOPLEFT", 16, -112, 0, 25, true, "Set the editbox step value to 10.")
+					frame.tenBtn:ClearAllPoints()
+					frame.tenBtn:SetPoint("LEFT", frame.hundredBtn, "RIGHT", 10, 0)
+					frame.tenBtn:SetScale(0.5)
+
+					frame.oneBtn = LeaPlusLC:CreateButton("SoundTenButton", frame, "1", "TOPLEFT", 16, -112, 0, 25, true, "Set the editbox step value to 1.")
+					frame.oneBtn:ClearAllPoints()
+					frame.oneBtn:SetPoint("LEFT", frame.tenBtn, "RIGHT", 10, 0)
+					frame.oneBtn:SetScale(0.5)
+
+					local function DimAllBoxes()
+						frame.millionBtn:SetAlpha(0.3)
+						frame.hundredThousandBtn:SetAlpha(0.3)
+						frame.tenThousandBtn:SetAlpha(0.3)
+						frame.thousandBtn:SetAlpha(0.3)
+						frame.hundredBtn:SetAlpha(0.3)
+						frame.tenBtn:SetAlpha(0.3)
+						frame.oneBtn:SetAlpha(0.3)
+					end
+
+					LeaPlusLC.SoundByte = 1000000
+					DimAllBoxes()
+					frame.millionBtn:SetAlpha(1)
+
+					-- Step button handlers
+					frame.millionBtn:SetScript("OnClick", function()
+						LeaPlusLC.SoundByte = 1000000
+						DimAllBoxes()
+						frame.millionBtn:SetAlpha(1)
+					end)
+
+					frame.hundredThousandBtn:SetScript("OnClick", function()
+						LeaPlusLC.SoundByte = 100000
+						DimAllBoxes()
+						frame.hundredThousandBtn:SetAlpha(1)
+					end)
+
+					frame.tenThousandBtn:SetScript("OnClick", function()
+						LeaPlusLC.SoundByte = 10000
+						DimAllBoxes()
+						frame.tenThousandBtn:SetAlpha(1)
+					end)
+
+					frame.thousandBtn:SetScript("OnClick", function()
+						LeaPlusLC.SoundByte = 1000
+						DimAllBoxes()
+						frame.thousandBtn:SetAlpha(1)
+					end)
+
+					frame.hundredBtn:SetScript("OnClick", function()
+						LeaPlusLC.SoundByte = 100
+						DimAllBoxes()
+						frame.hundredBtn:SetAlpha(1)
+					end)
+
+					frame.tenBtn:SetScript("OnClick", function()
+						LeaPlusLC.SoundByte = 10
+						DimAllBoxes()
+						frame.tenBtn:SetAlpha(1)
+					end)
+
+					frame.oneBtn:SetScript("OnClick", function()
+						LeaPlusLC.SoundByte = 1
+						DimAllBoxes()
+						frame.oneBtn:SetAlpha(1)
+					end)
+
+					-- Final code
+					LeaPlusLC.MuteFrame = frame
+					_G["LeaPlusGlobalMutePanel"] = frame
+					table.insert(UISpecialFrames, "LeaPlusGlobalMutePanel")
+				end
+				if LeaPlusLC.MuteFrame:IsShown() then LeaPlusLC.MuteFrame:Hide() else LeaPlusLC.MuteFrame:Show() end
+				return
 			elseif str == "admin" then
 				-- Preset profile (used for testing)
 				LpEvt:UnregisterAllEvents()						-- Prevent changes
@@ -12492,6 +12818,7 @@
 				LeaPlusDB["MinimapMod"] = "On"					-- Enhance minimap
 				LeaPlusDB["SquareMinimap"] = "On"				-- Square minimap
 				LeaPlusDB["MiniShowBugSack"] = "On"				-- Exclude BugSack
+				LeaPlusDB["ShowWhoPinged"] = "On"				-- Show who pinged
 				LeaPlusDB["CombineAddonButtons"] = "Off"		-- Combine addon buttons
 				LeaPlusDB["MinimapScale"] = 1.40				-- Minimap scale slider
 				LeaPlusDB["MinimapSize"] = 180					-- Minimap size slider

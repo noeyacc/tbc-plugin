@@ -1,3 +1,22 @@
+2.5.94 - 9th March 2022
+- Added lots of flight times.  There are now 1994 flight times stored in Leatrix Plus for BCC.
+
+2.5.93 - 2nd March 2022
+- Added lots of flight times.  There are now 1980 flight times stored in Leatrix Plus for BCC.
+
+2.5.92 - 23rd February 2022
+- Added lots of flight times.  There are now 1971 flight times stored in Leatrix Plus for BCC.
+
+2.5.91 - 16th February 2022
+- For 'Enhance minimap' ('Interface'), added a new setting 'Show who pinged'.  It's enabled by default.  Note that this does not apply to your own pings.
+- For 'Mute game sounds' ('System'), added 'A'dal'.  This will mute A'dal in Shattrath City.
+- Added lots of flight times.  There are now 1952 flight times stored in Leatrix Plus for BCC.
+
+2.5.90 - 9th February 2022
+- Added lots of flight times.  There are now 1932 flight times stored in Leatrix Plus for BCC.
+- Added 'Screech' to 'Mute game sounds' ('System').  This is a spell used by some flying pets.
+- Added 'Striders' to 'Mute game sounds' ('System').  This will mute mechanostrider mounts.
+
 2.5.89 - 3rd February 2022
 - Added lots of flight times.  There are now 1908 flight times stored in Leatrix Plus for BCC.
 

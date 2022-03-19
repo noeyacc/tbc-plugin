@@ -66,18 +66,18 @@ local function showRealDate(curseDate)
 end
 
 DBM = {
-	Revision = parseCurseDate("20220201064003"),
+	Revision = parseCurseDate("20220222122902"),
 }
 -- The string that is shown as version
 if isRetail then
-	DBM.DisplayVersion = "9.1.28 alpha"
-	DBM.ReleaseRevision = releaseDate(2022, 2, 1) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "9.2.0"
+	DBM.ReleaseRevision = releaseDate(2022, 2, 22) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 elseif isClassic then
-	DBM.DisplayVersion = "1.14.13 alpha"
-	DBM.ReleaseRevision = releaseDate(2022, 2, 1) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "1.14.16"
+	DBM.ReleaseRevision = releaseDate(2022, 2, 22) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 elseif isBCC then
-	DBM.DisplayVersion = "2.5.27 alpha"
-	DBM.ReleaseRevision = releaseDate(2022, 2, 1) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "2.5.29"
+	DBM.ReleaseRevision = releaseDate(2022, 2, 22) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 end
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
@@ -209,6 +209,10 @@ DBM.DefaultOptions = {
 	EnableModels = true,
 	GUIWidth = 800,
 	GUIHeight = 600,
+	GroupOptionsBySpell = true,
+	GroupOptionsExcludeIcon = false,
+	AutoExpandSpellGroups = not isRetail,
+	--ShowSpellDescWhenExpanded = false,
 	RangeFrameFrames = "radar",
 	RangeFrameUpdates = "Average",
 	RangeFramePoint = "CENTER",
@@ -328,7 +332,7 @@ DBM.DefaultOptions = {
 	ShowQueuePop = true,
 	HelpMessageVersion = 3,
 	MoviesSeen = {},
-	MovieFilter2 = "OnlyFight",
+	MovieFilter2 = "Never",
 	LastRevision = 0,
 	DebugMode = false,
 	DebugLevel = 1,
@@ -531,6 +535,38 @@ local function removeEntry(t, val)
 		end
 	end
 	return existed
+end
+
+local function OrderedTable()
+	local nextkey, firstkey = {}, {}
+	nextkey[nextkey] = firstkey
+
+	local function onext(self, key)
+		while key ~= nil do
+			key = nextkey[key]
+			local val = self[key]
+			if val ~= nil then
+				return key, val
+			end
+		end
+	end
+
+	local selfmeta = firstkey
+	selfmeta.__nextkey = nextkey
+
+	function selfmeta:__newindex(key, val)
+		rawset(self, key, val)
+		if nextkey[key] == nil then
+			nextkey[nextkey[nextkey]] = key
+			nextkey[nextkey] = key
+		end
+	end
+
+	function selfmeta:__pairs() return
+		onext, self, firstkey
+	end
+
+	return setmetatable({}, selfmeta)
 end
 
 --Whisper/Whisper Sync filter function
@@ -1409,6 +1445,7 @@ do
 								type			= GetAddOnMetadata(i, "X-DBM-Mod-Type") or "OTHER",
 								category		= GetAddOnMetadata(i, "X-DBM-Mod-Category") or "Other",
 								statTypes		= GetAddOnMetadata(i, "X-DBM-StatTypes") or "",
+								oldOptions		= tonumber(GetAddOnMetadata(i, "X-DBM-OldOptions") or 0) == 1,
 								name			= GetAddOnMetadata(i, "X-DBM-Mod-Name") or GetRealZoneText(tonumber(mapIdTable[1])) or CL.UNKNOWN,
 								mapId			= mapIdTable,
 								subTabs			= GetAddOnMetadata(i, "X-DBM-Mod-SubCategoriesID") and {strsplit(",", GetAddOnMetadata(i, "X-DBM-Mod-SubCategoriesID"))} or GetAddOnMetadata(i, "X-DBM-Mod-SubCategories") and {strsplit(",", GetAddOnMetadata(i, "X-DBM-Mod-SubCategories"))},
@@ -4046,7 +4083,7 @@ do
 		lastBossEngage[bossName..faction] = GetTime()
 		if DBM.Options.WorldBuffAlert and #inCombat == 0 then
 			DBM:Debug("WBA sync processing")
-			local factionText = faction == "Alliance" and FACTION_ALLIANCE or faction == "Horde" and FACTION_HORDE or L.BOTH
+			local factionText = faction == "Alliance" and FACTION_ALLIANCE or faction == "Horde" and FACTION_HORDE or CL.BOTH
 			local buffName, _, buffIcon = DBM:GetSpellInfo(tonumber(spellId) or 0)
 			DBM:AddMsg(L.WORLDBUFF_STARTED:format(buffName or CL.UNKNOWN, factionText, sender))
 			DBM:PlaySound(DBM.Options.RaidWarningSound, true)
@@ -6386,7 +6423,9 @@ do
 				instanceId = instanceId,
 				revision = 0,
 				SyncThreshold = 8,
-				localization = self:GetModLocalization(name)
+				localization = self:GetModLocalization(name),
+				groupSpells = {},
+				groupOptions = OrderedTable(),
 			},
 			mt
 		)
@@ -6597,7 +6636,7 @@ end
 
 do
 	local isSeasonal
-	function bossModPrototype:IsSeasonal()
+	function DBM:IsSeasonal()
 		--Once set to true, we stop checking api an return cache
 		--But if not set true we keep checking api because the api (or buff) will return false if called too early and we don't want to cache that
 		if not isSeasonal then
@@ -6612,6 +6651,7 @@ do
 		end
 		return isSeasonal
 	end
+	bossModPrototype.IsSeasonal = DBM.IsSeasonal
 end
 
 --Pretty much ANYTHING that has a heroic mode
@@ -6665,14 +6705,14 @@ end
 --checkCooldown should never be passed with skip or COUNT interrupt warnings. It should be passed with any other interrupt filter
 function bossModPrototype:CheckInterruptFilter(sourceGUID, force, checkCooldown, ignoreTandF)
 	if DBM.Options.FilterInterrupt2 == "None" and not force then return true end--user doesn't want to use interrupt filter, always return true
-	--Pummel, Mind Freeze, Counterspell, Kick, Skull Bash, Rebuke, Silence, Wind Shear, Disrupt, Solar Beam
+	--Pummel, Mind Freeze, Counterspell, Kick, Skull Bash, Rebuke, Silence, Wind Shear, Disrupt, Solar Beam, Spear Hand Strike
 	local InterruptAvailable = true
 	local requireCooldown = checkCooldown
 	if (DBM.Options.FilterInterrupt2 == "onlyTandF") or self.isTrashMod and (DBM.Options.FilterInterrupt2 == "TandFandBossCooldown") then
 		requireCooldown = false
 	end
 	local check = isRetail and
-		((GetSpellCooldown(6552)) ~= 0 or (GetSpellCooldown(47528)) ~= 0 or (GetSpellCooldown(282151)) ~= 0 or (GetSpellCooldown(2139)) ~= 0 or (GetSpellCooldown(1766)) ~= 0 or (GetSpellCooldown(106839)) ~= 0 or (GetSpellCooldown(96231)) ~= 0 or (GetSpellCooldown(15487)) ~= 0 or (GetSpellCooldown(57994)) ~= 0 or (GetSpellCooldown(183752)) ~= 0 or (GetSpellCooldown(78675)) ~= 0) or
+		((GetSpellCooldown(6552)) ~= 0 or (GetSpellCooldown(47528)) ~= 0 or (GetSpellCooldown(282151)) ~= 0 or (GetSpellCooldown(2139)) ~= 0 or (GetSpellCooldown(1766)) ~= 0 or (GetSpellCooldown(106839)) ~= 0 or (GetSpellCooldown(96231)) ~= 0 or (GetSpellCooldown(15487)) ~= 0 or (GetSpellCooldown(57994)) ~= 0 or (GetSpellCooldown(183752)) ~= 0 or (GetSpellCooldown(78675)) ~= 0 or (GetSpellCooldown(116705)) ~= 0) or
 		(GetSpellCooldown(6552)) ~= 0 or (GetSpellCooldown(72)) ~= 0 or (GetSpellCooldown(2139)) ~= 0 or (GetSpellCooldown(1766)) ~= 0 or (GetSpellCooldown(15487)) ~= 0 or (GetSpellCooldown(8042)) ~= 0 or (GetSpellCooldown(8044)) ~= 0 or (GetSpellCooldown(8045)) ~= 0 or (GetSpellCooldown(8046)) ~= 0 or (GetSpellCooldown(10412)) ~= 0 or (GetSpellCooldown(10413)) ~= 0 or (GetSpellCooldown(10414)) ~= 0
 	if requireCooldown and (UnitIsDeadOrGhost("player") or check) then
 		InterruptAvailable = false--checkCooldown check requested and player has no spell that can interrupt available (or is dead)
@@ -7742,7 +7782,7 @@ do
 	end
 
 	-- old constructor (no auto-localize)
-	function bossModPrototype:NewAnnounce(text, color, icon, optionDefault, optionName, soundOption)
+	function bossModPrototype:NewAnnounce(text, color, icon, optionDefault, optionName, soundOption, spellID)
 		if not text then
 			error("NewAnnounce: you must provide announce text", 2)
 			return
@@ -7771,10 +7811,10 @@ do
 		)
 		if optionName then
 			obj.option = optionName
-			self:AddBoolOption(obj.option, optionDefault, "announce")
+			self:AddBoolOption(obj.option, optionDefault, "announce", nil, nil, nil, spellID)
 		elseif not (optionName == false) then
 			obj.option = text
-			self:AddBoolOption(obj.option, optionDefault, "announce")
+			self:AddBoolOption(obj.option, optionDefault, "announce", nil, nil, nil, spellID)
 		end
 		tinsert(self.announces, obj)
 		return obj
@@ -7834,10 +7874,10 @@ do
 		end
 		if optionName then
 			obj.option = optionName
-			self:AddBoolOption(obj.option, optionDefault, catType)
+			self:AddBoolOption(obj.option, optionDefault, catType, nil, nil, nil, spellId, announceType)
 		elseif not (optionName == false) then
 			obj.option = catType..spellId..announceType..(optionVersion or "")
-			self:AddBoolOption(obj.option, optionDefault, catType)
+			self:AddBoolOption(obj.option, optionDefault, catType, nil, nil, nil, spellId, announceType)
 			if noFilter and announceType == "target" then
 				self.localization.options[obj.option] = L.AUTO_ANNOUNCE_OPTIONS["targetNF"]:format(spellId)
 			else
@@ -7885,7 +7925,7 @@ do
 	end
 
 	function bossModPrototype:NewAddsLeftAnnounce(spellId, color, ...)
-		return newAnnounce(self, "adds", spellId, color or 3, ...)
+		return newAnnounce(self, "addsleft", spellId, color or 3, ...)
 	end
 
 	function bossModPrototype:NewCountAnnounce(spellId, color, ...)
@@ -7984,10 +8024,10 @@ do
 		)
 		if optionName then
 			obj.option = optionName
-			self:AddBoolOption(obj.option, optionDefault, "yell")
+			self:AddBoolOption(obj.option, optionDefault, "yell", nil, nil, nil, spellId, yellType)
 		elseif not (optionName == false) then
 			obj.option = "Yell"..(spellId or yellText)..(yellType ~= "yell" and yellType or "")..(optionVersion or "")
-			self:AddBoolOption(obj.option, optionDefault, "yell")
+			self:AddBoolOption(obj.option, optionDefault, "yell", nil, nil, nil, spellId, yellType)
 			self.localization.options[obj.option] = L.AUTO_YELL_OPTION_TEXT[yellType]:format(spellId)
 		end
 		return obj
@@ -8559,7 +8599,7 @@ do
 		return DBMScheduler:Unschedule(self.Play, self.mod, self, ...)
 	end
 
-	function bossModPrototype:NewSpecialWarning(text, optionDefault, optionName, optionVersion, runSound, hasVoice, difficulty, texture)
+	function bossModPrototype:NewSpecialWarning(text, optionDefault, optionName, optionVersion, runSound, hasVoice, difficulty, texture, spellID)
 		if not text then
 			error("NewSpecialWarning: you must provide special warning text", 2)
 			return
@@ -8598,7 +8638,7 @@ do
 		if optionId then
 			obj.voiceOptionId = hasVoice and "Voice"..optionId or nil
 			obj.option = optionId..(optionVersion or "")
-			self:AddSpecialWarningOption(optionId, optionDefault, runSound, self.NoSortAnnounce and "specialannounce" or "announce")
+			self:AddSpecialWarningOption(optionId, optionDefault, runSound, self.NoSortAnnounce and "specialannounce" or "announce", spellID)
 		end
 		tinsert(self.specwarns, obj)
 		return obj
@@ -8683,7 +8723,7 @@ do
 					catType = "announcerole"
 				end
 			end
-			self:AddSpecialWarningOption(obj.option, optionDefault, runSound, catType)
+			self:AddSpecialWarningOption(obj.option, optionDefault, runSound, catType, spellId, announceType)
 		end
 		obj.voiceOptionId = hasVoice and "Voice"..spellId or nil
 		tinsert(self.specwarns, obj)
@@ -9499,10 +9539,10 @@ do
 		end
 	end
 
-	function timerPrototype:AddOption(optionDefault, optionName, colorType, countdown)
+	function timerPrototype:AddOption(optionDefault, optionName, colorType, countdown, spellId, optionType)
 		if optionName ~= false then
 			self.option = optionName or self.id
-			self.mod:AddBoolOption(self.option, optionDefault, "timer", nil, colorType, countdown)
+			self.mod:AddBoolOption(self.option, optionDefault, "timer", nil, colorType, countdown, spellId, optionType)
 		end
 	end
 
@@ -9627,7 +9667,7 @@ do
 			},
 			mt
 		)
-		obj:AddOption(optionDefault, optionName, colorType, countdown)
+		obj:AddOption(optionDefault, optionName, colorType, countdown, spellId, timerType)
 		tinsert(self.timers, obj)
 		-- todo: move the string creation to the GUI with SetFormattedString...
 		if timerType == "achievement" then
@@ -9847,7 +9887,7 @@ end
 ---------------
 --  Options  --
 ---------------
-function bossModPrototype:AddBoolOption(name, default, cat, func, extraOption, extraOptionTwo)
+function bossModPrototype:AddBoolOption(name, default, cat, func, extraOption, extraOptionTwo, spellId, optionType)
 	cat = cat or "misc"
 	self.DefaultOptions[name] = (default == nil) or default
 	if cat == "timer" then
@@ -9862,14 +9902,20 @@ function bossModPrototype:AddBoolOption(name, default, cat, func, extraOption, e
 		self.Options[name.."TColor"] = extraOption or 0
 		self.Options[name.."CVoice"] = extraOptionTwo or 0
 	end
-	self:SetOptionCategory(name, cat)
+	if spellId then
+		if optionType and optionType == "achievement" then
+			spellId = "at"..spellId--"at" for achievement timer
+		end
+		self:GroupSpells(spellId, name)
+	end
+	self:SetOptionCategory(name, cat, optionType)
 	if func then
 		self.optionFuncs = self.optionFuncs or {}
 		self.optionFuncs[name] = func
 	end
 end
 
-function bossModPrototype:AddSpecialWarningOption(name, default, defaultSound, cat)
+function bossModPrototype:AddSpecialWarningOption(name, default, defaultSound, cat, spellId, optionType)
 	cat = cat or "misc"
 	self.DefaultOptions[name] = (default == nil) or default
 	self.DefaultOptions[name.."SWSound"] = defaultSound or 1
@@ -9880,7 +9926,10 @@ function bossModPrototype:AddSpecialWarningOption(name, default, defaultSound, c
 	self.Options[name] = (default == nil) or default
 	self.Options[name.."SWSound"] = defaultSound or 1
 	self.Options[name.."SWNote"] = true
-	self:SetOptionCategory(name, cat)
+	if spellId then
+		self:GroupSpells(spellId, name)
+	end
+	self:SetOptionCategory(name, cat, optionType)
 end
 
 --Extended Icon Usage Notes
@@ -9897,6 +9946,9 @@ function bossModPrototype:AddSetIconOption(name, spellId, default, isHostile, ic
 		default = self:GetRoleFlagValue(default)
 	end
 	self.Options[name] = (default == nil) or default
+	if not DBM.Options.GroupOptionsExcludeIcon then
+		self:GroupSpells(spellId, name)
+	end
 	self:SetOptionCategory(name, "icon")
 	if isHostile then
 		if not self.findFastestComputer then
@@ -9948,6 +10000,7 @@ function bossModPrototype:AddArrowOption(name, spellId, default, isRunTo)
 		default = self:GetRoleFlagValue(default)
 	end
 	self.Options[name] = (default == nil) or default
+	self:GroupSpells(spellId, name)
 	self:SetOptionCategory(name, "misc")
 	if isRunTo == 2 then
 		self.localization.options[name] = L.AUTO_ARROW_OPTION_TEXT:format(spellId)
@@ -9964,12 +10017,13 @@ function bossModPrototype:AddRangeFrameOption(range, spellId, default)
 		default = self:GetRoleFlagValue(default)
 	end
 	self.Options["RangeFrame"] = (default == nil) or default
-	self:SetOptionCategory("RangeFrame", "misc")
 	if spellId then
+		self:GroupSpells(spellId, "RangeFrame")
 		self.localization.options["RangeFrame"] = L.AUTO_RANGE_OPTION_TEXT:format(range, spellId)
 	else
 		self.localization.options["RangeFrame"] = L.AUTO_RANGE_OPTION_TEXT_SHORT:format(range)
 	end
+	self:SetOptionCategory("RangeFrame", "misc")
 end
 
 function bossModPrototype:AddHudMapOption(name, spellId, default)
@@ -9978,12 +10032,13 @@ function bossModPrototype:AddHudMapOption(name, spellId, default)
 		default = self:GetRoleFlagValue(default)
 	end
 	self.Options[name] = (default == nil) or default
-	self:SetOptionCategory(name, "misc")
 	if spellId then
+		self:GroupSpells(spellId, name)
 		self.localization.options[name] = L.AUTO_HUD_OPTION_TEXT:format(spellId)
 	else
 		self.localization.options[name] = L.AUTO_HUD_OPTION_TEXT_MULTI
 	end
+	self:SetOptionCategory(name, "misc")
 end
 
 function bossModPrototype:AddNamePlateOption(name, spellId, default)
@@ -9995,6 +10050,7 @@ function bossModPrototype:AddNamePlateOption(name, spellId, default)
 		default = self:GetRoleFlagValue(default)
 	end
 	self.Options[name] = (default == nil) or default
+	self:GroupSpells(spellId, name)
 	self:SetOptionCategory(name, "nameplate")
 	self.localization.options[name] = L.AUTO_NAMEPLATE_OPTION_TEXT:format(spellId)
 end
@@ -10009,8 +10065,8 @@ function bossModPrototype:AddInfoFrameOption(spellId, default, optionVersion, op
 		default = self:GetRoleFlagValue(default)
 	end
 	self.Options["InfoFrame"..oVersion] = (default == nil) or default
-	self:SetOptionCategory("InfoFrame"..oVersion, "misc")
 	if spellId then
+		self:GroupSpells(spellId, "InfoFrame" .. oVersion)
 		if optionalThreshold then
 			self.localization.options["InfoFrame"..oVersion] = L.AUTO_INFO_FRAME_OPTION_TEXT3:format(spellId, optionalThreshold)
 		else
@@ -10019,6 +10075,7 @@ function bossModPrototype:AddInfoFrameOption(spellId, default, optionVersion, op
 	else
 		self.localization.options["InfoFrame"..oVersion] = L.AUTO_INFO_FRAME_OPTION_TEXT2
 	end
+	self:SetOptionCategory("InfoFrame"..oVersion, "misc")
 end
 
 function bossModPrototype:AddReadyCheckOption(questId, default, maxLevel)
@@ -10045,10 +10102,13 @@ end
 
 -- FIXME: this function does not reset any settings to default if you remove an option in a later revision and a user has selected this option in an earlier revision were it still was available
 -- this will be fixed as soon as it is necessary due to removed options ;-)
-function bossModPrototype:AddDropdownOption(name, options, default, cat, func)
+function bossModPrototype:AddDropdownOption(name, options, default, cat, func, spellId)
 	cat = cat or "misc"
 	self.DefaultOptions[name] = {type = "dropdown", value = default}
 	self.Options[name] = default
+	if spellId then
+		self:GroupSpells(spellId, name)
+	end
 	self:SetOptionCategory(name, cat)
 	self.dropdowns = self.dropdowns or {}
 	self.dropdowns[name] = options
@@ -10065,13 +10125,22 @@ function bossModPrototype:AddOptionSpacer(cat)
 	end
 end
 
-function bossModPrototype:AddOptionLine(text, cat)
-	cat = cat or "misc"
-	if not self.optionCategories[cat] then
-		self.optionCategories[cat] = {}
-	end
-	if self.optionCategories[cat] then
-		tinsert(self.optionCategories[cat], {line = true, text = text})
+do
+	local lineCount = 1
+
+	function bossModPrototype:AddOptionLine(text, cat, forceIgnore)
+		if self.addon and not self.addon.oldOptions and DBM.Options.GroupOptionsBySpell and not forceIgnore then
+			self.groupOptions["line" .. lineCount] = text
+			lineCount = lineCount + 1
+		else
+			cat = cat or "misc"
+			if not self.optionCategories[cat] then
+				self.optionCategories[cat] = {}
+			end
+			if self.optionCategories[cat] then
+				tinsert(self.optionCategories[cat], {line = true, text = text})
+			end
+		end
 	end
 end
 
@@ -10100,7 +10169,7 @@ function bossModPrototype:AddIconLine(text)
 end
 
 function bossModPrototype:AddMiscLine(text)
-	return self:AddOptionLine(text, "misc")
+	return self:AddOptionLine(text, "misc", true)
 end
 
 function bossModPrototype:RemoveOption(name)
@@ -10116,17 +10185,45 @@ function bossModPrototype:RemoveOption(name)
 	end
 end
 
-function bossModPrototype:GroupSpells() end -- NOOP placeholder
+function bossModPrototype:GroupSpells(...)
+	local spells = {...}
+	local catSpell = tostring(tremove(spells, 1))
+	if not self.groupSpells[catSpell] then
+		self.groupSpells[catSpell] = {}
+	end
+	for _, spell in ipairs(spells) do
+		local sSpell = tostring(spell)
+		self.groupSpells[sSpell] = catSpell
+		if sSpell ~= catSpell and self.groupOptions[sSpell] then
+			if not self.groupOptions[catSpell] then
+				self.groupOptions[catSpell] = {}
+			end
+			for _, spell2 in ipairs(self.groupOptions[sSpell]) do
+				tinsert(self.groupOptions[catSpell], spell2)
+			end
+			self.groupOptions[sSpell] = nil
+		end
+	end
+end
 
-function bossModPrototype:SetOptionCategory(name, cat)
+function bossModPrototype:SetOptionCategory(name, cat, optionType)
+	optionType = optionType or ""
 	for _, options in pairs(self.optionCategories) do
 		removeEntry(options, name)
 	end
-	if not self.optionCategories[cat] then
-		self.optionCategories[cat] = {}
+	if self.addon and not self.addon.oldOptions and DBM.Options.GroupOptionsBySpell and self.groupSpells[name] and not (optionType == "gtfo" or optionType == "adds" or optionType == "addscustom" or optionType:find("stage") or cat == "icon" and DBM.Options.GroupOptionsExcludeIcon) then
+		local sSpell = self.groupSpells[name]
+		if not self.groupOptions[sSpell] then
+			self.groupOptions[sSpell] = {}
+		end
+		tinsert(self.groupOptions[sSpell], name)
+	else
+		if not self.optionCategories[cat] then
+			self.optionCategories[cat] = {}
+		end
+		tinsert(self.optionCategories[cat], name)
+		tinsert(self.categorySort, cat)
 	end
-	tinsert(self.optionCategories[cat], name)
-	tinsert(self.categorySort, cat)
 end
 
 --------------

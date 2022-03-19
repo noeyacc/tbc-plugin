@@ -1,0 +1,17 @@
+## Interface: 20502
+## Title: RollTracker Classic
+## Notes: Keeps tracks of /rolls, loot and more
+## Title-zhTW: |cffFF7F00[副本]|r 骰子記錄
+## Notes-zhTW: RollTracker Classic |n記錄並統計擲骰子 /roll 的點數，自動計算出骰最大的贏家，還可以將結果發佈到聊天頻道。特別適合分裝使用。|n|cffffd200使用方法：|r點小地圖按鈕開啟主視窗，從Esc>介面設定>插件>骰子記錄，進行設定。
+## DefaultState: disabled
+## Version: 2.5.2
+## Author: GPI / Erytheia-Razorfen
+## SavedVariables: RollTrackerClassicDB,RollTrackerClassicLoot
+
+LibGPIOptions.lua
+LibGPIMinimapButton.lua
+LibGPIToolBox.lua
+Localization.lua
+RollTrackerClassic.lua
+RollTrackerClassic.xml
+

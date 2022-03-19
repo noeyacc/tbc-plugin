@@ -276,8 +276,8 @@ E:RegisterOptions("loot_items", {
 	dnd = false,
 	sfx = true,
 	ilvl = true,
-	quest = true,
-	threshold = 2,
+	quest = false,
+	threshold = 1,
 }, {
 	name = L["TYPE_LOOT_ITEMS"],
 	get = function(info)

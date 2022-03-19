@@ -14,7 +14,7 @@ E:RegisterSkin("beautycase", {
 })
 
 E:RegisterSkin("beautycase-no-art", {
-	name = "Beautycase (無背景圖)",
+	name = "Beautycase (No Artwork)",
 	template = "beautycase",
 	text_bg = {
 		hidden = true,

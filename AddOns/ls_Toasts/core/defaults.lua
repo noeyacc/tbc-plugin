@@ -9,10 +9,10 @@ D.profile = {
 	skin = "default",
 	font = {
 		-- name = nil,
-		size = 14,
+		size = 12,
 	},
 	colors = {
-		name = true,
+		name = false,
 		border = true,
 		icon_border = true,
 		threshold = 1,
@@ -21,16 +21,16 @@ D.profile = {
 	anchors = {
 		[1] = {
 			fadeout_delay = 2.8,
-			growth_direction = "UP",
+			growth_direction = "DOWN",
 			growth_offset_x = 26,
 			growth_offset_y = 14,
 			max_active_toasts = 12,
 			scale = 1,
 			point = {
 				p = "TOPLEFT",
-				rP = "BOTTOMLEFT",
-				x = 270,
-				y = 370,
+				rP = "TOPLEFT",
+				x = 26,
+				y = -14,
 			},
 		},
 	},

@@ -62,6 +62,7 @@ local addon = LibStub("AceAddon-3.0"):NewAddon(private.addon_name, "AceConsole-3
 addon.constants = private.constants
 addon.constants.addon_name = private.addon_name
 addon.Name = FOLDER_NAME
+addon.LocName = select(2, GetAddOnInfo(addon.Name))
 addon.Notes = select(3, GetAddOnInfo(addon.Name))
 _G.Accountant_Classic = addon
 
@@ -74,7 +75,6 @@ local LibDialog = LibStub("LibDialog-1.0");
 local L = LibStub("AceLocale-3.0"):GetLocale(private.addon_name);
 local ACbutton = LibStub("LibDBIcon-1.0")
 local AceDB = LibStub("AceDB-3.0")
-addon.LocName = L["Accountant Classic"]								   
 -- Minimap button with LibDBIcon-1.0
 local LDB = LibStub("LibDataBroker-1.1"):NewDataObject(private.addon_name);
 if ( TitanPanelButton_UpdateButton ) then

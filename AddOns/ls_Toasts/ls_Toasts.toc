@@ -1,10 +1,8 @@
-## Interface: 20502
+## Interface: 11402
 ## Author: lightspark
-## Version: 20501.01
+## Version: 11402.01
 ## Title: LS: |cff1a9fc0Toasts|r
 ## Notes: Better toasts, cheers!
-## Title-zhTW: |cff0099FF[介面]|r 通知面板增強
-## Notes-zhTW: ls: |cff1a9fc0Toasts|r |n可以完全自訂彈出式通知面板，移動位置、調整大小、選擇要顯示哪些通知，還有更多自訂選項。讓彈出的通知不會再擋住快捷列或重要的畫面。|n|cffffd200使用方法：|r從Esc>介面>插件>通知，進行設定。
 ## SavedVariables: LS_TOASTS_GLOBAL_CONFIG
 
 embeds\_embeds.xml

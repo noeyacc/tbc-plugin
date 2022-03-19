@@ -1,6 +1,6 @@
 ## Interface: 20503
-## X-Min-Interface: 90105
-## X-Min-Interface-Classic: 11401
+## X-Min-Interface: 90200
+## X-Min-Interface-Classic: 11402
 ## X-Min-Interface-BCC: 20503
 
 ## Title:|cffffd200Deadly Boss Mods|r |cff69ccf0Core|r
@@ -20,7 +20,7 @@
 ## LoadOnDemand: 0
 ## DefaultState: enabled
 ## Author: MysticalOS, QartemisT
-## Version: c5789eb
+## Version: 80137cb
 ## X-Website: https://deadlybossmods.com
 
 Libs\LibStub\LibStub.lua

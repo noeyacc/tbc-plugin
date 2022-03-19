@@ -44,6 +44,7 @@ NWB.LDBIcon = LibStub("LibDBIcon-1.0");
 local version = GetAddOnMetadata("NovaWorldBuffs", "Version") or 9999;
 NWB.latestRemoteVersion = version;
 NWB.prefixColor = "|cFFFF6900";
+local terokOffset = 2.7507;
 
 --Some notes on the change Blizzard just implemented to make layers share buffs.
 --The buff drop only works on both layers if each layer NPC is reset.
@@ -212,12 +213,7 @@ function NWB:printBuffTimers(isLogon)
 	local timestamp, timeLeft, type = NWB:getDmfData();
 	if ((isLogon and NWB.db.global.logonDmfSpawn and (timeLeft > 0 and timeLeft < 21600)) or
 		(not isLogon and NWB.db.global.showDmfWb)) then	
-		local zone;
-		if (NWB.dmfZone == "Mulgore") then
-			zone = L["mulgore"];
-		else
-			zone = L["elwynnForest"];
-		end
+		local zone = NWB:getDmfZoneString();
 		msg = NWB:getDmfTimeString() .. " (" .. zone .. ")";
 		if (not NWB.isTBC) then
 			NWB:print("|HNWBCustomLink:timers|h" .. msg .. "|h", nil, "[DMF]");
@@ -562,6 +558,7 @@ NWB.types = {
 --1 second looping function for timer warning msgs.
 NWB.played = 0;
 local lastDmfTick = 0;
+local lastSecondsLeft = 0;
 function NWB:ticker()
 	for k, v in pairs(NWB.types) do
 		local offset = 0;
@@ -599,26 +596,41 @@ function NWB:ticker()
 					NWB.data.layers[layer][v .. "30"] = nil;
 					NWB:doWarning(v, 30, secondsLeft, layer);
 				end
-				if (NWB.data.layers[layer]["terokTowers10"] and NWB.data.layers[layer]["terokTowers"]
-						and tonumber(NWB.data.layers[layer]["terokTowers"])) then
-					--This timer drifts 3 seconds forward per minute.
-					local endTime = NWB.data.layers[layer]["terokTowers"] + NWB:round((((NWB.data.layers[layer]["terokTowers"]  - GetServerTime()) / 60) * 3));
-					local secondsLeft = endTime - GetServerTime()
-					if (secondsLeft <= 600 and secondsLeft >= 599) then
-						NWB.data.layers[layer]["terokTowers10"] = nil;
-						local layer = NWB:GetLayerNum(layer);
-						local layerMsg = " (Layer " .. layer .. ")";
-						if (NWB.db.global.terokkarChat10) then
-							NWB:print(string.format(L["terokkarWarning"], "10 minutes") .. layerMsg .. ".");
+				if (k == 1) then
+					if (NWB.data.layers[layer]["terokTowers10"] and NWB.data.layers[layer]["terokTowers"]
+							and tonumber(NWB.data.layers[layer]["terokTowers"])) then
+						--This timer drifts 3 seconds forward per minute.
+						local endTime = NWB:getTerokEndTime(NWB.data.layers[layer]["terokTowers"], NWB.data.layers[layer]["terokTowersTime"]);
+						--local endTime = NWB.data.layers[layer]["terokTowers"];
+						local secondsLeft = endTime - GetServerTime();
+						--if (secondsLeft ~= lastSecondsLeft - 1) then
+							--NWB:debug("Time irregularity New:", secondsLeft, "Old:", lastSecondsLeft, "Diff:", lastSecondsLeft - secondsLeft);
+						--end
+						lastSecondsLeft = secondsLeft;
+						--Seems to not fire on 10mins sometimes, maybe getting a timer update that skips the 600 seconds remaining mark.
+						--Trying a 30 second window instead.
+						if (secondsLeft <= 600 and secondsLeft >= 570) then
+							NWB.data.layers[layer]["terokTowers10"] = nil;
+							local layer = NWB:GetLayerNum(layer);
+							local layerMsg = " (Layer " .. layer .. ")";
+							local msg = string.format(L["terokkarWarning"], "10 minutes") .. layerMsg .. ".";
+							if (NWB.db.global.terokkarChat10) then
+								NWB:print(msg);
+							end
+							if (NWB.db.global.terokkarMiddle10) then
+								NWB:middleScreenMsgTBC("middle30", msg, nil, 5);
+							end
+							if (NWB.db.global.guildTerok10) then
+								NWB:sendGuildMsg(msg, "guildTerok10", nil, "[NWB]");
+							end
+							--NWB:debug("terok10", secondsLeft);
 						end
-						if (NWB.db.global.terokkarMiddle10) then
-							NWB:middleScreenMsgTBC("middle30", string.format(L["terokkarWarning"], "10 minutes") .. layerMsg .. ".", nil, 5);
+						if (secondsLeft < 0) then
+							NWB.data.layers[layer]["terokTowers"] = nil;
+							NWB.data.layers[layer]["terokTowersTime"] = nil;
+							NWB.data.layers[layer]["terokFaction"] = nil;
+							--NWB:debug("terrok timer ended on layer", layer);
 						end
-					end
-					if (secondsLeft < 0) then
-						NWB.data.layers[layer]["terokTowers"] = nil;
-						NWB.data.layers[layer]["terokFaction"] = nil;
-						NWB:debug("terrok timer ended on layer", layer);
 					end
 				end
 				if (NWB.data.layers[layer][v .. "NpcDied"] and ((GetServerTime() - NWB.data.layers[layer][v .. "NpcDied"]) == npcRespawnTime
@@ -650,17 +662,28 @@ function NWB:ticker()
 				NWB.data[v .. "30"] = nil;
 				NWB:doWarning(v, 30, secondsLeft);
 			end
-			if (NWB.data["terokTowers10"] and NWB.data["terokTowers"]) then
-				--This timer drifts 3 seconds forward per minute.
-				local endTime = NWB.data["terokTowers"] + NWB:round((((NWB.data["terokTowers"]  - GetServerTime()) / 60) * 3));
-				local secondsLeft = endTime - GetServerTime()
-				if (secondsLeft <= 600 and secondsLeft >= 599) then
-					NWB.data["terokTowers10"] = nil;
-					if (NWB.db.global.terokkarChat10) then
-						NWB:print(string.format(L["terokkarWarning"], "10 minutes") .. ".");
+			if (k == 1) then
+				if (NWB.data["terokTowers10"] and NWB.data["terokTowers"]) then
+					--This timer drifts 3 seconds forward per minute.
+					local endTime = NWB:getTerokEndTime(NWB.data["terokTowers"], NWB.data["terokTowersTime"]);
+					local secondsLeft = endTime - GetServerTime();
+					if (secondsLeft <= 630 and secondsLeft >= 570) then
+						NWB.data["terokTowers10"] = nil;
+						local msg = string.format(L["terokkarWarning"], "10 minutes") .. ".";
+						if (NWB.db.global.terokkarChat10) then
+							NWB:print(msg);
+						end
+						if (NWB.db.global.terokkarMiddle10) then
+							NWB:middleScreenMsgTBC("middle30", msg, nil, 5);
+						end
+						if (NWB.db.global.guildTerok10) then
+							NWB:sendGuildMsg(msg, "guildTerok10", nil, "[NWB]");
+						end
 					end
-					if (NWB.db.global.terokkarMiddle10) then
-						NWB:middleScreenMsgTBC("middle30", string.format(L["terokkarWarning"], "10 minutes") .. ".", nil, 5);
+					if (secondsLeft < 0) then
+						NWB.data.terokTowers = nil;
+						NWB.data.terokTowersTime = nil;
+						NWB.data.terokFaction = nil;
 					end
 				end
 			end
@@ -874,8 +897,8 @@ end
 --Can also specify zone so only 1 person from that zone will send the msg (like orgrimmar when npc yell goes out).
 --BUG: sometimes a user doesn't register as having addon, checked table they don't exist when this happens.
 --Must be some reason they don't send a guild addon msg at logon.
-function NWB:sendGuildMsg(msg, type, zoneName)
-	if (NWB.isTBC) then
+function NWB:sendGuildMsg(msg, type, zoneName, prefix)
+	if (NWB.isTBC and type ~= "guildTerok10") then
 		return;
 	end
 	if (NWB.db.global.disableAllGuildMsgs == 1) then
@@ -906,6 +929,7 @@ function NWB:sendGuildMsg(msg, type, zoneName)
 		["guild1"] = "l",
 		["guild0"] = "m",
 		["guildNpcWalking"] = "K",
+		["guildTerok10"] = "V",
 	};
 	local numTotalMembers = GetNumGuildMembers();
 	local onlineMembers = {};
@@ -949,7 +973,11 @@ function NWB:sendGuildMsg(msg, type, zoneName)
 	--Check temp table to see if we're first in alphabetical order.
 	for k, v in NWB:pairsByKeys(onlineMembers) do
 		if (k == me) then
-			SendChatMessage("[WorldBuffs] " .. NWB:stripColors(msg), "guild");
+			if (prefix) then
+				SendChatMessage(prefix .. " " .. NWB:stripColors(msg), "guild");
+			else
+				SendChatMessage("[WorldBuffs] " .. NWB:stripColors(msg), "guild");
+			end
 		end
 		return;
 	end
@@ -999,7 +1027,8 @@ function NWB:checkGuildMasterSetting(type)
 				found = true;
 			elseif (v == 2) then
 				if (type == "guild30" or type == "guild15" or type == "guild10"
-					 or type == "guild5" or type == "guild1" or type == "guild0") then
+					 or type == "guild5" or type == "guild1" or type == "guild0"
+					 or type == "guildTerok10") then
 					found = true;
 				end
 			elseif (v == 3) then
@@ -3435,6 +3464,26 @@ function NWB:throddleEventByFunc(event, time, func, ...)
 	end
 end
 
+function NWB:getTerokEndTime(terokTowers, terokTowersTime)
+	--Can potentially just adjust the time when it's recorded instead and remove the timeSet sharing..
+	--But this way makes it easier to adjust the offset with version updates if needed without wiping peoples timers and ignoring old versions.
+	--Will see how this works out for a while before trying the above method.
+	--local endTime = NWB.data.layers[layer]["terokTowers"] + NWB:round((((NWB.data.layers[layer]["terokTowers"]  - GetServerTime()) / 60) * terokOffset));
+	--local endTime = timestamp + NWB:round((((timestamp  - GetServerTime()) / 60) * terokOffset));
+	--return endTime;
+	if (terokTowersTime) then
+		--This worked fine when you're have a fresh timestamp by being in the zone or was just shared with.
+		--But it doesn't work when you have a timestamp set a while ago because Blizzard creeps the timestamp forward.
+		--local offset = math.floor((((terokTowers  - GetServerTime()) / 60) * terokOffset));
+		--This should work no matter when you got the timestamp.
+		local offset = math.floor(((terokTowers - terokTowersTime) / 60) * terokOffset)
+		local endTime = terokTowers + offset;
+		return endTime;
+	else
+		return terokTowers;
+	end
+end
+
 local f = CreateFrame("Frame");
 f:RegisterEvent("PLAYER_ENTERING_WORLD");
 f:RegisterEvent("COMBAT_LOG_EVENT_UNFILTERED");
@@ -4658,76 +4707,79 @@ function NWB:updateMinimapButton(tooltip, usingPanel)
 			for k, v in NWB:pairsByKeys(NWB.data.layers) do
 				count = count + 1;
 				tooltip:AddLine("|cff00ff00[Layer " .. count .. "]|r  |cFF989898(zone " .. k .. ")|r");
-				if (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend) then
-					if (v.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
-						msg = msg .. L["rend"] .. ": " .. NWB:getTimeString(NWB.db.global.rendRespawnTime - (GetServerTime() - v.rendTimer), true) .. ".";
+				if (NWB.isClassic or (not NWB.db.global.hideMinimapBuffTimers
+						and not (NWB.db.global.disableBuffTimersMaxBuffLevel and UnitLevel("player") > 64))) then
+					if (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend) then
+						if (v.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
+							msg = msg .. L["rend"] .. ": " .. NWB:getTimeString(NWB.db.global.rendRespawnTime - (GetServerTime() - v.rendTimer), true) .. ".";
+							if (NWB.db.global.showTimeStamp) then
+								local timeStamp = NWB:getTimeFormat(v.rendTimer + NWB.db.global.rendRespawnTime);
+								msg = msg .. " (" .. timeStamp .. ")";
+							end
+						else
+							msg = msg .. L["rend"] .. ": " .. L["noCurrentTimer"] .. ".";
+						end
+						tooltip:AddLine(NWB.chatColor .. msg);
+					end
+					msg = "";
+					if ((v.onyNpcDied > v.onyTimer) and
+							(v.onyNpcDied > (GetServerTime() - NWB.db.global.onyRespawnTime)) and not NWB.db.global.ignoreKillData) then
+						local respawnTime = npcRespawnTime - (GetServerTime() - v.onyNpcDied);
+						if (NWB.faction == "Horde") then
+							if (respawnTime > 0) then
+								msg = string.format(L["onyxiaNpcKilledHordeWithTimer2"], NWB:getTimeString(GetServerTime() - v.onyNpcDied, true),
+										NWB:getTimeString(respawnTime, true));
+							else
+								msg = string.format(L["onyxiaNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - v.onyNpcDied, true));
+							end
+						else
+							if (respawnTime > 0) then
+								msg = string.format(L["onyxiaNpcKilledAllianceWithTimer2"], NWB:getTimeString(GetServerTime() - v.onyNpcDied, true),
+										NWB:getTimeString(respawnTime, true));
+							else
+								msg = string.format(L["onyxiaNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - v.onyNpcDied, true));
+							end
+						end
+					elseif (v.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
+						msg = msg .. L["onyxia"] .. ": " .. NWB:getTimeString(NWB.db.global.onyRespawnTime - (GetServerTime() - v.onyTimer), true) .. ".";
 						if (NWB.db.global.showTimeStamp) then
-							local timeStamp = NWB:getTimeFormat(v.rendTimer + NWB.db.global.rendRespawnTime);
+							local timeStamp = NWB:getTimeFormat(v.onyTimer + NWB.db.global.onyRespawnTime);
 							msg = msg .. " (" .. timeStamp .. ")";
 						end
 					else
-						msg = msg .. L["rend"] .. ": " .. L["noCurrentTimer"] .. ".";
+						msg = msg .. L["onyxia"] .. ": " .. L["noCurrentTimer"] .. ".";
+					end
+					tooltip:AddLine(NWB.chatColor .. msg);
+					msg = "";
+					if ((v.nefNpcDied > v.nefTimer) and
+							(v.nefNpcDied > (GetServerTime() - NWB.db.global.nefRespawnTime)) and not NWB.db.global.ignoreKillData) then
+						local respawnTime = npcRespawnTime - (GetServerTime() - v.nefNpcDied);
+						if (NWB.faction == "Horde") then
+							if (respawnTime > 0) then
+								msg = string.format(L["nefarianNpcKilledHordeWithTimer2"], NWB:getTimeString(GetServerTime() - v.nefNpcDied, true),
+										NWB:getTimeString(respawnTime, true));
+							else
+								msg = string.format(L["nefarianNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - v.nefNpcDied, true));
+							end
+						else
+							if (respawnTime > 0) then
+								msg = string.format(L["nefarianNpcKilledAllianceWithTimer2"], NWB:getTimeString(GetServerTime() - v.nefNpcDied, true),
+										NWB:getTimeString(respawnTime, true));
+							else
+								msg = string.format(L["nefarianNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - v.nefNpcDied, true));
+							end
+						end
+					elseif (v.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
+						msg = L["nefarian"] .. ": " .. NWB:getTimeString(NWB.db.global.nefRespawnTime - (GetServerTime() - v.nefTimer), true) .. ".";
+						if (NWB.db.global.showTimeStamp) then
+							local timeStamp = NWB:getTimeFormat(v.nefTimer + NWB.db.global.nefRespawnTime);
+							msg = msg .. " (" .. timeStamp .. ")";
+						end
+					else
+						msg = msg .. L["nefarian"] .. ": " .. L["noCurrentTimer"] .. ".";
 					end
 					tooltip:AddLine(NWB.chatColor .. msg);
 				end
-				msg = "";
-				if ((v.onyNpcDied > v.onyTimer) and
-						(v.onyNpcDied > (GetServerTime() - NWB.db.global.onyRespawnTime)) and not NWB.db.global.ignoreKillData) then
-					local respawnTime = npcRespawnTime - (GetServerTime() - v.onyNpcDied);
-					if (NWB.faction == "Horde") then
-						if (respawnTime > 0) then
-							msg = string.format(L["onyxiaNpcKilledHordeWithTimer2"], NWB:getTimeString(GetServerTime() - v.onyNpcDied, true),
-									NWB:getTimeString(respawnTime, true));
-						else
-							msg = string.format(L["onyxiaNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - v.onyNpcDied, true));
-						end
-					else
-						if (respawnTime > 0) then
-							msg = string.format(L["onyxiaNpcKilledAllianceWithTimer2"], NWB:getTimeString(GetServerTime() - v.onyNpcDied, true),
-									NWB:getTimeString(respawnTime, true));
-						else
-							msg = string.format(L["onyxiaNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - v.onyNpcDied, true));
-						end
-					end
-				elseif (v.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
-					msg = msg .. L["onyxia"] .. ": " .. NWB:getTimeString(NWB.db.global.onyRespawnTime - (GetServerTime() - v.onyTimer), true) .. ".";
-					if (NWB.db.global.showTimeStamp) then
-						local timeStamp = NWB:getTimeFormat(v.onyTimer + NWB.db.global.onyRespawnTime);
-						msg = msg .. " (" .. timeStamp .. ")";
-					end
-				else
-					msg = msg .. L["onyxia"] .. ": " .. L["noCurrentTimer"] .. ".";
-				end
-				tooltip:AddLine(NWB.chatColor .. msg);
-				msg = "";
-				if ((v.nefNpcDied > v.nefTimer) and
-						(v.nefNpcDied > (GetServerTime() - NWB.db.global.nefRespawnTime)) and not NWB.db.global.ignoreKillData) then
-					local respawnTime = npcRespawnTime - (GetServerTime() - v.nefNpcDied);
-					if (NWB.faction == "Horde") then
-						if (respawnTime > 0) then
-							msg = string.format(L["nefarianNpcKilledHordeWithTimer2"], NWB:getTimeString(GetServerTime() - v.nefNpcDied, true),
-									NWB:getTimeString(respawnTime, true));
-						else
-							msg = string.format(L["nefarianNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - v.nefNpcDied, true));
-						end
-					else
-						if (respawnTime > 0) then
-							msg = string.format(L["nefarianNpcKilledAllianceWithTimer2"], NWB:getTimeString(GetServerTime() - v.nefNpcDied, true),
-									NWB:getTimeString(respawnTime, true));
-						else
-							msg = string.format(L["nefarianNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - v.nefNpcDied, true));
-						end
-					end
-				elseif (v.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
-					msg = L["nefarian"] .. ": " .. NWB:getTimeString(NWB.db.global.nefRespawnTime - (GetServerTime() - v.nefTimer), true) .. ".";
-					if (NWB.db.global.showTimeStamp) then
-						local timeStamp = NWB:getTimeFormat(v.nefTimer + NWB.db.global.nefRespawnTime);
-						msg = msg .. " (" .. timeStamp .. ")";
-					end
-				else
-					msg = msg .. L["nefarian"] .. ": " .. L["noCurrentTimer"] .. ".";
-				end
-				tooltip:AddLine(NWB.chatColor .. msg);
 				msg = "";
 				local texture = "";
 				if (NWB.isTBC) then
@@ -4745,7 +4797,7 @@ function NWB:updateMinimapButton(tooltip, usingPanel)
 								texture = "|TInterface\\worldstateframe\\neutraltower.blp:12:12:-2:0:32:32:1:18:1:18|t";
 							end
 							--Offset was 3 seconds per minute because of drift, trying 0 offset now as it may be fixed on Blizzards end.
-							local endTime = v.terokTowers + NWB:round((((v.terokTowers  - GetServerTime()) / 60) * 0));
+							local endTime = NWB:getTerokEndTime(v.terokTowers, v.terokTowersTime);
 							msg = msg .. texture .. L["terokkarTimer"] .. ": " .. NWB:getTimeString(endTime - GetServerTime(), true) .. ".";
 							if (NWB.db.global.showTimeStamp) then
 								local timeStamp = NWB:getTimeFormat(endTime);
@@ -4775,74 +4827,77 @@ function NWB:updateMinimapButton(tooltip, usingPanel)
 			end
 		else
 			local msg = "";
-			if (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend) then
-				if (NWB.data.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
-					msg = L["rend"] .. ": " .. NWB:getTimeString(NWB.db.global.rendRespawnTime - (GetServerTime() - NWB.data.rendTimer), true) .. ".";
+			if (NWB.isClassic or (not NWB.db.global.hideMinimapBuffTimers
+					and not (NWB.db.global.disableBuffTimersMaxBuffLevel and UnitLevel("player") > 64))) then
+				if (NWB.faction == "Horde" or NWB.db.global.allianceEnableRend) then
+					if (NWB.data.rendTimer > (GetServerTime() - NWB.db.global.rendRespawnTime)) then
+						msg = L["rend"] .. ": " .. NWB:getTimeString(NWB.db.global.rendRespawnTime - (GetServerTime() - NWB.data.rendTimer), true) .. ".";
+						if (NWB.db.global.showTimeStamp) then
+							local timeStamp = NWB:getTimeFormat(NWB.data.rendTimer + NWB.db.global.rendRespawnTime);
+							msg = msg .. " (" .. timeStamp .. ")";
+						end
+					else
+						msg = L["rend"] .. ": " .. L["noCurrentTimer"] .. ".";
+					end
+					tooltip:AddLine(NWB.chatColor .. msg);
+				end
+				if ((NWB.data.onyNpcDied > NWB.data.onyTimer) and
+						(NWB.data.onyNpcDied > (GetServerTime() - NWB.db.global.onyRespawnTime)) and not NWB.db.global.ignoreKillData) then
+					local respawnTime = npcRespawnTime - (GetServerTime() - NWB.data.onyNpcDied);
+					if (NWB.faction == "Horde") then
+						if (respawnTime > 0) then
+							msg = string.format(L["onyxiaNpcKilledHordeWithTimer2"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true),
+									NWB:getTimeString(respawnTime, true));
+						else
+							msg = string.format(L["onyxiaNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true));
+						end
+					else
+						if (respawnTime > 0) then
+							msg = string.format(L["onyxiaNpcKilledAllianceWithTimer2"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true),
+									NWB:getTimeString(respawnTime, true));
+						else
+							msg = string.format(L["onyxiaNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true));
+						end
+					end
+				elseif (NWB.data.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
+					msg = L["onyxia"] .. ": " .. NWB:getTimeString(NWB.db.global.onyRespawnTime - (GetServerTime() - NWB.data.onyTimer), true) .. ".";
 					if (NWB.db.global.showTimeStamp) then
-						local timeStamp = NWB:getTimeFormat(NWB.data.rendTimer + NWB.db.global.rendRespawnTime);
+						local timeStamp = NWB:getTimeFormat(NWB.data.onyTimer + NWB.db.global.onyRespawnTime);
 						msg = msg .. " (" .. timeStamp .. ")";
 					end
 				else
-					msg = L["rend"] .. ": " .. L["noCurrentTimer"] .. ".";
+					msg = L["onyxia"] .. ": " .. L["noCurrentTimer"] .. ".";
+				end
+				tooltip:AddLine(NWB.chatColor .. msg);
+				if ((NWB.data.nefNpcDied > NWB.data.nefTimer) and
+						(NWB.data.nefNpcDied > (GetServerTime() - NWB.db.global.nefRespawnTime)) and not NWB.db.global.ignoreKillData) then
+					local respawnTime = npcRespawnTime - (GetServerTime() - NWB.data.nefNpcDied);
+					if (NWB.faction == "Horde") then
+						if (respawnTime > 0) then
+							msg = string.format(L["nefarianNpcKilledHordeWithTimer2"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true),
+									NWB:getTimeString(respawnTime, true));
+						else
+							msg = string.format(L["nefarianNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true));
+						end
+					else
+					if (respawnTime > 0) then
+							msg = string.format(L["nefarianNpcKilledAllianceWithTimer2"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true),
+									NWB:getTimeString(respawnTime, true));
+						else
+							msg = string.format(L["nefarianNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true));
+						end
+					end
+				elseif (NWB.data.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
+					msg = L["nefarian"] .. ": " .. NWB:getTimeString(NWB.db.global.nefRespawnTime - (GetServerTime() - NWB.data.nefTimer), true) .. ".";
+					if (NWB.db.global.showTimeStamp) then
+						local timeStamp = NWB:getTimeFormat(NWB.data.nefTimer + NWB.db.global.nefRespawnTime);
+						msg = msg .. " (" .. timeStamp .. ")";
+					end
+				else
+					msg = L["nefarian"] .. ": " .. L["noCurrentTimer"] .. ".";
 				end
 				tooltip:AddLine(NWB.chatColor .. msg);
 			end
-			if ((NWB.data.onyNpcDied > NWB.data.onyTimer) and
-					(NWB.data.onyNpcDied > (GetServerTime() - NWB.db.global.onyRespawnTime)) and not NWB.db.global.ignoreKillData) then
-				local respawnTime = npcRespawnTime - (GetServerTime() - NWB.data.onyNpcDied);
-				if (NWB.faction == "Horde") then
-					if (respawnTime > 0) then
-						msg = string.format(L["onyxiaNpcKilledHordeWithTimer2"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true),
-								NWB:getTimeString(respawnTime, true));
-					else
-						msg = string.format(L["onyxiaNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true));
-					end
-				else
-					if (respawnTime > 0) then
-						msg = string.format(L["onyxiaNpcKilledAllianceWithTimer2"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true),
-								NWB:getTimeString(respawnTime, true));
-					else
-						msg = string.format(L["onyxiaNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.onyNpcDied, true));
-					end
-				end
-			elseif (NWB.data.onyTimer > (GetServerTime() - NWB.db.global.onyRespawnTime)) then
-				msg = L["onyxia"] .. ": " .. NWB:getTimeString(NWB.db.global.onyRespawnTime - (GetServerTime() - NWB.data.onyTimer), true) .. ".";
-				if (NWB.db.global.showTimeStamp) then
-					local timeStamp = NWB:getTimeFormat(NWB.data.onyTimer + NWB.db.global.onyRespawnTime);
-					msg = msg .. " (" .. timeStamp .. ")";
-				end
-			else
-				msg = L["onyxia"] .. ": " .. L["noCurrentTimer"] .. ".";
-			end
-			tooltip:AddLine(NWB.chatColor .. msg);
-			if ((NWB.data.nefNpcDied > NWB.data.nefTimer) and
-					(NWB.data.nefNpcDied > (GetServerTime() - NWB.db.global.nefRespawnTime)) and not NWB.db.global.ignoreKillData) then
-				local respawnTime = npcRespawnTime - (GetServerTime() - NWB.data.nefNpcDied);
-				if (NWB.faction == "Horde") then
-					if (respawnTime > 0) then
-						msg = string.format(L["nefarianNpcKilledHordeWithTimer2"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true),
-								NWB:getTimeString(respawnTime, true));
-					else
-						msg = string.format(L["nefarianNpcKilledHordeWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true));
-					end
-				else
-				if (respawnTime > 0) then
-						msg = string.format(L["nefarianNpcKilledAllianceWithTimer2"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true),
-								NWB:getTimeString(respawnTime, true));
-					else
-						msg = string.format(L["nefarianNpcKilledAllianceWithTimer"], NWB:getTimeString(GetServerTime() - NWB.data.nefNpcDied, true));
-					end
-				end
-			elseif (NWB.data.nefTimer > (GetServerTime() - NWB.db.global.nefRespawnTime)) then
-				msg = L["nefarian"] .. ": " .. NWB:getTimeString(NWB.db.global.nefRespawnTime - (GetServerTime() - NWB.data.nefTimer), true) .. ".";
-				if (NWB.db.global.showTimeStamp) then
-					local timeStamp = NWB:getTimeFormat(NWB.data.nefTimer + NWB.db.global.nefRespawnTime);
-					msg = msg .. " (" .. timeStamp .. ")";
-				end
-			else
-				msg = L["nefarian"] .. ": " .. L["noCurrentTimer"] .. ".";
-			end
-			tooltip:AddLine(NWB.chatColor .. msg);
 			if (NWB.isTBC) then
 				msg = "";
 				local texture = "";
@@ -4859,7 +4914,7 @@ function NWB:updateMinimapButton(tooltip, usingPanel)
 							texture = "|TInterface\\worldstateframe\\neutraltower.blp:12:12:-2:0:32:32:1:18:1:18|t";
 						end
 						--Offset was 3 seconds per minute because of drift, trying 0 offset now as it may be fixed on Blizzards end.
-						local endTime = NWB.data.terokTowers + NWB:round((((NWB.data.terokTowers  - GetServerTime()) / 60) * 0));
+						local endTime = NWB:getTerokEndTime(NWB.data.terokTowers, NWB.data.terokTowersTime);
 						msg = msg .. texture .. L["terokkarTimer"] .. ": " .. NWB:getTimeString(endTime - GetServerTime(), true) .. ".";
 						if (NWB.db.global.showTimeStamp) then
 							local timeStamp = NWB:getTimeFormat(endTime);
@@ -6809,7 +6864,9 @@ function SlashCmdList.NWBDMFCMD(msg, editBox)
 	end
 	if (msg == "map") then
 		WorldMapFrame:Show();
-		if (NWB.dmfZone == "Mulgore") then
+		if (NWB.dmfZone == "Outlands") then
+			WorldMapFrame:SetMapID(1952);
+		elseif (NWB.dmfZone == "Mulgore") then
 			WorldMapFrame:SetMapID(1412); 
 		else
 			WorldMapFrame:SetMapID(1429);
@@ -6820,12 +6877,8 @@ function SlashCmdList.NWBDMFCMD(msg, editBox)
 		NWB:openConfig();
 		return;
 	end
-	local output, zone, dmfFound;
-	if (NWB.dmfZone == "Mulgore") then
-		zone = L["mulgore"];
-	else
-		zone = L["elwynnForest"];
-	end
+	local output, dmfFound;
+	local zone = NWB:getDmfZoneString();
 	output = NWB:getDmfTimeString() .. " (" .. zone .. ")";
 	if (output) then
 		if (msg ~= nil and msg ~= "") then
@@ -7118,6 +7171,7 @@ function NWB:getDmfStartEnd(month, nextYear, recalc)
 	end
 end
 
+local test = type
 function NWB:getDmfData()
 	local dmfStart, dmfEnd = NWB:getDmfStartEnd();
 	local timestamp, timeLeft, type;
@@ -7148,26 +7202,36 @@ function NWB:getDmfData()
 			NWB.isDmfUp = nil;
 		end
 		local zone;
-		local startMonth = date("%m", dmfStart);
-		local startDay = date("%d", dmfStart);
+		local startMonth = tonumber(date("%m", dmfStart));
+		local startDay = tonumber(date("%d", dmfStart));
 		--If it starts at the end of the month then change which zone it starts in.
-		if (tonumber(startDay) > 20) then
+		if (startDay > 20) then
 			startMonth = startMonth + 1;
 		end
-		if (startMonth % 2 == 0) then
-			--These were swapped around manually by Blizzard but now it seems to be swapped back to be in sync with era realms.
-			--if (NWB.isTBC or NWB.realmsTBC) then
-			--	zone = "Elwynn Forest";
-			--else
-    			zone = "Mulgore";
-    		--end
+		if (NWB.isTBC) then
+			if (startMonth == 2 or startMonth == 5 or startMonth == 8 or startMonth == 11) then
+				zone = "Outlands";
+			elseif (startMonth == 1 or startMonth == 4 or startMonth == 7 or startMonth == 10) then
+	    		zone = "Mulgore";
+			else
+	    		zone = "Elwynn Forest";
+			end
 		else
-			--if (NWB.isTBC or NWB.realmsTBC) then
-			--	zone = "Mulgore";
-			--else
-    			zone = "Elwynn Forest";
-    		--end
- 
+			if (startMonth % 2 == 0) then
+				--These were swapped around manually by Blizzard but now it seems to be swapped back to be in sync with era realms.
+				--if (NWB.isTBC or NWB.realmsTBC) then
+				--	zone = "Elwynn Forest";
+				--else
+	    			zone = "Mulgore";
+	    		--end
+			else
+				--if (NWB.isTBC or NWB.realmsTBC) then
+				--	zone = "Mulgore";
+				--else
+	    			zone = "Elwynn Forest";
+	    		--end
+	 
+			end
 		end
 		--Zone override for static dates.
 		if (dmfZoneStatic ~= "") then
@@ -7176,6 +7240,16 @@ function NWB:getDmfData()
 		NWB.dmfZone = zone;
 		--Timestamp of next start or end event, seconds left untill that event, and type of event.
 		return timestamp, timeLeft, type;
+	end
+end
+
+function NWB:getDmfZoneString()
+	if (NWB.dmfZone == "Outlands") then
+		return L["Outlands"];
+	elseif (NWB.dmfZone == "Mulgore") then
+		return L["mulgore"];
+	else
+		return L["elwynnForest"];
 	end
 end
 
@@ -7325,7 +7399,10 @@ end
 local d = NWB.realm;
 function NWB:refreshDmfMarkers()
 	local x, y, mapID, worldX, worldY, worldMapID;
-	if (NWB.dmfZone == "Mulgore") then
+	if (NWB.dmfZone == "Outlands") then
+		x, y, mapID = 34.8, 34.6, 1952;
+		worldX, worldY, worldMapID = 44.6, 69.5, 1945;
+	elseif (NWB.dmfZone == "Mulgore") then
 		x, y, mapID = 36.8, 37.6, 1412;
 		worldX, worldY, worldMapID = 46, 63, 1414;
 	else
@@ -9000,6 +9077,9 @@ function NWB:createNewLayer(zoneID, GUID, isFromNpc)
 			flower9 = 0,
 			flower10 = 0,
 		};
+		--if (NWB.isTBC) then
+		--	NWB.data.layers[zoneID].terokTowersTime = 0;
+		--end
 		if (NWB.data.layerMapBackups and NWB.data.layerMapBackups[zoneID]
 				and (GetServerTime() - NWB.data.layerMapBackups[zoneID].created) < 518400) then
 			--Restore layermap backup if less than 6 days old.
@@ -9404,7 +9484,7 @@ function NWB:recalclayerFrame(isLogon, copyPaste)
 							--5387
 							texture = "|TInterface\\worldstateframe\\neutraltower.blp:12:12:-2:0:32:32:1:18:1:18|t";
 						end
-						local endTime = v.terokTowers + NWB:round((((v.terokTowers  - GetServerTime()) / 60) * 3));
+						local endTime = NWB:getTerokEndTime(v.terokTowers, v.terokTowersTime);
 						msg = msg .. texture .. L["terokkarTimer"] .. ": " .. NWB:getTimeString(endTime - GetServerTime(), true) .. ".";
 						if (NWB.db.global.showTimeStamp) then
 							local timeStamp = NWB:getTimeFormat(endTime);
@@ -9537,7 +9617,7 @@ function NWB:recalclayerFrame(isLogon, copyPaste)
 								--5387
 								texture = "|TInterface\\worldstateframe\\neutraltower.blp:12:12:-2:0:32:32:1:18:1:18|t";
 							end
-							local endTime = v.terokTowers + NWB:round((((v.terokTowers  - GetServerTime()) / 60) * 3));
+							local endTime = NWB:getTerokEndTime(v.terokTowers, v.terokTowersTime);
 							msg = msg .. texture .. L["terokkarTimer"] .. ": " .. NWB:getTimeString(endTime - GetServerTime(), true) .. ".";
 							if (NWB.db.global.showTimeStamp) then
 								local timeStamp = NWB:getTimeFormat(endTime);
@@ -9657,7 +9737,7 @@ function NWB:recalclayerFrame(isLogon, copyPaste)
 						--5387
 						texture = "|TInterface\\worldstateframe\\neutraltower.blp:12:12:-2:0:32:32:1:18:1:18|t";
 					end
-					local endTime = NWB.data.terokTowers + NWB:round((((NWB.data.terokTowers  - GetServerTime()) / 60) * 3));
+					local endTime = NWB:getTerokEndTime(NWB.data.terokTowers, NWB.data.terokTowersTime);
 					msg = msg .. texture .. L["terokkarTimer"] .. ": " .. NWB:getTimeString(endTime - GetServerTime(), true) .. ".";
 					if (NWB.db.global.showTimeStamp) then
 						local timeStamp = NWB:getTimeFormat(endTime);

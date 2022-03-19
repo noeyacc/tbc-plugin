@@ -67,7 +67,7 @@ local options = {
 local defaultDB = {
 	profile = {
 		searchType = "fontStrings",
-		fastCopy = true,
+		fastCopy = false,
 	},
 }
 

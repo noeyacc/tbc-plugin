@@ -45,7 +45,7 @@ E:RegisterSkin("elv", {
 })
 
 E:RegisterSkin("elv-legacy", {
-	name = "ElvUI (經典)",
+	name = "ElvUI (Legacy)",
 	template = "elv",
 	bg = {
 		default = {
@@ -64,7 +64,7 @@ E:RegisterSkin("elv-legacy", {
 })
 
 E:RegisterSkin("elv-no-art", {
-	name = "ElvUI (無背景圖)",
+	name = "ElvUI (No Artwork)",
 	template = "elv",
 	text_bg = {
 		hidden = true,

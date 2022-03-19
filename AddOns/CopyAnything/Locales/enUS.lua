@@ -20,4 +20,3 @@ L["show"] = "Show"
 L["tooManyFontStrings"] = "More than %d FontStrings were found. The copy was cancelled to prevent the game from freezing for an excessive amount of time."
 
 
-
