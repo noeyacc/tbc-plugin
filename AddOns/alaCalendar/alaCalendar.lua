@@ -13,6 +13,8 @@ local __isdev = select(2, GetAddOnInfo("!!!!!DebugMe")) ~= nil;
 
 local _G = _G;
 local setfenv = setfenv;
+local rawset = rawset;
+local next = next;
 local _GlobalRef = {  };
 local _GlobalAssign = {  };
 function NS:BuildEnv(category)
@@ -69,7 +71,6 @@ end
 
 
 local LOCALE = GetLocale();
-local curPhase = 6;
 ----------------------------------------------------------------------------------------------------upvalue
 	----------------------------------------------------------------------------------------------------LUA
 	local date, time = date, time;
@@ -758,7 +759,7 @@ do	--	MAIN
 						for _, inst in inext, NS.milestone_list, 0 do
 							if SET.inst_hash[inst] then
 								local val = NS.milestone[inst];
-								if val and val.phase <= curPhase then
+								if val and val.phase <= NS.CUR_PHASE then
 									local first_seen = val.dst and (val[1] - dst_ofs) or val[1];
 									local start_of_day_first_seen = date_engine.get_localized_start_of_day(first_seen);
 									if NOW0 >= start_of_day_first_seen then
@@ -2289,7 +2290,7 @@ do	--	MAIN
 						local VAR = AVAR[key];
 						local var = VAR[inst];
 						local ms = NS.milestone[inst];
-						if ms and ms.phase <= curPhase and SET.inst_hash[inst] then
+						if ms and ms.phase <= NS.CUR_PHASE and SET.inst_hash[inst] then
 							if (var and var[1]) or (SET.show_unlocked and VAR.PLAYER_LEVEL and VAR.PLAYER_LEVEL >= ms.min) or VAR.manual then
 								if add_head then
 									tinsert(list, 'header');
@@ -3018,8 +3019,8 @@ do	--	MAIN
 	local ADDON_MSG_QUERY = "_q_cal";
 	local ADDON_MSG_REPLY = "_r_cal";
 	local ADDON_MSG_BCMDAILY = "_b_dln";
-	local ADDON_MSG_VER = 1;
-	local ADDON_MSG_MIN_VER = 1;
+	local ADDON_MSG_VER = 2;
+	local ADDON_MSG_MIN_VER = 2;
 	do	--	comm
 		--	GUID#INST# index-count #id#t#numEncounters#encounterProgress#bossName#isKilled
 		local function encode_data(cache, max_len, GUID, inst, var)
@@ -3078,8 +3079,9 @@ do	--	MAIN
 			return false;
 		end
 		function NS.CHAT_MSG_ADDON(prefix, msg, channel, sender, target, zoneChannelID, localID, name, instanceID)
-			sender = Ambiguate(sender, 'none');
-			if sender ~= PLAYER_NAME then
+			local name, realm = strsplit("-", sender);
+			if realm == nil or realm == PLAYER_REALM_NAME then
+				sender = name;
 				if prefix == ADDON_PREFIX then
 					local control_code = strsub(msg, 1, ADDON_MSG_CONTROL_CODE_LEN);
 					if control_code == ADDON_MSG_BCMDAILY then
@@ -3095,15 +3097,15 @@ do	--	MAIN
 							);
 						end
 					end
-				elseif prefix == "REPUTABLE" then
+				-- elseif prefix == "REPUTABLE" then
 					-- local action, version, NID, _, HID, _, CID, _, FID, _, PvP, _ = strsplit(":", msg);
 					-- if action ~= nil then
 					-- 	NS.DailyOnComm(
 					-- 		nil,
-					-- 		NID, NS.-1,
-					-- 		HID, NS.-1,
-					-- 		CID, NS.-1,
-					-- 		FID, NS.-1,
+					-- 		NID, -1,
+					-- 		HID, -1,
+					-- 		CID, -1,
+					-- 		FID, -1,
 					-- 		channel, sender
 					-- 	);
 					-- end
@@ -3112,8 +3114,9 @@ do	--	MAIN
 		end
 		NS.CHAT_MSG_ADDON_LOGGED = NS.CHAT_MSG_ADDON;
 		function NS.InitComm()
-			local r1, r2 = RegisterAddonMessagePrefix(ADDON_PREFIX), RegisterAddonMessagePrefix("REPUTABLE");
-			if r1 or r2 then
+			-- local r1, r2 = RegisterAddonMessagePrefix(ADDON_PREFIX), RegisterAddonMessagePrefix("REPUTABLE");
+			-- if r1 or r2 then
+			if RegisterAddonMessagePrefix(ADDON_PREFIX) then
 				_EventHandler:RegEvent("CHAT_MSG_ADDON");
 				_EventHandler:RegEvent("CHAT_MSG_ADDON_LOGGED");
 			end
@@ -3597,7 +3600,7 @@ do	--	INITIALIZE
 				var = {  },
 				daily = {  };
 			};
-		elseif alaCalendarSV._version < 210610.01 then
+		elseif alaCalendarSV._version < 220308.01 then
 			for GUID, VAR in next, alaCalendarSV.var do
 				for _, inst in next, NS.raid_list do
 					if VAR[inst] == nil then
@@ -3606,14 +3609,8 @@ do	--	INITIALIZE
 				end
 			end
 			alaCalendarSV.daily = {  };
-		elseif alaCalendarSV._version < 210828.01 then
-			alaCalendarSV.daily = {  };
-		elseif alaCalendarSV._version < 210918.01 then
-			alaCalendarSV.daily = {  };
-		elseif alaCalendarSV._version < 220113.01 then
-			alaCalendarSV.daily = {  };
 		end
-		alaCalendarSV._version = 220113.01;
+		alaCalendarSV._version = 220308.01;
 		NS:MergeGlobal(alaCalendarSV);
 		--
 		alaCalendarSV.set = alaCalendarSV.set or {
@@ -3711,7 +3708,7 @@ do	--	INITIALIZE
 		SET.show_indicator = false;
 		NS.ui_refresh_config();
 	end
-	function NS.PLAYER_ENTERING_WORLD()
+	function NS.PLAYER_ENTERING_WORLD(addon)
 		_EventHandler:UnregEvent("PLAYER_ENTERING_WORLD");
 		init();
 	end

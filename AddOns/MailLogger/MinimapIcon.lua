@@ -65,13 +65,13 @@ if LDB and LDBIcon then
 					end
 				end
 			elseif button == "RightButton" then
-				InterfaceOptionsFrame_OpenToCategory(L["MailLogger"])
-				InterfaceOptionsFrame_OpenToCategory(L["MailLogger"])
+				InterfaceOptionsFrame_OpenToCategory("MailLogger")
+				InterfaceOptionsFrame_OpenToCategory("MailLogger")
 			end
 		end
 	end
 	function MinimapIcon:MinimapOnEnter()
-		GameTooltip:AddLine(L["MailLogger"])
+		GameTooltip:AddLine("MailLogger:")
 		GameTooltip:AddLine(L["|cFF00FF00Left Click|r to Open Log Frame"])
 		GameTooltip:AddLine(L["|cFF00FF00Right Click|r to Open Config Frame"])
 		GameTooltip:AddLine(L["|cFF00FF00Shift+Left|r to Restore Log Frame Position"])
@@ -169,7 +169,7 @@ function MinimapIcon:Initialize()
 			else
 				GameTooltip:SetOwner(b,"ANCHOR_LEFT")
 			end
-			GameTooltip:AddLine(L["MailLogger"])
+			GameTooltip:AddLine("MailLogger:")
 			GameTooltip:AddLine(L["|cFF00FF00Left Click|r to Open Log Frame"])
 			GameTooltip:AddLine(L["|cFF00FF00Right Click|r to Open Config Frame"])
 			GameTooltip:AddLine(L["|cFF00FF00Shift+Left|r to Restore Log Frame Position"])
@@ -208,8 +208,8 @@ function MinimapIcon:Initialize()
 					end
 				end
 			elseif button == "RightButton" then
-				InterfaceOptionsFrame_OpenToCategory(L["MailLogger"])
-				InterfaceOptionsFrame_OpenToCategory(L["MailLogger"])
+				InterfaceOptionsFrame_OpenToCategory("MailLogger")
+				InterfaceOptionsFrame_OpenToCategory("MailLogger")
 			end
 		end
 	end)

@@ -92,7 +92,7 @@
 
 #### 物品裝備
 
-- 檢視銀行 BagBrother
+- 檢視銀行 BagBrother(含在Combuctor裡面)
 - 分類整合背包 [Combuctor](https://www.curseforge.com/wow/addons/combuctor)
 - 副本戰利品查詢 [AtlasLoot Classic](https://www.curseforge.com/wow/addons/atlaslootclassic)
 - 裝備屬性比較 [Pawn](https://www.curseforge.com/wow/addons/pawn)

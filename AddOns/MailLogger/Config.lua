@@ -14,12 +14,12 @@ ScrollFrame.ScrollBar:ClearAllPoints()
 ScrollFrame.ScrollBar:SetPoint("TOPLEFT", ScrollFrame, "TOPRIGHT", -20, -20)
 ScrollFrame.ScrollBar:SetPoint("BOTTOMLEFT", ScrollFrame, "BOTTOMRIGHT", -20, 20)
 ScrollFrame:SetScrollChild(Panel)
-ScrollFrame.name = L[AddonName]
+ScrollFrame.name = AddonName
 InterfaceOptions_AddCategory(ScrollFrame)
 --标题
 local PanelTitle = Panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLargeLeft")
 PanelTitle:SetPoint("TOPLEFT", 16, -16)
-PanelTitle:SetText(L[AddonName].." |cFFFF6633" .. AddonName .. "|r" .. " v" .. Addon.Version)
+PanelTitle:SetText("|cFFFF6633" .. AddonName .. "|r" .. " v" .. Addon.Version)
 --所有组件表
 Panel.Controls = {}
 --创建唯一命名函数

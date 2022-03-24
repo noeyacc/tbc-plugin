@@ -463,7 +463,7 @@ function Frame:ADDON_LOADED(Name)
 	Addon.Output:Initialize()
 	Addon.Calendar:Initialize()
 
-	-- print(string.format(L["|cFFBA55D3MailLogger|r v%s|cFFB0C4DE is Loaded.|r"], Addon.Version))
+	print(string.format(L["|cFFBA55D3MailLogger|r v%s|cFFB0C4DE is Loaded.|r"], Addon.Version))
 end
 
 -- 进入世界
@@ -734,6 +734,9 @@ end
 -- 交易/邮件通报和记录
 function Frame:UI_INFO_MESSAGE(...)
 	local arg = {...}
+	if not Current then
+		return
+	end
 	if arg[2] == ERR_TRADE_CANCELLED then
 		Current.Result = "cancelled"
 		Current.Reason = arg[2]
