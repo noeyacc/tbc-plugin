@@ -7,8 +7,8 @@
 	Previous Authors: Tunhadil, Fixed by Pericles for patch 2.23 til 4.0, fixed by yossa for patch 4.0.1, updated for 4.2+ by karlsnyder
 	
 ]]
-
-MBB_Version = "1.2.0";
+local addonName, mbb = ...
+MBB_Version = GetAddOnMetadata(addonName,"Version");
 
 -- Setup some variable for debugging.
 MBB_DebugFlag = 0;
@@ -24,7 +24,7 @@ MBB_Buttons = {};
 MBB_Exclude = {};
 
 MBB_DefaultOptions = {
-	["ButtonPos"] = {-2, -114},
+	["ButtonPos"] = {-18, -100},
 	["AttachToMinimap"] = 1,
 	["DetachedButtonPos"] = "CENTER",
 	["CollapseTimeout"] = 1,
@@ -100,8 +100,7 @@ MBB_Ignore = {
 	[42] = "QuestieFrame", -- Questie Fix
 	[43] = "NauticusClassicMiniIcon", -- NauticusClassic Fix
 	[44] = "Spy_", --Spy Addon
-	[45] = "TomTomMapOverlay",
-	[46] = "HandyNotes_.*Pin" -- Handy Notes plugins support
+	[45] = "TomTomMapOverlay"
 };
 
 MBB_IgnoreSize = {
@@ -340,7 +339,7 @@ function MBB_PrepareButton(name)
 	
 	if( buttonframe ) then
 		if( buttonframe.RegisterForClicks ) then
-			buttonframe:RegisterForClicks("LeftButtonDown","RightButtonDown");
+			buttonframe:RegisterForClicks("AnyDown");
 		end
 		
 		buttonframe.isvisible = buttonframe:IsVisible();

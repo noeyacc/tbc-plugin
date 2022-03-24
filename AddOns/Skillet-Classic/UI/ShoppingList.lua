@@ -72,7 +72,9 @@ local function createShoppingListFrame(self)
 	end
 	frame:SetBackdrop(FrameBackdrop)
 	frame:SetBackdropColor(0.1, 0.1, 0.1)
-	-- A title bar stolen from the Ace2 Waterfall window.
+--
+-- A title bar stolen from the Ace2 Waterfall window.
+--
 	local r,g,b = 0, 0.7, 0; -- dark green
 	local titlebar = frame:CreateTexture(nil,"BACKGROUND")
 	local titlebar2 = frame:CreateTexture(nil,"BACKGROUND")
@@ -96,17 +98,19 @@ local function createShoppingListFrame(self)
 	titletext:SetShadowColor(0,0,0)
 	titletext:SetShadowOffset(1,-1)
 	titletext:SetTextColor(1,1,1)
-	titletext:SetText(L["Skillet-Classic"] .. ": " .. L["Shopping List"])
+	titletext:SetText("Skillet: " .. L["Shopping List"])
 
 	SkilletShowQueuesFromAllAltsText:SetText(L["Include alts"])
-	SkilletShowQueuesFromAllAlts:SetChecked(Skillet.db.char.include_alts)
+	SkilletShowQueuesFromAllAlts:SetChecked(Skillet.db.profile.include_alts)
+	SkilletShowQueuesFromSameFactionText:SetText(L["Same faction"])
+	SkilletShowQueuesFromSameFaction:SetChecked(Skillet.db.profile.same_faction)
 	SkilletShowQueuesInItemOrderText:SetText(L["Order by item"])
-	SkilletShowQueuesInItemOrder:SetChecked(Skillet.db.char.item_order)
+	SkilletShowQueuesInItemOrder:SetChecked(Skillet.db.profile.item_order)
 	SkilletShowQueuesMergeItemsText:SetText(L["Merge items"])
-	SkilletShowQueuesMergeItems:SetChecked(Skillet.db.char.merge_items)
+	SkilletShowQueuesMergeItems:SetChecked(Skillet.db.profile.merge_items)
 	if isBCC then
 		SkilletShowQueuesIncludeGuildText:SetText(L["Include guild"])
-		SkilletShowQueuesIncludeGuild:SetChecked(Skillet.db.char.include_guild)
+		SkilletShowQueuesIncludeGuild:SetChecked(Skillet.db.profile.include_guild)
 	else
 		SkilletShowQueuesIncludeGuildText:Hide()
 		SkilletShowQueuesIncludeGuild:Hide()
@@ -194,31 +198,35 @@ function Skillet:ClearShoppingList(player)
 	self:UpdateTradeSkillWindow()
 end
 
-function Skillet:GetShoppingList(player, includeGuildbank)
-	--DA.DEBUG(0,"GetShoppingList("..tostring(player)..", "..tostring(includeGuildbank)..")")
+function Skillet:GetShoppingList(player, sameFaction, includeGuildbank)
+	--DA.DEBUG(0,"GetShoppingList("..tostring(player)..", "..tostring(sameFaction)..", "..tostring(includeGuildbank)..")")
 	self:InventoryScan()
+	local curPlayer = self.currentPlayer
+	local curFaction = self.db.realm.faction[curPlayer] 
+	local curGuild = GetGuildInfo("player")
 	if not Skillet.db.global.cachedGuildbank then
 		Skillet.db.global.cachedGuildbank = {}
 	end
 	local cachedGuildbank = Skillet.db.global.cachedGuildbank
 	local list = {}
 	local playerList
+	local usedInventory = {}  -- only use the items from each player once
+	local usedGuild = {}
 	if player then
 		playerList = { player }
 	else
 		playerList = {}
 		for player,queue in pairs(self.db.realm.reagentsInQueue) do
-			table.insert(playerList, player)
+			if not sameFaction or self.db.realm.faction[player] == curFaction then
+				table.insert(playerList, player)
+			end
 		end
 	end
 	--DA.DEBUG(0,"shopping list for: "..(player or "all players"))
 	local usedInventory = {}  -- only use the items from each player once
-	local curPlayer = self.currentPlayer
 	if not usedInventory[curPlayer] then
 		usedInventory[curPlayer] = {}
 	end
-	local usedGuild = {}
-	local curGuild = GetGuildInfo("player")
 	if curGuild and not cachedGuildbank[curGuild] then
 		cachedGuildbank[curGuild] = {}
 	end
@@ -284,10 +292,10 @@ end
 
 local function cache_list(self)
 	local name = nil
-	if not Skillet.db.char.include_alts then
+	if not Skillet.db.profile.include_alts then
 		name = Skillet.currentPlayer
 	end
-	self.cachedShoppingList = self:GetShoppingList(name, Skillet.db.char.include_guild)
+	self.cachedShoppingList = self:GetShoppingList(name, Skillet.db.profile.same_faction, Skillet.db.profile.include_guild)
 end
 
 local function indexBank()
@@ -380,7 +388,6 @@ function Skillet:indexAllGuildBankTabs()
 	for tab=1, numTabs, 1 do
 		indexGuildBank(tab)
 	end
-	guildbankFrameOpen = true
 end
 
 --
@@ -425,6 +432,7 @@ end
 
 function Skillet:GUILDBANKFRAME_OPENED()
 	DA.TRACE("GUILDBANKFRAME_OPENED")
+	guildbankFrameOpen = true
 	guildbankQuery = 0
 	guildbankOnce = true
 	Skillet.guildBusy = false
@@ -488,6 +496,7 @@ function Skillet:AUCTION_HOUSE_CLOSED()
 	DA.TRACE("AUCTION_HOUSE_CLOSED")
 	self.auctionOpen = false
 	self:UnregisterEvent("AUCTION_OWNED_LIST_UPDATE")
+	SkilletAuctionatorButton:Hide()
 	self:HideShoppingList()
 end
 
@@ -628,10 +637,6 @@ local function getItemFromBank(itemID, bag, slot, count)
 	return num_moved
 end
 
---
--- In Classic, there is no guild bank
---
---[[
 local function getItemFromGuildBank(itemID, bag, slot, count)
 	DA.DEBUG(0,"getItemFromGuildBank(",itemID, bag, slot, count,")")
 	ClearCursor()
@@ -661,7 +666,6 @@ local function getItemFromGuildBank(itemID, bag, slot, count)
 	ClearCursor()
 	return num_moved
 end
-]]--
 
 --
 -- Called once to get things started and then is called after both
@@ -812,7 +816,7 @@ end
 function Skillet:GetReagentsFromBanks()
 	--DA.DEBUG(0,"GetReagentsFromBanks")
 	local list = self.cachedShoppingList
-	local incAlts = Skillet.db.char.include_alts
+	local incAlts = Skillet.db.profile.include_alts
 	local name = UnitName("player")
 
 --
@@ -885,19 +889,23 @@ function Skillet:GetReagentsFromBanks()
 end
 
 function Skillet:ShoppingListToggleShowAlts()
-	Skillet.db.char.include_alts = not Skillet.db.char.include_alts
+	Skillet.db.profile.include_alts = not Skillet.db.profile.include_alts
+end
+
+function Skillet:ShoppingListToggleSameFaction()
+	Skillet.db.profile.same_faction = not Skillet.db.profile.same_faction
 end
 
 function Skillet:ShoppingListToggleItemOrder()
-	Skillet.db.char.item_order = not Skillet.db.char.item_order
+	Skillet.db.profile.item_order = not Skillet.db.profile.item_order
 end
 
 function Skillet:ShoppingListToggleMergeItems()
-	Skillet.db.char.merge_items = not Skillet.db.char.merge_items
+	Skillet.db.profile.merge_items = not Skillet.db.profile.merge_items
 end
 
 function Skillet:ShoppingListToggleIncludeGuild()
-	Skillet.db.char.include_guild = not Skillet.db.char.include_guild
+	Skillet.db.profile.include_guild = not Skillet.db.profile.include_guild
 end
 
 local function get_button(i)
@@ -937,14 +945,14 @@ function Skillet:UpdateShoppingListWindow(use_cached_recipes)
 	else
 		SkilletShoppingListRetrieveButton:Enable()
 	end
-	if Skillet.db.char.item_order then
+	if Skillet.db.profile.item_order then
 --
 -- sort by item
 --
 		table.sort(self.cachedShoppingList, function(a,b)
 			return (a.id > b.id)
 		end)
-		if Skillet.db.char.merge_items then
+		if Skillet.db.profile.merge_items then
 --
 -- merge counts of same item
 --
@@ -1053,7 +1061,7 @@ function Skillet:DisplayShoppingList(atBank)
 	if not self.shoppingList then
 		self.shoppingList = createShoppingListFrame(self)
 	end
-	if self.auctionOpen and AuctionatorLoaded and self.ATRPlugin and self.db.profile.plugins.ATR.enabled then
+	if self.auctionOpen and Auctionator and self.ATRPlugin and self.db.profile.plugins.ATR.enabled then
 		SkilletSLAuctionatorButton:Show()
 	else
 		SkilletSLAuctionatorButton:Hide()

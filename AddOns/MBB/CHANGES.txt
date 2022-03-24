@@ -1,10 +1,20 @@
-lightweight tag e4f48101105c8fa0dea021b93bb7cc7c3f877877 v1.2.0
-Author:	VallanTV <vallantv@protonmail.com>
-Date:	Thu May 20 20:21:33 2021 -0700
+lightweight tag 6b3993b000465ca462848366cbe6f0e8f0490708 v1.2.1
+Author:	GitHub <noreply@github.com>
+Date:	Thu Mar 17 10:05:59 2022 -0700
 
-commit e4f48101105c8fa0dea021b93bb7cc7c3f877877
-Author: VallanTV <vallantv@protonmail.com>
-Date:   Thu May 20 20:21:33 2021 -0700
+commit 2e500e3e22465ea19385679085d96bc0e41268b5
+Author: Road-block <dridzt.addons@hotmail.com>
+Date:   Thu Mar 17 16:51:00 2022 +0200
 
-    update for TBC Classic
+    expand click registration so addons using middle/4/5 mouse buttons do not break
+    update toc interface for latest bcc, increment addon version, stop hardcoding it in the lua file
+    closes #19
+
+commit 2e500e3e22465ea19385679085d96bc0e41268b5
+Author: Road-block <dridzt.addons@hotmail.com>
+Date:   Thu Mar 17 16:51:00 2022 +0200
+
+    expand click registration so addons using middle/4/5 mouse buttons do not break
+    update toc interface for latest bcc, increment addon version, stop hardcoding it in the lua file
+    closes #19
 

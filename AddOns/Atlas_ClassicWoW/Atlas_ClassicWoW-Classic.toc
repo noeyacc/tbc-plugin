@@ -27,9 +27,9 @@
 # ## Notes: Classic WoW Dungeon Maps
 # ## Notes-zhTW: 艾澤拉斯副本地圖模組
 #@end-debug@
-## Version: v1.50.00
+## Version: v1.50.02
 ## Author: arith, Dynaletik, dubcat
-## X-Date: 2022-02-23T15:31:09Z
+## X-Date: 2022-03-23T15:32:36Z
 ## X-Credits: Dan Gilbert, Lothaer
 ## X-Email: atlas.addon at gmail dot com
 ## X-Website: http://www.atlasmod.com
@@ -37,6 +37,5 @@
 ## RequiredDeps: Atlas
 
 Locale\Locales.xml
-Core.lua
-Data.lua
-Data-Classic.lua
+Core\Core.lua
+Core\Data-Classic.lua

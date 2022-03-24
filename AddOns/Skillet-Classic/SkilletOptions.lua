@@ -427,33 +427,18 @@ Skillet.options =
 					width = "full",
 					order = 3,
 				},
-				confirm_queue_clear = {
+				interrupt_clears_queue = {
 					type = "toggle",
-					name = L["CONFIRMQUEUECLEARNAME"],
-					desc = L["CONFIRMQUEUECLEARDESC"],
+					name = L["INTERRUPTCLEARNAME"],
+					desc = L["INTERRUPTCLEARDESC"],
 					get = function()
-						return Skillet.db.profile.confirm_queue_clear
+						return Skillet.db.profile.interrupt_clears_queue
 					end,
 					set = function(self,value)
-						Skillet.db.profile.confirm_queue_clear = value
-						Skillet:UpdateTradeSkillWindow()
+						Skillet.db.profile.interrupt_clears_queue = value
 					end,
 					width = "full",
 					order = 4,
-				},
-				queue_only_view = {
-					type = "toggle",
-					name = L["QUEUEONLYVIEWNAME"],
-					desc = L["QUEUEONLYVIEWDESC"],
-					get = function()
-						return Skillet.db.profile.queue_only_view
-					end,
-					set = function(self,value)
-						Skillet.db.profile.queue_only_view = value
-						Skillet:UpdateTradeSkillWindow()
-					end,
-					width = "full",
-					order = 5,
 				},
 				clamp_to_screen = {
 					type = "toggle",
@@ -481,7 +466,7 @@ Skillet.options =
 						Skillet.db.profile.scale_tooltip = value
 					end,
 					width = "full",
-					order = 7,
+					order = 6,
 				},
 				transparency = {
 					type = "range",
@@ -926,7 +911,7 @@ Skillet.options =
 			set = function(self,value)
 				Skillet.db.profile.nomodkeys = value
 			end,
-			order = 75
+			order = 76
 		},
 --
 -- commands to print and initialize skill data (SkillLevelData.lua)
@@ -964,7 +949,7 @@ Skillet.options =
 		},
 
 --
--- commands to manipulate the state of debugging code flags
+-- Commands to manipulate the state of debugging code flags
 -- (See DebugAids.lua)
 --
 		WarnShow = {
@@ -1245,6 +1230,51 @@ Skillet.options =
 			end,
 			order = 98
 		},
+--
+-- Commands to set/show how many TRADE_SKILL_UPDATE / CRAFT_UPDATE events to ignore
+--
+		TradeWait = {
+			type = "input",
+			name = "TradeWait",
+			desc = "Number of TRADE_SKILL_UPDATE events to ignore",
+			get = function()
+				return Skillet.db.realm.trade_wait
+			end,
+			set = function(self,value)
+				value = tonumber(value)
+				if not value then value = 1
+				elseif value < 1 then value = 1
+				elseif value > 9 then value = 10 end
+				Skillet.db.realm.trade_wait = value
+			end,
+			order = 100
+		},
+		CraftWait = {
+			type = "input",
+			name = "CraftWait",
+			desc = "Number of CRAFT_UPDATE events to ignore",
+			get = function()
+				return Skillet.db.realm.craft_wait
+			end,
+			set = function(self,value)
+				value = tonumber(value)
+				if not value then value = 1
+				elseif value < 1 then value = 1
+				elseif value > 9 then value = 10 end
+				Skillet.db.realm.craft_wait = value
+			end,
+			order = 101
+		},
+		ShowWait = {
+			type = 'execute',
+			name = "ShowWait",
+			desc = "Print *_UPDATE Waits",
+			func = function()
+				print("TradeWait= "..tostring(Skillet.db.realm.trade_wait))
+				print("CraftWait= "..tostring(Skillet.db.realm.craft_wait))
+			end,
+			order = 103
+		},
 
 --
 -- command to reset the position of the major Skillet frames
@@ -1279,21 +1309,57 @@ Skillet.options =
 												  " Leave combat and try again.")
 				end
 			end,
-			order = 99
+			order = 110
 		},
 	}
 }
 
+--
+-- Configure the options window
+--
 function Skillet:ConfigureOptions()
 	local acecfg = LibStub("AceConfig-3.0")
-	acecfg:RegisterOptionsTable("Skillet", self.options, "skillet")
+	acecfg:RegisterOptionsTable("Skillet", self.options, "Skillet")
 	acecfg:RegisterOptionsTable("Skillet Features", self.options.args.features)
 	acecfg:RegisterOptionsTable("Skillet Appearance", self.options.args.appearance)
 	acecfg:RegisterOptionsTable("Skillet Profiles", LibStub("AceDBOptions-3.0"):GetOptionsTable(self.db))
 	acecfg:RegisterOptionsTable("Skillet Plugins", Skillet.pluginsOptions)
 	local acedia = LibStub("AceConfigDialog-3.0")
-	acedia:AddToBlizOptions("Skillet Features", L["Skillet"])
-	acedia:AddToBlizOptions("Skillet Appearance", L["Appearance"], L["Skillet"])
-	acedia:AddToBlizOptions("Skillet Profiles", L["Profiles"], L["Skillet"])
-	acedia:AddToBlizOptions("Skillet Plugins", L["Plugins"], L["Skillet"])
+	Skillet.optionsFrame = acedia:AddToBlizOptions("Skillet Features", "Skillet")
+	acedia:AddToBlizOptions("Skillet Appearance", "Appearance", "Skillet")
+	acedia:AddToBlizOptions("Skillet Profiles", "Profiles", "Skillet")
+	acedia:AddToBlizOptions("Skillet Plugins", "Plugins", "Skillet")
 end
+
+local function ScrollToCategory(panelName,offset)
+	local idx = 0
+	InterfaceOptionsFrameAddOnsListScrollBar:SetValue(0)
+	local mdx = #INTERFACEOPTIONS_ADDONCATEGORIES
+	for i,cat in ipairs(INTERFACEOPTIONS_ADDONCATEGORIES) do 
+		if not cat.hidden then 
+			idx = idx + 1
+			if cat.name == panelName then
+				break
+			end
+		end
+	end
+	local numbuttons = #(InterfaceOptionsFrameAddOns.buttons)
+	--DA.DEBUG(0,"ScrollToCategory: numbuttons= "..tostring(numbuttons)..", idx= "..tostring(idx)..", mdx= "..tostring(mdx)..", offset= "..tostring(offset))
+	if idx and numbuttons and idx > numbuttons then
+		local btnHeight = InterfaceOptionsFrameAddOns.buttons[1]:GetHeight()
+		if offset+idx > mdx then
+			idx = mdx - offset
+		end
+		InterfaceOptionsFrameAddOnsListScrollBar:SetValue((offset+idx-numbuttons)*btnHeight)
+	end
+end
+
+--
+-- Show the options window
+--
+function Skillet:ShowOptions()
+	InterfaceOptionsFrame_Show()
+	ScrollToCategory("Skillet",4)
+	InterfaceOptionsFrame_OpenToCategory("Skillet")
+end
+

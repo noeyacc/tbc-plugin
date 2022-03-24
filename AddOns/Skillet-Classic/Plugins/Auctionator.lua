@@ -189,6 +189,21 @@ plugin.options =
 			end,
 			order = 10
 		},
+		alwaysEnchanting = {
+			type = "toggle",
+			name = "alwaysEnchanting",
+			desc = "Always show Enchanting profit (loss)",
+			get = function()
+				return Skillet.db.profile.plugins.ATR.alwaysEnchanting
+			end,
+			set = function(self,value)
+				Skillet.db.profile.plugins.ATR.alwaysEnchanting = value
+				if value then
+					Skillet.db.profile.plugins.ATR.alwaysEnchanting = value
+				end
+			end,
+			order = 11
+		},
 		buyFactor = {
 			type = "range",
 			name = "buyFactor",
@@ -260,6 +275,13 @@ function plugin.GetExtraText(skill, recipe)
 	local label, extra_text
 	if not recipe then return end
 	local itemID = recipe.itemID
+--
+-- Check for Enchanting. Most recipes don't produce an item but
+-- we still should get reagent prices.
+--
+	if recipe.tradeID == 7411 and itemID then
+		itemID = Skillet.EnchantSpellToItem[itemID] or 0
+	end
 	if Skillet.db.profile.plugins.ATR.enabled and itemID then
 --
 -- buyout is Auctionator's price (for one) times the number this recipe makes
@@ -305,10 +327,12 @@ function plugin.GetExtraText(skill, recipe)
 -- Default value for a reagent is the Auctionator price
 --
 			local value
-			if isRetail then
+			if Atr_GetAuctionBuyout then
+				value = (Atr_GetAuctionBuyout(id) or 0) * needed
+			elseif Auctionator and Auctionator.API.v1.GetAuctionPriceByItemID then
 				value = (Auctionator.API.v1.GetAuctionPriceByItemID(addonName, id) or 0) * needed
 			else
-				value = (Atr_GetAuctionBuyout(id) or 0) * needed
+				value = 0
 			end
 			if not Skillet:VendorSellsReagent(id) then
 --
@@ -367,9 +391,9 @@ function plugin.GetExtraText(skill, recipe)
 --
 -- Show the profit absolute value and as a percentage of the cost
 --
-				label = label..L["   Profit:\n"]
+				label = label.."   Profit:\n"
 				extra_text = extra_text..Skillet:FormatMoneyFull(profit, true).."\n"
-				label = label..L["   Profit percentage:\n"]
+				label = label.."   Profit percentage:\n"
 				extra_text = extra_text..profitPctText(profit,cost,9999).."%\n"
 			end
 		end
@@ -386,6 +410,13 @@ function plugin.RecipeNameSuffix(skill, recipe)
 	if not recipe then return end
 	--DA.DEBUG(0,"RecipeNameSuffix: recipe= "..DA.DUMP1(recipe,1))
 	local itemID = recipe.itemID
+--
+-- Check for Enchanting. Most recipes don't produce an item but
+-- we still should get reagent prices.
+--
+	if recipe.tradeID == 7411 and itemID then
+		itemID = Skillet.EnchantSpellToItem[itemID] or 0
+	end
 	--DA.DEBUG(0,"RecipeNameSuffix: itemID= "..tostring(itemID)..", type= "..type(itemID))
 	local itemName
 	if itemID then itemName = GetItemInfo(itemID) end
@@ -416,10 +447,12 @@ function plugin.RecipeNameSuffix(skill, recipe)
 			end
 			local name = GetItemInfo(id) or id
 			local value
-			if isRetail then
+			if Atr_GetAuctionBuyout then
+				value = (Atr_GetAuctionBuyout(id) or 0) * needed
+			elseif Auctionator and Auctionator.API.v1.GetAuctionPriceByItemID then
 				value = (Auctionator.API.v1.GetAuctionPriceByItemID(addonName, id) or 0) * needed
 			else
-				value = (Atr_GetAuctionBuyout(id) or 0) * needed
+				value = 0
 			end
 			if Skillet:VendorSellsReagent(id) then
 				if Skillet.db.profile.plugins.ATR.buyablePrices then
@@ -453,7 +486,16 @@ function plugin.RecipeNameSuffix(skill, recipe)
 				text = "("..profitPctText(profit,cost,999).."%)"
 			end
 		end
-		if Skillet.db.profile.plugins.ATR.onlyPositive and profit <= 0 then
+--
+-- Enchants don't have any profit so if checked, always display the (negative) cost.
+--
+		if recipe.tradeID == 7411 then
+			if not Skillet.db.profile.plugins.ATR.alwaysEnchanting then
+				if Skillet.db.profile.plugins.ATR.onlyPositive and profit <= 0 then
+					text = nil
+				end
+			end
+		elseif Skillet.db.profile.plugins.ATR.onlyPositive and profit <= 0 then
 			text = nil
 		end
 	end
@@ -477,7 +519,7 @@ function Skillet:AuctionatorSearch(whichOne)
 	local items = {}
 	if whichOne then
 		shoppingListName = L["Shopping List"]
-		local list = Skillet:GetShoppingList(nil, false)
+		local list = Skillet:GetShoppingList(nil, nil, false)
 		if not list or #list == 0 then
 			DA.DEBUG(0,"AuctionatorSearch: Shopping List is empty")
 			return
@@ -524,18 +566,16 @@ function Skillet:AuctionatorSearch(whichOne)
 			end
 		end
 	end
-	if isRetail then
-		if Skillet.db.profile.plugins.ATR.useSearchExact and Auctionator.API.v1.MultiSearchExact then
-			DA.DEBUG(0, "AuctionatorSearch: (exact) addonName= "..tostring(addonName)..", items= "..DA.DUMP1(items))
-			Auctionator.API.v1.MultiSearchExact(addonName, items)
-		else
-			DA.DEBUG(0, "AuctionatorSearch: addonName= "..tostring(addonName)..", items= "..DA.DUMP1(items))
-			Auctionator.API.v1.MultiSearch(addonName, items)
-		end
-	else
+	if Atr_SelectPane and Atr_SearchAH then
 		DA.DEBUG(0, "AuctionatorSearch: shoppingListName= "..tostring(shoppingListName)..", items= "..DA.DUMP1(items))
 		local BUY_TAB = 3;
 		Atr_SelectPane(BUY_TAB)
 		Atr_SearchAH(shoppingListName, items)
+	elseif Skillet.db.profile.plugins.ATR.useSearchExact and Auctionator.API.v1.MultiSearchExact then
+		DA.DEBUG(0, "AuctionatorSearch: (exact) addonName= "..tostring(addonName)..", items= "..DA.DUMP1(items))
+		Auctionator.API.v1.MultiSearchExact(addonName, items)
+	elseif Auctionator.API.v1.MultiSearch then
+		DA.DEBUG(0, "AuctionatorSearch: addonName= "..tostring(addonName)..", items= "..DA.DUMP1(items))
+		Auctionator.API.v1.MultiSearch(addonName, items)
 	end
 end

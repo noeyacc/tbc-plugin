@@ -195,6 +195,21 @@ function Skillet:RestoreEnchantButton(show)
 	end
 end
 
+function Skillet:EnablePauseButton()
+	if not self.isCraft then
+		SkilletStartQueueButton:Hide()
+		SkilletPauseQueueButton:Show()
+		self.pauseQueue = false
+	end
+end
+
+function Skillet:DisablePauseButton()
+	if not self.isCraft then
+		SkilletStartQueueButton:Show()
+		SkilletPauseQueueButton:Hide()
+	end
+end
+
 function Skillet:CreateTradeSkillWindow()
 --
 -- We are going to steal the Enchant button to avoid DoCraft errors so
@@ -268,6 +283,9 @@ function Skillet:CreateTradeSkillWindow()
 	SkilletCreateButton:SetText(L["Create"])
 	SkilletQueueButton:SetText(L["Queue"])
 	SkilletStartQueueButton:SetText(L["Process"])
+	SkilletPauseQueueButton:SetText(L["Pause"])
+	SkilletPauseQueueButton:SetAttribute("type", "macro")
+	SkilletPauseQueueButton:SetAttribute("macrotext", "/stopcasting")
 	SkilletEmptyQueueButton:SetText(L["Clear"])
 	SkilletEnchantButton:SetText(L["Enchant"])
 	SkilletRecipeNotesButton:SetText(L["Notes"])
@@ -539,17 +557,20 @@ end
 function Skillet:ConfigureRecipeControls()
 	DA.DEBUG(0,"ConfigureRecipeControls()")
 	if Skillet.isCraft then
-		SkilletQueueAllButton:Hide()
 		if Skillet.db.profile.queue_crafts then
 			SkilletQueueButton:Show()
+			SkilletEmptyQueueButton:Show()
+			SkilletQueueParent:Show()
 		else
 			SkilletQueueButton:Hide()
+			SkilletEmptyQueueButton:Hide()
+			SkilletQueueParent:Hide()
 		end
+		SkilletQueueAllButton:Hide()
 		SkilletCreateAllButton:Hide()
 		SkilletCreateButton:Hide()
-		SkilletQueueParent:Hide()
 		SkilletStartQueueButton:Hide()
-		SkilletEmptyQueueButton:Hide()
+		SkilletPauseQueueButton:Hide()
 		SkilletItemCountInputBox:Hide()
 		SkilletSub10Button:Hide()
 		SkilletSub1Button:Hide()
@@ -624,10 +645,10 @@ function Skillet:TradeButton_OnEnter(button)
 		local buttonIcon = _G[button:GetName().."Icon"]
 		local r,g,b = buttonIcon:GetVertexColor()
 		if g == 0 then
-			GameTooltip:AddLine(L["scan incomplete..."],1,0,0)
+			GameTooltip:AddLine("scan incomplete...",1,0,0)
 		end
 		if nonLinkingTrade[tradeID] and player ~= UnitName("player") then
-			GameTooltip:AddLine((GetSpellInfo(tradeID))..L[" not available for alts"])
+			GameTooltip:AddLine((GetSpellInfo(tradeID)).." not available for alts")
 		end
 	end
 	GameTooltip:Show()
@@ -702,7 +723,7 @@ function Skillet:CreateAdditionalButtonsList()
 end
 
 function Skillet:UpdateTradeButtons(player)
-	DA.DEBUG(3,"UpdateTradeButtons("..tostring(player)..")")
+	--DA.DEBUG(0,"UpdateTradeButtons("..tostring(player)..")")
 --	if TSM_API then return end		-- Maybe later but for now, these buttons cause more trouble than they are worth.
 	local position = 0 -- pixels
 	local tradeSkillList = self.tradeSkillList
@@ -882,6 +903,9 @@ function Skillet:UpdateTradeSkillWindow()
 	else
 		numTradeSkills = 0
 	end
+	Skillet:ScanQueuedReagents()
+	Skillet:InventoryScan()
+	self:CalculateCraftableCounts()
 	self:UpdateDetailsWindow(self.selectedSkill)
 	self:UpdateTradeButtons(self.currentPlayer)
 	self:UpdateIgnoreListButton()
@@ -1260,7 +1284,7 @@ function Skillet:UpdateTradeSkillWindow()
 		SkilletFrameEmptySpace:SetPoint("TOPLEFT",SkilletSkillListParent,"TOPLEFT")
 	end
 	SkilletFrameEmptySpace:SetPoint("BOTTOMRIGHT",SkilletSkillListParent,"BOTTOMRIGHT")
-	DA.DEBUG(3,"UpdateTradeSkillWindow Complete")
+	--DA.DEBUG(3,"UpdateTradeSkillWindow Complete")
 end
 
 --
@@ -1566,7 +1590,7 @@ function Skillet:SetReagentToolTip(reagentID, numNeeded, numCraftable)
 		GameTooltip:AppendText(GRAY_FONT_COLOR_CODE .. " (" .. L["craftable"] .. ")" .. FONT_COLOR_CODE_CLOSE)
 		for recipeID in pairs(self.db.global.itemRecipeSource[reagentID]) do
 			local recipe = self:GetRecipe(recipeID)
-			GameTooltip:AddDoubleLine(L["Source:"],(self:GetTradeName(recipe.tradeID) or recipe.tradeID)..":"..self:GetRecipeName(recipeID),0,1,0,1,1,1)
+			GameTooltip:AddDoubleLine("Source: ",(self:GetTradeName(recipe.tradeID) or recipe.tradeID)..":"..self:GetRecipeName(recipeID),0,1,0,1,1,1)
 			for player,lookupTable in pairs(self.data.skillIndexLookup) do
 				if lookupTable[recipeID] then
 					local rankData = self:GetSkillRanks(player, recipe.tradeID)
@@ -1583,18 +1607,18 @@ function Skillet:SetReagentToolTip(reagentID, numNeeded, numCraftable)
 	local inBoth = self:GetInventory(self.currentPlayer, reagentID)
 	local surplus = inBoth - numNeeded * numCraftable
 	if inBoth < 0 then
-		GameTooltip:AddDoubleLine(L["in shopping list:"],(-inBoth),1,1,0)
+		GameTooltip:AddDoubleLine("in shopping list:",(-inBoth),1,1,0)
 	end
 	if surplus < 0 then
-		GameTooltip:AddDoubleLine(L["to craft "]..numCraftable..L[" you need:"],(-surplus),1,0,0)
+		GameTooltip:AddDoubleLine("to craft "..numCraftable.." you need:",(-surplus),1,0,0)
 	end
 	if self.db.realm.reagentsInQueue[self.currentPlayer] then
 		local inQueue = self.db.realm.reagentsInQueue[self.currentPlayer][reagentID]
 		if inQueue then
 			if inQueue < 0 then
-				GameTooltip:AddDoubleLine(L["used in queued skills:"],-inQueue,1,1,1)
+				GameTooltip:AddDoubleLine("used in queued skills:",-inQueue,1,1,1)
 			else
-				GameTooltip:AddDoubleLine(L["created from queued skills:"],inQueue,1,1,1)
+				GameTooltip:AddDoubleLine("created from queued skills:",inQueue,1,1,1)
 			end
 		end
 	end
@@ -1765,7 +1789,7 @@ function Skillet:UpdateDetailsWindow(skillIndex)
 --
 -- Check for Auction House
 --
-	if AuctionFrame and self.auctionOpen and AuctionatorLoaded and self.ATRPlugin and self.db.profile.plugins.ATR.enabled then
+	if self.auctionOpen and Auctionator and self.ATRPlugin and self.db.profile.plugins.ATR.enabled then
 		SkilletAuctionatorButton:Show()
 	else
 		SkilletAuctionatorButton:Hide()
@@ -1895,27 +1919,39 @@ end
 --
 -- Updates the window/scroll list displaying queue of items
 -- that are waiting to be crafted.
+-- Enchanting (isCraft) shows the window but not the processing buttons.
 --
 function Skillet:UpdateQueueWindow()
 	local queue = self.db.realm.queueData[self.currentPlayer]
 	if not queue then
-		SkilletStartQueueButton:SetText(L["Process"])
 		SkilletEmptyQueueButton:Disable()
-		SkilletStartQueueButton:Disable()
+		if self.isCraft then
+			SkilletStartQueueButton:Hide()
+		else
+			SkilletStartQueueButton:Disable()
+		end
 		return
 	end
 	local numItems = #queue
 	if numItems > 0 then
-		SkilletStartQueueButton:Enable()
 		SkilletEmptyQueueButton:Enable()
+		if self.isCraft then
+			SkilletStartQueueButton:Hide()
+		else
+			SkilletStartQueueButton:Enable()
+		end
 	else
-		SkilletStartQueueButton:Disable()
 		SkilletEmptyQueueButton:Disable()
+		if self.isCraft then
+			SkilletStartQueueButton:Hide()
+		else
+			SkilletStartQueueButton:Disable()
+		end
 	end
 	if self.queueCasting then
-		SkilletStartQueueButton:SetText(L["Pause"])
+		self:EnablePauseButton()	-- handles isCraft internally
 	else
-		SkilletStartQueueButton:SetText(L["Process"])
+		self:DisablePauseButton()	-- handles isCraft internally
 	end
 	local button_count = SkilletQueueList:GetHeight() / SKILLET_TRADE_SKILL_HEIGHT
 	button_count = math.floor(button_count)
@@ -3144,19 +3180,40 @@ local queueMenuList = {
 }
 
 --
--- Process/Pause button.
+-- Process button
 --
 function Skillet:StartQueue_OnClick(button)
 	local mouse = GetMouseButtonClicked()
 	--DA.DEBUG(0,"StartQueue_OnClick("..tostring(button).."), "..tostring(mouse))
 	if self.queueCasting then
-		button:Disable()
 		self.queueCasting = false
 	else
-		button:SetText(L["Pause"])
 		self:ProcessQueue(mouse == "RightButton" or IsAltKeyDown())
 	end
 	self:UpdateQueueWindow()
+end
+
+--
+-- Pause button
+--   before executing secure action "/stopcasting" macro
+--
+function Skillet:PauseQueue_PreClick(button)
+	local mouse = GetMouseButtonClicked()
+	DA.DEBUG(0,"PauseQueue_PreClick("..tostring(button).."), "..tostring(mouse))
+	if self.queueCasting then
+		self.queueCasting = false
+		self.pauseQueue = true
+	end
+	self:UpdateQueueWindow()
+end
+
+--
+-- Pause button
+--   after executing secure action "/stopcasting" macro
+--
+function Skillet:PauseQueue_PostClick(button)
+	local mouse = GetMouseButtonClicked()
+	DA.DEBUG(0,"PauseQueue_PostClick("..tostring(button).."), "..tostring(mouse))
 end
 
 function Skillet:SkilletQueueMenu_Show(button)

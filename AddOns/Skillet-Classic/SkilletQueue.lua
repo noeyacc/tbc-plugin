@@ -19,6 +19,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 local L = Skillet.L
 
+StaticPopupDialogs["SKILLET_QUEUE_LARGE"] = {
+	text = "Skillet-Classic\n"..L["Request to queue %s items.\n Are you sure?"],
+	button1 = ACCEPT,
+	button2 = CANCEL,
+	OnAccept = function( self )
+		Skillet:QueueItems(Skillet.queueCount)
+		return
+	end,
+	OnCancel = function( self )
+		Skillet.queueCount = 0
+		return
+	end,
+	timeout = 0,
+	exclusive = 1,
+	whileDead = 1,
+	hideOnEscape = 1
+};
+
 --
 -- Iterates through a list of reagentIDs and recalculates craftability
 --
@@ -187,19 +205,19 @@ function Skillet:RemoveFromQueue(index)
 	local queue = self.db.realm.queueData[self.currentPlayer]
 	local command = queue[index]
 	local reagentsInQueue = self.db.realm.reagentsInQueue[Skillet.currentPlayer]
-	local reagentsChanged = self.reagentsChanged
 	if command.op == "iterate" then
 		local recipe = self:GetRecipe(command.recipeID)
 		if not command.count then
 			command.count = 1
 		end
 		reagentsInQueue[recipe.itemID] = (reagentsInQueue[recipe.itemID] or 0) - (recipe.numMade or 0) * command.count
-		reagentsChanged[recipe.itemID] = true
 		for i=1,#recipe.reagentData,1 do
 			local reagent = recipe.reagentData[i]
 			reagentsInQueue[reagent.id] = (reagentsInQueue[reagent.id] or 0) + (reagent.numNeeded or 0) * command.count
-			reagentsChanged[reagent.id] = true
 		end
+	end
+	if self.skippedQueue[index] then
+		self.skippedQueue[index] = nil
 	end
 	table.remove(queue, index)
 	self:AdjustInventory()
@@ -209,6 +227,7 @@ function Skillet:ClearQueue()
 	DA.DEBUG(0,"ClearQueue()")
 	if #self.db.realm.queueData[self.currentPlayer]>0 then
 		self.db.realm.queueData[self.currentPlayer] = {}
+		self.skippedQueue = {}
 		self.db.realm.reagentsInQueue[self.currentPlayer] = {}
 		self:UpdateTradeSkillWindow()
 	end
@@ -247,7 +266,7 @@ function Skillet:PrintQueue(name)
 	end
 	if queue then
 		for qpos,command in pairs(queue) do
-			print("qpos= "..tostring(qpos)..", command= "..DA.DUMP1(command))
+			print("qpos= "..tostring(qpos)..", skipped= "..tostring(self.skippedQueue[qpos])..", command= "..DA.DUMP1(command))
 		end
 	end
 end
@@ -259,13 +278,18 @@ function Skillet:ProcessQueue(altMode)
 	local skillIndexLookup = self.data.skillIndexLookup[self.currentPlayer]
 	self.processingPosition = nil
 	self.processingCommand = nil
+	self.skippedQueue = {}
 	local command
+--
+-- If any plugins have registered a ProcessQueue function, call it now
+--
+	self:ProcessQueuePlugins()
 --
 -- find the first queue entry that is craftable
 --
 	repeat
 		command = queue[qpos]
-		--DA.DEBUG(1,"command= "..DA.DUMP1(command))
+		--DA.DEBUG(1,"qpos= "..tostring(qpos)..", command= "..DA.DUMP1(command))
 		if command and command.op == "iterate" then
 			local recipe = self:GetRecipe(command.recipeID)
 			local craftable = true
@@ -276,6 +300,7 @@ function Skillet:ProcessQueue(altMode)
 			end
 			if cooldown then
 				Skillet:Print(L["Skipping"],recipe.name,"-",L["has cooldown of"],SecondsToTime(cooldown))
+				self.skippedQueue[qpos] = true
 				craftable = false
 			else
 				for i=1,#recipe.reagentData,1 do
@@ -288,6 +313,7 @@ function Skillet:ProcessQueue(altMode)
 					--DA.DEBUG(1,"numInBoth= "..tostring(numInBoth)..", numInBags="..tostring(numInBags)..", numInBank="..tostring(numInBank))
 					if numInBags < reagent.numNeeded then
 						Skillet:Print(L["Skipping"],recipe.name,"-",L["need"],reagent.numNeeded,"x",reagentName,"("..L["have"],numInBags..")")
+						self.skippedQueue[qpos] = true
 						craftable = false
 						break
 					end
@@ -301,14 +327,12 @@ function Skillet:ProcessQueue(altMode)
 -- either queue[qpos] is craftable or nothing is craftable
 --
 	if qpos > #queue then
-		qpos = 1				-- nothing is craftable
-		command = queue[qpos]
+		--DA.DEBUG(1,"Nothing is craftable")
+		return
 	end
 --
 -- Process this item in the queue:
 -- Change professions if necessary (and come back later).
--- If we got here with nothing craftable in the queue,
--- let DoTradeSkill or DoCraft generate the error.
 --
 	if command then
 		if command.op == "iterate" then
@@ -351,7 +375,7 @@ function Skillet:ProcessQueue(altMode)
 			--DA.DEBUG(1,"processingSpell= "..tostring(self.processingSpell)..", processingPosition= "..tostring(qpos)..", processingCommand= "..DA.DUMP1(command))
 			if self.isCraft then
 				--DA.DEBUG(1,"DoCraft(spell= "..tostring(recipeIndex)..", count= "..tostring(count)..") altMode= "..tostring(altMode))
-				if self.DoCraft then 
+				if self.DoCraft then
 					DoCraft(recipeIndex, count)
 				else
 					DA.WARN("processingSpell= "..tostring(self.processingSpell)..", processingPosition= "..tostring(qpos)..", processingCommand= "..DA.DUMP1(command))
@@ -359,6 +383,7 @@ function Skillet:ProcessQueue(altMode)
 				end
 			else
 				--DA.DEBUG(1,"DoTradeSkill(spell= "..tostring(recipeIndex)..", count= "..tostring(count)..") altMode= "..tostring(altMode))
+				self:EnablePauseButton()
 				DoTradeSkill(recipeIndex, count)
 			end
 --
@@ -383,6 +408,7 @@ function Skillet:ProcessQueue(altMode)
 		DA.DEBUG(0,"not command, clearing queueData for "..tostring(self.currentPlayer))
 		self.db.realm.queueData[self.currentPlayer] = {}
 	end		-- command
+	self:AdjustInventory()
 end
 
 --
@@ -403,6 +429,11 @@ function Skillet:QueueItems(count)
 		end
 		if count == 0 then
 			count = (skill.numCraftableAlts or 0) / (recipe.numMade or 1)
+		end
+		self.queueCount = math.min(count, 9999)
+		if self.queueCount == 9999 then
+			StaticPopup_Show("SKILLET_QUEUE_LARGE", tostring(self.queueCount))
+			return 0
 		end
 	end
 	count = math.min(count, 9999)
@@ -438,14 +469,6 @@ function Skillet:CreateItems(count)
 end
 
 --
--- Adds one item to the queue and then starts the queue
---
-function Skillet:EnchantItem()
-	DA.DEBUG(0,"EnchantItem()")
-	self:CreateItems(1)
-end
-
---
 -- Queue and create the max number of craftable items for the currently selected skill
 --
 function Skillet:CreateAllItems()
@@ -454,6 +477,14 @@ function Skillet:CreateAllItems()
 	if self:QueueAllItems() > 0 then
 		self:ProcessQueue(mouse == "RightButton" or IsAltKeyDown())
 	end
+end
+
+--
+-- Adds one item to the queue and then starts the queue
+--
+function Skillet:EnchantItem()
+	DA.DEBUG(0,"EnchantItem()")
+	self:CreateItems(1)
 end
 
 function Skillet:UNIT_SPELLCAST_SENT(event, unit, target, castGUID)
@@ -564,15 +595,16 @@ end
 
 function Skillet:StopCast(spell, success)
 	DA.DEBUG(0,"StopCast("..tostring(spell)..", "..tostring(success).."): changingTrade= "..tostring(self.changingTrade)..
-	  ", processingSpell= "..tostring(self.processingSpell)..", queueCasting= "..tostring(self.queueCasting))
+	  ", processingSpell= "..tostring(self.processingSpell)..", queueCasting= "..tostring(self.queueCasting)..", pauseQueue= "..tostring(self.pauseQueue))
 	if not self.db.realm.queueData then
 		self.db.realm.queueData = {}
 	end
 	local queue = self.db.realm.queueData[self.currentPlayer]
+	local qpos, command
 	if spell == self.processingSpell then
 		if success then
-			local qpos = self.processingPosition or 1
-			local command = nil
+			qpos = self.processingPosition or 1
+			command = nil
 			if not queue[qpos] or queue[qpos] ~= self.processingCommand then
 				for i=1,#queue,1 do
 					if queue[i] == self.processingCommand then
@@ -604,20 +636,24 @@ function Skillet:StopCast(spell, success)
 					self.processingSpell = nil
 					self.processingPosition = nil
 					self.processingCommand = nil
-					self.reagentsChanged = {}
-					self:RemoveFromQueue(qpos)		-- implied queued reagent inventory adjustment in remove routine
-					DA.DEBUG(0,"removed queue command")
+					self:RemoveFromQueue(qpos)
+					DA.DEBUG(0,"removed successful queue command at "..tostring(qpos))
 				end
 			end
-			DA.DEBUG(0,"StopCast is updating window")
-			self:AdjustInventory()
 		else
 			DA.DEBUG(0,"StopCast without success")
+			qpos = self.processingPosition
 			self.queueCasting = false
 			self.processingSpell = nil
 			self.processingPosition = nil
 			self.processingCommand = nil
+			if self.db.profile.interrupt_clears_queue and qpos and not self.skippedQueue[qpos] then -- if qpos and not self.pauseQueue then
+				self:RemoveFromQueue(qpos)
+				DA.DEBUG(0,"removed failed queue command at "..tostring(qpos))
+			end
+			self.pauseQueue = false
 		end
+		self:AdjustInventory()
 	else
 		DA.DEBUG(0,"StopCast called with "..tostring(spell).." ~= "..tostring(self.processingSpell))
 	end
@@ -628,7 +664,6 @@ end
 --
 function Skillet:RemoveQueuedCommand(queueIndex)
 	DA.DEBUG(0,"RemoveQueuedCommand("..tostring(queueIndex)..")")
-	self.reagentsChanged = {}
 	self:RemoveFromQueue(queueIndex)
 	self:UpdateQueueWindow()
 	self:UpdateTradeSkillWindow()

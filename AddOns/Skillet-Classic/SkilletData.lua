@@ -149,8 +149,10 @@ end
 
 function Skillet:AddCurrencyData(name,id)
 	DA.DEBUG(0,"AddCurrencyData("..tostring(name)..", "..tostring(id)..")")
-	self.currencyIDsByName[name] = id
-	self.currencyNamesByID[id] = name
+	if name and id then
+		self.currencyIDsByName[name] = id
+		self.currencyNamesByID[id] = name
+	end
 end
 
 --
@@ -194,7 +196,6 @@ end
 local TradeSkillIgnoredMats	 = {
 	[11479] = 1 , -- Transmute: Iron to Gold
 	[11480] = 1 , -- Transmute: Mithril to Truesilver
-	[60350] = 1 , -- Transmute: Titanium
 	[17559] = 1 , -- Transmute: Air to Fire
 	[17560] = 1 , -- Transmute: Fire to Earth
 	[17561] = 1 , -- Transmute: Earth to Water
@@ -202,6 +203,7 @@ local TradeSkillIgnoredMats	 = {
 	[17563] = 1 , -- Transmute: Undeath to Water
 	[17565] = 1 , -- Transmute: Life to Earth
 	[17566] = 1 , -- Transmute: Earth to Life
+	[28022] = 1 , -- large prismatic shard
 	[28585] = 1 , -- Transmute: Primal Earth to Life
 	[28566] = 1 , -- Transmute: Primal Air to Fire
 	[28567] = 1 , -- Transmute: Primal Earth to Water
@@ -212,6 +214,9 @@ local TradeSkillIgnoredMats	 = {
 	[28582] = 1 , -- Transmute: Primal Mana to Fire
 	[28583] = 1 , -- Transmute: Primal Fire to Mana
 	[28584] = 1 , -- Transmute: Primal Life to Earth
+	[42613] = 1 , -- nexus transformation
+	[42615] = 1 , -- small prismatic shard
+	[45765] = 1 , -- Void Shatter
 	[53771] = 1 , -- Transmute: Eternal Life to Shadow
 	[53773] = 1 , -- Transmute: Eternal Life to Fire
 	[53774] = 1 , -- Transmute: Eternal Fire to Water
@@ -224,13 +229,10 @@ local TradeSkillIgnoredMats	 = {
 	[53782] = 1 , -- Transmute: Eternal Earth to Shadow
 	[53783] = 1 , -- Transmute: Eternal Water to Air
 	[53784] = 1 , -- Transmute: Eternal Water to Fire
-	[45765] = 1 , -- Void Shatter
-	[42615] = 1 , -- small prismatic shard
-	[42613] = 1 , -- nexus transformation
-	[28022] = 1 , -- large prismatic shard
-	[118239] = 1 , -- sha shatter
-	[118238] = 1 , -- ethereal shard shatter
+	[60350] = 1 , -- Transmute: Titanium
 	[118237] = 1 , -- mysterious diffusion
+	[118238] = 1 , -- ethereal shard shatter
+	[118239] = 1 , -- sha shatter
 	[181637] = 1 , -- Transmute: Sorcerous-air-to-earth
 	[181633] = 1 , -- Transmute: Sorcerous-air-to-fire
 	[181636] = 1 , -- Transmute: Sorcerous-air-to-water
@@ -245,7 +247,49 @@ local TradeSkillIgnoredMats	 = {
 	[181634] = 1 , -- Transmute: Sorcerous-water-to-fire
 	[181643] = 1 , -- Transmute: Savage Blood
 }
-Skillet.TradeSkillIgnoredMats = TradeSkillIgnoredMats
+
+function Skillet:ConvertIgnoreListData()
+	DA.DEBUG(0,"ConvertIgnoreListData()")
+	self.TradeSkillIgnoredMats = {}
+	for id in pairs(TradeSkillIgnoredMats) do
+		local name = GetSpellInfo(id)
+		--DA.DEBUG(1,"ConvertIgnoreListData: id= "..tostring(id)..", name= "..tostring(name))
+		if name then
+			self.TradeSkillIgnoredMats[name] = id
+			self.TradeSkillIgnoredMats[id] = name
+		else
+			--DA.DEBUG(1,"ConvertIgnoreListData: id= "..tostring(id).." is unknown")
+			self.TradeSkillIgnoredMats[id] = 1
+		end
+	end
+end
+
+--
+-- Enchants that produce items
+--
+local EnchantSpellToItem = {
+	[14923] = 11287 , -- Lesser Magic Wand
+	[25124] = 20744 , -- Minor Wizard Oil
+	[14807] = 11288 , -- Greater Magic Wand
+	[25125] = 20745 , -- Minor Mana Oil
+	[14809] = 11289 , -- Lesser Mystic Wand
+	[14810] = 11290 , -- Greater Mystic Wand
+	[25126] = 20746 , -- Lesser Wizard Oil
+	[25127] = 20747 , -- Lesser Mana Oil
+	[15596] = 11811 , -- Smoking Heart of the Mountain
+	[25128] = 20750 , -- Wizard Oil
+	[17180] = 12655 , -- Enchanted Thorium Bar
+	[17181] = 12810 , -- Enchanted Leather
+	[25130] = 20748 , -- Brilliant Mana Oil
+	[25129] = 20749 , -- Brilliant Wizard Oil
+	[28027] = 22460 , -- Prismatic Sphere
+	[28016] = 22521 , -- Superior Mana Oil
+	[28022] = 22449 , -- Large Prismatic Shard
+	[28019] = 22522 , -- Superior Wizard Oil
+	[28028] = 22459 , -- Void Sphere
+	[42615] = 22448 , -- Small Prismatic Shard
+}
+Skillet.EnchantSpellToItem = EnchantSpellToItem
 
 --
 -- None of these "features" exist in Classic

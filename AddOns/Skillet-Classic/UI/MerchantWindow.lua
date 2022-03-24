@@ -72,11 +72,12 @@ local function update_merchant_inventory()
 						DA.DEBUG(2,"itemCount for "..tostring(name).." ("..tostring(id)..")= "..tostring(itemCount))
 						for j=1, itemCount, 1 do
 							itemTexture, itemValue, itemLink, currencyName = GetMerchantItemCostItem(i, j)
-							if itemLink then
+							DA.DEBUG(2,"itemTexture= "..tostring(itemTexture)..", itemValue= "..tostring(itemValue)..", currencyName= "..tostring(currencyName))
+							if currencyName then
+								currencyID = -1 * tonumber(Skillet.currencyIDsByName[currencyName] or 0)
+							elseif itemLink then
 								currencyName = GetItemInfo(itemLink)
 								currencyID = Skillet:GetItemIDFromLink(itemLink)
-							elseif currencyName then
-								currencyID = -1 * tonumber(Skillet.currencyIDsByName[currencyName] or 0)
 							end
 							DA.DEBUG(2,"Currency for "..tostring(name).." ("..tostring(id)..")= "..tostring(currencyName).." ("..tostring(currencyID)..") x "..tostring(itemValue))
 							Skillet:AddCurrencyData(currencyName,currencyID)
@@ -134,7 +135,7 @@ end
 --
 local function update_merchant_buy_button()
 	Skillet:InventoryScan()
-	local list = Skillet:GetShoppingList(Skillet.currentPlayer, false)
+	local list = Skillet:GetShoppingList(Skillet.currentPlayer, Skillet.db.profile.same_faction, false)
 	if not list or #list == 0 then
 		--DA.DEBUG(0,"ShoppingList is empty")
 		SkilletMerchantBuyFrame:Hide()
@@ -227,7 +228,7 @@ end
 --
 function Skillet:BuyRequiredReagents()
 	--DA.DEBUG(0,"BuyRequiredReagents()")
-	local list = Skillet:GetShoppingList(Skillet.currentPlayer, false)
+	local list = Skillet:GetShoppingList(Skillet.currentPlayer, Skillet.db.profile.same_faction, false)
 	if #list == 0 then
 		return
 	elseif does_merchant_sell_required_items(list) == false then
@@ -336,7 +337,7 @@ function Skillet:MerchantBuyButton_OnEnter(button)
 	GameTooltip:SetOwner(button, "ANCHOR_BOTTOMRIGHT")
 	GameTooltip:ClearLines()
 	GameTooltip:AddLine(L["Buy Reagents"])
-	local needList = Skillet:GetShoppingList(Skillet.currentPlayer, false)
+	local needList = Skillet:GetShoppingList(Skillet.currentPlayer, Skillet.db.profile.same_faction, false)
 	local totalCost = 0
 	for i=1,#needList,1 do
 		local itemID = needList[i].id

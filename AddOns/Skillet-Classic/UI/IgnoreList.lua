@@ -91,7 +91,7 @@ local function createIgnoreListFrame(self)
 	titletext:SetShadowColor(0,0,0)
 	titletext:SetShadowOffset(1,-1)
 	titletext:SetTextColor(1,1,1)
-	titletext:SetText(L["Skillet-Classic: Ignored Recipes"])
+	titletext:SetText("Skillet-Classic: Ignored Recipes")
 --
 -- The frame enclosing the scroll list needs a border and a background .....
 --

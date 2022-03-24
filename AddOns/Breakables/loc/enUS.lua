@@ -8,7 +8,6 @@ local L = LibStub("AceLocale-3.0"):NewLocale("Breakables", "enUS", true, debug)
 L["Are you sure you want to clear the ignore list?"] = true
 L["Are you sure you want to remove this item from the ignore list?"] = true
 L["Breakables"] = true
-L["Breakables "] = "Breakables"
 L["Button grow direction"] = true
 L["Button scale"] = true
 L["Clear ignore list"] = true
