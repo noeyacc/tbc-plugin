@@ -1281,6 +1281,23 @@ D["MBB"] = {
     },
 	
 };
+D["HidingBar"] = {
+	defaultEnable = 1,
+	tags = { "MAP" },
+	title = "HidingBar - 小地圖按鈕選單",
+	desc = "將小地圖周圍的按鈕，整合成一個彈出式按鈕選單!",
+	--icon = "Interface\\Icons\\achievement_boss_cthun",
+	img = true,
+	{
+		text = "設定選項",
+		callback = function(cfg, v, loading) SlashCmdList["HIDDINGBAR"]("") end,
+	},
+	{
+		type = "text",
+		text = "可將小地圖周圍的按鈕，整合成一個彈出式按鈕選單!\n\n可在對話框輸入'/hidingbar'直接開啟設定選項"
+	},
+
+};
 D["MeepMerp"] = {
 	defaultEnable = 1,
 	tags = { "COMBAT" },

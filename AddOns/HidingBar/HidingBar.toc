@@ -1,0 +1,13 @@
+## Interface: 20504
+## Title: HidingBar
+## Author: sfmict
+## Version: v2.5.23
+## Notes: Convenient hiding panel
+## SavedVariables: HidingBarDB
+## SavedVariablesPerCharacter: HidingBarDBChar
+## OptionalDeps: Masque
+embeds.xml
+locales.xml
+templates.xml
+Config.lua
+HidingBar.lua
