@@ -1,22 +1,3 @@
-Version 0.7.8
-- A compatibility fix for Fast Loot addons (thanks Zilom!)
-
-Version 0.7.7
-- Fix buff check comparison error
-
-Version 0.7.6 Beta 3
-- Update to the latest LibTourist for Crusade
-
-Version 0.7.6 Beta 2
-- Let's try loading the LibTourist library just the way we do in Classic, since we didn't change the file name
-
-Version 0.7.6 Beta 1
-Version 0.7.6
-- Let's try separate versions for Classic and Crusade
-
-Version 0.7.5.5
-- Let's try that again, shall we?
-
 Version 0.7.5.4
 - Use a consistent version of LibTourist while I figure out BCC vs. Classic
 
@@ -118,4 +99,3 @@ Version 0.2
 
 Version 0.1
 - An initial, very rough, Classic version
-

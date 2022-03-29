@@ -10,7 +10,7 @@ Licensed under a Creative Commons "Attribution Non-Commercial Share Alike" Licen
 local _
 
 local MAJOR_VERSION = "LibFishing-1.0"
-local MINOR_VERSION = 101085
+local MINOR_VERSION = 101083
 
 if not LibStub then error(MAJOR_VERSION .. " requires LibStub") end
 
@@ -139,7 +139,6 @@ local FISHING_LEVELS = {
     200,        -- Shadowlands
 }
 
-local CHECKINTERVAL = 0.5
 
 -- Go ahead and forcibly get the trade skill data
 function FishLib:GetTradeSkillData()

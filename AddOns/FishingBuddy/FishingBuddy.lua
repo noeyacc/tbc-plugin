@@ -376,7 +376,6 @@ FishingBuddy.StartedFishing = nil;
 
 local OpenThisFishId = {};
 local DoAutoOpenLoot = nil;
-local NewLootCheck = true;
 
 FishingBuddy.OpenThisFishId = OpenThisFishId;
 
@@ -1296,51 +1295,47 @@ FishingBuddy.OnEvent = function(self, event, ...)
         end
         FishingMode();
         RunHandlers(FBConstants.INVENTORY_EVT)
-    elseif ( event == "LOOT_READY" ) then
+    elseif ( event == "LOOT_OPENED" ) then
         local autoLoot = ...;
         local doautoloot = false;
-        if NewLootCheck then
-            NewLootCheck = false;
-            if autoLoot or (autoLoot == nil and BlizzardOptionsPanel_GetCVarSafeBool("autoLootDefault") ~= IsModifiedClick("AUTOLOOTTOGGLE"))  then
-                doautoloot = true
-            else
-                doautoloot = FishingBuddy.GetSettingBool("AutoLoot")
+        if autoLoot or (autoLoot == nil and BlizzardOptionsPanel_GetCVarSafeBool("autoLootDefault") ~= IsModifiedClick("AUTOLOOTTOGGLE"))  then
+            doautoloot = true
+        else
+            doautoloot = FishingBuddy.GetSettingBool("AutoLoot")
+        end
+
+        if ( IsFishingLoot() or LegionBarrel() ) then
+            local poolhint = nil;
+
+            -- How long ago did the achievement fire?
+            local elapsedtime = GetTime() - trackedtime;
+            if ( elapsedtime < TRACKING_DELAY ) then
+                poolhint = true;
             end
 
-            if ( IsFishingLoot() or LegionBarrel() ) then
-                local poolhint = nil;
-
-                -- How long ago did the achievement fire?
-                local elapsedtime = GetTime() - trackedtime;
-                if ( elapsedtime < TRACKING_DELAY ) then
-                    poolhint = true;
+            -- if we want to autoloot, and Blizz isn't, let's grab stuff
+            local info = GetLootInfo()
+            for index, item in ipairs(info) do
+                local link = GetLootSlotLink(index);
+                -- should we track "locked" items we couldn't loot?'
+                FishingBuddy.AddLootCache(item.texture, item.name, item.quantity, item.quality, link, poolhint)
+                if (doautoloot) then
+                    LootSlot(index);
                 end
-
-                -- if we want to autoloot, and Blizz isn't, let's grab stuff
-                local info = GetLootInfo()
-                for index, item in ipairs(info) do
-                    local link = GetLootSlotLink(index);
-                    -- should we track "locked" items we couldn't loot?'
-                    FishingBuddy.AddLootCache(item.texture, item.name, item.quantity, item.quality, link, poolhint)
-                    if (doautoloot) then
-                        LootSlot(index);
-                    end
-                end
-                ClearTooltipText();
-                FL:ExtendDoubleClick();
-            elseif (DoAutoOpenLoot) then
-                DoAutoOpenLoot = nil;
-                for index = 1, GetNumLootItems(), 1 do
-                    if (doautoloot) then
-                        LootSlot(index);
-                    end
+            end
+            ClearTooltipText();
+            FL:ExtendDoubleClick();
+        elseif (DoAutoOpenLoot) then
+            DoAutoOpenLoot = nil;
+            for index = 1, GetNumLootItems(), 1 do
+                if (doautoloot) then
+                    LootSlot(index);
                 end
             end
         end
     elseif ( event == "LOOT_CLOSED" ) then
         -- nothing to do here at the moment
         DoAutoOpenLoot = nil;
-        NewLootCheck = true;
     elseif ( event == "PLAYER_LOGIN" ) then
         FL:CreateSAButton();
         FL:SetSAMouseEvent(FishingBuddy.GetSetting("MouseEvent"));
@@ -1374,7 +1369,7 @@ FishingBuddy.OnEvent = function(self, event, ...)
         FishingBuddy.OptionsFrame.HandleOptions(nil, nil, InvisibleOptions);
 
         -- defaults to true
-        if (FishingBuddy_Player and FishingBuddy_Player["Settings"] and FishingBuddy_Player["Settings"]["ShowBanner"]) then
+        if (FishingBuddy_Player and FishingBuddy_Player["Settings"] and FishingBuddy_Player["Settings"]["ShowBanner"] == nil) then
             FishingBuddy.Output(FBConstants.WINDOW_TITLE.." loaded");
         end
 
@@ -1432,7 +1427,7 @@ FishingBuddy.OnLoad = function(self)
     self:RegisterEvent("VARIABLES_LOADED");
 
     -- we want to deal with fishing loot windows all the time
-    self:RegisterEvent("LOOT_READY");
+    self:RegisterEvent("LOOT_OPENED");
     self:RegisterEvent("LOOT_CLOSED");
 
     self:RegisterEvent("CURSOR_UPDATE");

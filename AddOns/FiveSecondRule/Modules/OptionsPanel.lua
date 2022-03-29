@@ -21,7 +21,7 @@ OptionsPanelFrame:SetScript("OnEvent",
                 self:SetScript('OnShow', nil)
 
                 if not OptionsPanelFrame.optionsPanel then
-                    OptionsPanelFrame.optionsPanel = OptionsPanelFrame:CreateGUI(ADDON_NAME, "5 秒回魔監控")
+                    OptionsPanelFrame.optionsPanel = OptionsPanelFrame:CreateGUI(ADDON_NAME, "5 秒回魔監控")ptionsPanelFrame.optionsPanel = OptionsPanelFrame:CreateGUI(ADDON_NAME, "5 秒回魔監控")
                     InterfaceOptions_AddCategory(OptionsPanelFrame.optionsPanel);
                 end
             end)
@@ -42,6 +42,7 @@ function OptionsPanelFrame:UpdateOptionValues()
     frame.content.showSpark:SetChecked(FiveSecondRule_Options.showSpark == true)
     frame.content.alwaysShowTicks:SetChecked(FiveSecondRule_Options.alwaysShowTicks == true)
     frame.content.enableCountdown:SetChecked(FiveSecondRule_Options.enableCountdown == true)
+    frame.content.forceTrackDruidEnergy:SetChecked(FiveSecondRule_Options.forceTrackDruidEnergy == true)
     
     frame.content.barWidth:SetText(tostring(FiveSecondRule_Options.barWidth))
     frame.content.barHeight:SetText(tostring(FiveSecondRule_Options.barHeight))
@@ -164,6 +165,24 @@ function OptionsPanelFrame:CreateGUI(name, displayName, parent)
         frame.content.enableCountdown = enableCountdown        
     end     
 
+    -- FORCE TRACK ENERGY FOR DRUIDS?
+    if (not frame.content.forceTrackDruidEnergy) then
+        local forceTrackDruidEnergy = FiveSecondRule.UIFactory:MakeCheckbox(ADDON_NAME.."forceTrackDruidEnergy", frame.content, "監控德魯伊的能量而非法力")
+        forceTrackDruidEnergy.label:SetText("強制監控德魯伊能量值")
+        forceTrackDruidEnergy:SetPoint("TOPLEFT", 10, -210)
+        forceTrackDruidEnergy:SetScript("OnClick",function(self,button)
+            FiveSecondRule_Options.forceTrackDruidEnergy = self:GetChecked()
+            FiveSecondRule:Refresh()
+        end)
+        frame.content.forceTrackDruidEnergy = forceTrackDruidEnergy
+        
+        if (select(2, UnitClass("player")) ~= "DRUID") then 
+            frame.content.forceTrackDruidEnergy:Hide()
+        end
+
+    end     
+    
+
     -- BAR
     local barWidth = FiveSecondRule.UIFactory:MakeEditBox(ADDON_NAME.."CountdownWidth", frame.content, "寬度", 75, 25, function(self)
         FiveSecondRule_Options.barWidth = tonumber(self:GetText())
@@ -200,7 +219,7 @@ function OptionsPanelFrame:CreateGUI(name, displayName, parent)
     frame.content.toggleLock = toggleLock
 
     -- RESET BUTTON
-    local resetButton = FiveSecondRule.UIFactory:MakeButton(ADDON_NAME.."ResetButton", frame.content, 60, 20, "重置", 14, FiveSecondRule.UIFactory:MakeColor(1,1,1,1), function(self) 
+    local resetButton = FiveSecondRule.UIFactory:MakeButton(ADDON_NAME.."ResetButton", frame.content, 60, 20, "Reset", 14, FiveSecondRule.UIFactory:MakeColor(1,1,1,1), function(self) 
         if (FiveSecondRule_Options.unlocked) then
             lockToggled(toggleLock)
         end

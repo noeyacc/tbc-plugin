@@ -58,9 +58,9 @@ FishingTranslations["zhTW"] = {
 	--[[Translation missing --]]
 	--[[ ["CONFIG_BOBBINGBERG_ONOFF"] = "Use Bipsi's Berg",--]] 
 	--[[Translation missing --]]
-	--[[ ["CONFIG_CONSERVATORY_INFO"] = "如果啟用，在女王的栽培園時開啟“尋找魚類”。 Queen's Conservatory.",--]] 
+	--[[ ["CONFIG_CONSERVATORY_INFO"] = "If enabled, turn on the 'Find Fish' buff when in the Queen's Conservatory.",--]] 
 	--[[Translation missing --]]
-	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "女王的栽培園",--]] 
+	--[[ ["CONFIG_CONSERVATORY_ONOFF"] = "Queen's Pools",--]] 
 	["CONFIG_CONTESTS_INFO"] = "顯示釣魚比賽計時器",
 	["CONFIG_CONTESTS_ONOFF"] = "支援釣魚大賽",
 	["CONFIG_CREATEMACRO_INFO"] = "為#NAME#新增巨集.",

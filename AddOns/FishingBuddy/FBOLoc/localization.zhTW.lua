@@ -1,4 +1,4 @@
-﻿
+﻿-- Translation for zhTW   by Indra from Eastern.Stories an old old old TW mud. 11/24/2007
 
 -- FB_ODFTranslations = {};
 FB_ODFTranslations["zhTW"] = {
@@ -11,16 +11,6 @@ FB_ODFTranslations["zhTW"] = {
 
    SWITCHOUTFIT = "切換",
    SWITCHOUTFIT_INFO = "在你設定的釣魚配備與原本穿著之間切換",
-
-   CONFIG_COMBATSWITCH_ONOFF = "戰鬥切換",
-   CONFIG_COMBATSWITCH_INFO = "當戰鬥時切換武器",
-   CONFIG_ANYPOLE_ONOFF = "使用任何魚桿",
-   CONFIG_TABARD_INFO = "在釣魚裝備中包含垂釣翁戰袍",
-   CONFIG_TABARD_ONOFF = "垂釣翁戰袍",
-
-   CONFIG_ANYPOLE_INFO = "隨機使用任何可用的釣魚竿",
-   CONFIG_OUTFITDISPLAY_ONOFF = "裝備展示選項",
-   CONFIG_OUTFITDISPLAY_INFO = "自訂管理裝備", 
 
    -- Option names and tooltips
    CONFIG_SKILL_INFO		= "釣魚配備的總技能加成",

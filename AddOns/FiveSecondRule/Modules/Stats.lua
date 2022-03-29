@@ -50,6 +50,15 @@ do -- private scope
         return Round(base, 0) * 5
     end
 
+    local function MP2FromSpirit()
+        local base, _ = GetManaRegen() -- Returns mana reg per 1 second
+        if base < 1 then
+            base = lastManaReg
+        end
+        lastManaReg = base
+        return Round(base, 0) * 2
+    end
+
     local function GetTalentModifierMP5()
         local _, _, classId = UnitClass("player")
         local mod = 0
@@ -139,22 +148,36 @@ do -- private scope
     local function GetSpellRank(spellId)
         local str = GetSpellSubtext(spellId)
         if str then
-            return string.sub(str, -1)
+            local ENClientFormat = string.sub(str, -1) -- Subtext is "Rank 1"
+            if tonumber(ENClientFormat) ~= nil then
+                return tonumber(ENClientFormat)
+            else
+                return tonumber(string.sub(str, 1, 1)) -- RU Client format, subtext is "1-й уровень"
+            end
         end
         return 1
     end
 
     local function GetBlessingOfWisdomBonus()
-        local bow, bowExp, bowRank = PlayerHasBuff(GREATER_BLESSING_OF_WISDOM_NAME)
+        -- DOES NOT INCLUDE MODIFIER TALENTS (rank 1 = 10%, rank 2 = 20%)
+        local bow, bowExp, bowRank = PlayerHasBuff(SpellIdToName(25918))
 
         if bow then
-            return 27 + bowRank * 3
+            if bowRank < 3 then
+                return 27 + bowRank * 3
+            else
+                return 27 + bowRank * 3 + 5
+            end
         end
 
-        bow, bowExp, bowRank = PlayerHasBuff(BLESSING_OF_WISDOM_NAME)
+        bow, bowExp, bowRank = PlayerHasBuff(SpellIdToName(19854))
 
         if bow then
-            return  5 + bowRank * 5 
+            if bowRank < 6 then
+                return 5 + bowRank * 5
+            else
+                return 25 + (bowRank-5) * 8 -- Rank 6 = 33, Rank 7 = 41
+            end
         end
 
         return 0
@@ -163,6 +186,7 @@ do -- private scope
     -- Expose Field Variables and Functions
     FSR_STATS.MP5FromItems = MP5FromItems
     FSR_STATS.MP5FromSpirit = MP5FromSpirit
+    FSR_STATS.MP2FromSpirit = MP2FromSpirit
     FSR_STATS.MP5WhileCasting = MP5WhileCasting
     FSR_STATS.MP5FromBuffs = MP5FromBuffs
     FSR_STATS.GetSpellRank = GetSpellRank

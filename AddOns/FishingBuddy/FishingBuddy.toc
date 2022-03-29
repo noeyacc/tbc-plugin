@@ -1,24 +1,30 @@
-## Interface: 20502
+## Interface: 20501
+## Title: Fishing Buddy (Classic)
+## Version: 0.7.5.5
 ## Globe: check-classic
-## Title: Fishing Buddy (Crusade)
-## Version: 0.7.8
-## X-Curse-Project-ID: 500433
-## X-WoWI-ID: 26108
 ## Notes: Help with fishing related tasks -- clothing, fish information, etc.
-## Title-zhTW: |cffFFFF99[專業]|r 釣魚夥伴
-## Notes-zhTW: Fishing Buddy (Classic) |n幫忙處理釣魚的相關工作、漁具、魚類資訊...等等。|n|cffffd200使用方法：|r點小地圖按鈕。
-## DefaultState: disabled
+## Notes-deDE: Erleichtert das Angeln - Ausrüstung und Fish-Infos
+## Notes-frFR: Vous facilite la vie de pecheur. Informations sur les poissons, changement d'habits, etc.
+## Notes-esES: Ayude con las tareas relacionadas pesca -- ropa, información de los pescados
 ## Author: Sutorix=AT=hotmail.com
 ## OptionalDeps: FB_Debugging, myAddOns, Titan, TownsfolkTracker
 ## SavedVariables: FishingBuddy_Info
 ## SavedVariablesPerCharacter: FishingBuddy_Player, FBODF_PlayerInfo
 ## X-Date: July 21, 2005
 ## X-Help: FBConstants.HELPMSG
+## X-Curse-Project-ID: 15093
+## X-WoWI-ID: 4239
 Libs\Libs.xml
 localization.enUS.lua
-localization.zhCN.lua
+localization.deDE.lua
+localization.esES.lua
+localization.frFR.lua
+localization.itIT.lua
+localization.koKR.lua
+localization.ptBR.lua
+localization.ruRU.lua
 localization.zhTW.lua
-
+localization.zhCN.lua
 FishingSetup.lua
 FishingBuddy.xml
 FishingDatabase.lua

@@ -191,11 +191,17 @@ do -- private scope
             return false
         end
 
-        local low = FiveSecondRule_Options.averageManaTick * mp5Sensitivty
-        local high = FiveSecondRule_Options.averageManaTick * (1 + (1 - mp5Sensitivty))
-        
-        if (PlayerHasBuff(BLESSING_OF_WISDOM_NAME) or PlayerHasBuff(GREATER_BLESSING_OF_WISDOM_NAME)) then
-            high = high + 30
+        local mid = FSR_STATS.MP2FromSpirit() -- FiveSecondRule_Options.averageManaTick
+        if (mid <= 0) then
+            mid = FiveSecondRule_Options.averageManaTick
+        end
+
+        local low = mid * mp5Sensitivty
+        local high = mid * (1 + (1 - mp5Sensitivty))
+        high = high + FSR_STATS.GetBlessingOfWisdomBonus()
+
+        if (tick <= low and tick >= FiveSecondRule.GetPowerMax() - FiveSecondRule.GetPower()) then
+            return true -- last tick
         end
 
         if (tick >= high) then
