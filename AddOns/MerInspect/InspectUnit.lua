@@ -34,7 +34,7 @@ local slots = {
 local function GetInspectItemListFrame(parent)
     if (not parent.inspectFrame) then
         local itemfont = "ChatFontNormal"
-        local frame = CreateFrame("Frame", nil, parent, BackdropTemplateMixin and "BackdropTemplate")
+        local frame = CreateFrame("Frame", nil, parent, "BackdropTemplate")
         frame.backdrop = {
             bgFile   = "Interface\\Tooltips\\UI-Tooltip-Background",
             edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border",
@@ -70,7 +70,7 @@ local function GetInspectItemListFrame(parent)
             insets   = {left = 1, right = 1, top = 1, bottom = 1}
         }
         for i, v in ipairs(slots) do
-            itemframe = CreateFrame("Button", nil, frame)
+            itemframe = CreateFrame("Button", nil, frame, "BackdropTemplate")
             itemframe:SetSize(120, (height-80)/#slots)
             itemframe.index = v.index
             itemframe.backdrop = backdrop
@@ -79,7 +79,7 @@ local function GetInspectItemListFrame(parent)
             else
                 itemframe:SetPoint("TOPLEFT", frame["item"..(i-1)], "BOTTOMLEFT")
             end
-            itemframe.label = CreateFrame("Frame", nil, itemframe, BackdropTemplateMixin and "BackdropTemplate")
+            itemframe.label = CreateFrame("Frame", nil, itemframe, "BackdropTemplate")
             itemframe.label:SetSize(38, 16)
             itemframe.label:SetPoint("LEFT")
             itemframe.label:SetBackdrop(backdrop)
@@ -137,7 +137,7 @@ local function GetInspectItemListFrame(parent)
         LibEvent:trigger("INSPECT_FRAME_CREATED", frame, parent)
     end
 
-	return parent.inspectFrame
+    return parent.inspectFrame
 end
 
 --等級字符
@@ -201,12 +201,6 @@ function ShowInspectItemListFrame(unit, parent, ilevel, maxLevel)
     frame:SetBackdrop(frame.backdrop)
     frame:SetBackdropColor(0, 0, 0, 0.9)
     frame:SetBackdropBorderColor(color.r, color.g, color.b)
-	
-	-- 修正與 Details 的相容性
-    local DetailsTalentFrame = _G["DetailsTalentFrame"]
-	if DetailsTalentFrame then
-		DetailsTalentFrame:SetPoint("TOPLEFT", frame, "TOPRIGHT", 362, 0)
-	end
 
     return frame
 end
@@ -246,34 +240,29 @@ LibEvent:attachTrigger("INSPECT_FRAME_BACKDROP", function(self, frame)
     end
 end)
 
---設置邊框和位置
 LibEvent:attachTrigger("INSPECT_FRAME_SHOWN", function(self, frame, parent, ilevel)
     local x, y, f = 0, 0, parent:GetName()
     if (f == "InspectFrame" or f == "PaperDollFrame") then
         x, y = 33, 14
     end
-	-- 修正與 CharacterStatsTBC 的相容性
-	if IsAddOnLoaded("CharacterStatsTBC") then
-		local CSC_SideStatsFrame = _G["CSC_SideStatsFrame"]
-		if CSC_SideStatsFrame and CSC_SideStatsFrame:IsVisible() then
-			x = x - CSC_SideStatsFrame:GetWidth()
-		end
-	end
+    local backdrop = frame:GetBackdrop()
     if (MerInspectDB and MerInspectDB.ShowInspectAngularBorder) then
-        frame.backdrop.edgeSize = 1
-        frame.backdrop.edgeFile = "Interface\\Buttons\\WHITE8X8"
-        frame.backdrop.insets.top = 1
-        frame.backdrop.insets.left = 1
-        frame.backdrop.insets.right = 1
-        frame.backdrop.insets.bottom = 1
+        backdrop.edgeSize = 1
+        backdrop.edgeFile = "Interface\\Buttons\\WHITE8X8"
+        backdrop.insets.top = 1
+        backdrop.insets.left = 1
+        backdrop.insets.right = 1
+        backdrop.insets.bottom = 1
+        frame.backdrop = backdrop
         frame:SetPoint("TOPLEFT", parent, "TOPRIGHT", 2-x, 0-y)
     else
-        frame.backdrop.edgeSize = 16
-        frame.backdrop.edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border"
-        frame.backdrop.insets.top = 4
-        frame.backdrop.insets.left = 4
-        frame.backdrop.insets.right = 4
-        frame.backdrop.insets.bottom = 4
+        backdrop.edgeSize = 16
+        backdrop.edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border"
+        backdrop.insets.top = 4
+        backdrop.insets.left = 4
+        backdrop.insets.right = 4
+        backdrop.insets.bottom = 4
+        frame.backdrop = backdrop
         frame:SetPoint("TOPLEFT", parent, "TOPRIGHT", 0-x, 0-y)
     end
 end)

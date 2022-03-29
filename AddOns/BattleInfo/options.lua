@@ -46,7 +46,7 @@ ADDONSELF.SetConfig = SetConfig
 
 
 local f = CreateFrame("Frame", nil, UIParent)
-f.name = L["TITLE"]
+f.name = L["BattleInfo"]
 InterfaceOptions_AddCategory(f)
 
 do

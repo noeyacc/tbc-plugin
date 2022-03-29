@@ -22,12 +22,12 @@
 
     <Script file="ForAllIndentsAndPurposes\indent.lua"/>
 
-    <!--@version-retail@
+    <!--@version-retail@-->
     <Include file="LibDualSpec-1.0\LibDualSpec-1.0.lua"/>
-    @end-version-retail@-->
+    <!--@end-version-retail@-->
 
-    <!--@version-bcc@-->
-    <!--@end-version-bcc@-->
+    <!--@version-bcc@
+    @end-version-bcc@-->
 
     <!--@version-classic@
     <Script file="LibClassicCasterino\LibClassicCasterino.lua"/>

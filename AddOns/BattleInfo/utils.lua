@@ -113,8 +113,7 @@ end
 
 --     return data
 -- end
---[[ 註解掉載入訊息
+
 RegEvent("ADDON_LOADED", function()
     ADDONSELF.Print(L["BattleInfo Loaded"])
 end)
---]]

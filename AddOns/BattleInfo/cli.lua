@@ -8,8 +8,8 @@ SlashCmdList["BATTLEINFO"] = function(msg, editbox)
     local cmd, what = msg:match("^(%S*)%s*(%S*)%s*$")
 
     if cmd == "" then
-        InterfaceOptionsFrame_OpenToCategory(L["TITLE"])
-        InterfaceOptionsFrame_OpenToCategory(L["TITLE"])
+        InterfaceOptionsFrame_OpenToCategory(L["BattleInfo"])
+        InterfaceOptionsFrame_OpenToCategory(L["BattleInfo"])
     elseif cmd == "fontsize" then
         local size = tonumber(what) or 0
         if size then

@@ -1,5 +1,5 @@
 ﻿----------------------------------------------------------------------
--- 	Leatrix Plus 2.5.95 (23rd March 2022)
+-- 	Leatrix Plus 2.5.96 (25th March 2022)
 ----------------------------------------------------------------------
 
 --	01:Functions	20:Live			50:RunOnce		70:Logout			
@@ -20,7 +20,7 @@
 	local void
 
 	-- Version
-	LeaPlusLC["AddonVer"] = "2.5.95"
+	LeaPlusLC["AddonVer"] = "2.5.96"
 
 	-- Get locale table
 	local void, Leatrix_Plus = ...
@@ -5557,6 +5557,9 @@
 				regions[4]:Hide()
 				regions[5]:Hide()
 
+				-- Hide horizonal bar in recipe list
+				regions[8]:Hide()
+
 				-- Move create button row
 				_G["TradeSkillCreateButton"]:ClearAllPoints()
 				_G["TradeSkillCreateButton"]:SetPoint("RIGHT", _G["TradeSkillCancelButton"], "LEFT", -1, 0)
@@ -5576,6 +5579,20 @@
 				TradeSkillInvSlotDropDown:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 510, -40)
 				TradeSkillSubClassDropDown:ClearAllPoints()
 				TradeSkillSubClassDropDown:SetPoint("RIGHT", TradeSkillInvSlotDropDown, "LEFT", 0, 0)
+
+				-- Move search box below rank frame
+				TradeSearchInputBox:ClearAllPoints()
+				TradeSearchInputBox:SetPoint("TOPRIGHT", TradeSkillRankFrame, "BOTTOMRIGHT", 0, 1)
+				TradeSearchInputBox:SetFrameLevel(3)
+
+				-- Move have materials checkbox down slightly
+				TradeSkillFrameAvailableFilterCheckButton:ClearAllPoints()
+				TradeSkillFrameAvailableFilterCheckButton:SetPoint("TOPLEFT", TradeSkillFrame, "TOPLEFT", 70, -53)
+
+				-- Ensure have materials checkbox doesn't overlap search box
+				TradeSkillFrameAvailableFilterCheckButtonText:SetWidth(110)
+				TradeSkillFrameAvailableFilterCheckButtonText:SetWordWrap(false)
+				TradeSkillFrameAvailableFilterCheckButtonText:SetJustifyH("LEFT")
 
 				-- ElvUI fixes
 				local function ElvUIFixes()

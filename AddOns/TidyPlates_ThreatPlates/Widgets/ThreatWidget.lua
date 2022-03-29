@@ -15,15 +15,15 @@ local tostring = tostring
 local string_format = string.format
 
 -- WoW APIs
-local UnitIsUnit, UnitDetailedThreatSituation = UnitIsUnit, UnitDetailedThreatSituation
+local UnitIsUnit, UnitDetailedThreatSituation, UnitName, UnitClass = UnitIsUnit, UnitDetailedThreatSituation, UnitName, UnitClass
 local GetNamePlateForUnit = C_NamePlate.GetNamePlateForUnit
 local GetRaidTargetIndex = GetRaidTargetIndex
+local IsInGroup, IsInRaid, GetNumGroupMembers, GetNumSubgroupMembers = IsInGroup, IsInRaid, GetNumGroupMembers, GetNumSubgroupMembers
 
 -- ThreatPlates APIs
-local TidyPlatesThreat = TidyPlatesThreat
 local GetThreatSituation = Addon.GetThreatSituation
-local PlatesByGUID = Addon.PlatesByGUID
 local Font = Addon.Font
+local TransliterateCyrillicLetters = Addon.TransliterateCyrillicLetters
 
 local _G =_G
 -- Global vars/functions that we don't upvalue since they might get hooked, or upgraded
@@ -46,7 +46,7 @@ local REVERSE_THREAT_SITUATION = {
 ---------------------------------------------------------------------------------------------------
 -- Cached configuration settings
 ---------------------------------------------------------------------------------------------------
-local Settings, SettingsArt, ThreatColors
+local Settings, SettingsArt, ThreatColors, ThreatDetailsFunction
 
 ---------------------------------------------------------------------------------------------------
 -- Event handling stuff
@@ -96,7 +96,7 @@ function Widget:Create(tp_frame)
 end
 
 function Widget:IsEnabled()
-  return TidyPlatesThreat.db.profile.threat.art.ON or TidyPlatesThreat.db.profile.threatWidget.ThreatPercentage.Show
+  return Addon.db.profile.threat.art.ON or Addon.db.profile.threatWidget.ThreatPercentage.Show
 end
 
 function Widget:OnEnable()
@@ -109,13 +109,12 @@ function Widget:OnDisable()
   self:UnregisterEvent("RAID_TARGET_UPDATE")
 end
 
-
 function Widget:EnabledForStyle(style, unit)
   return not (unit.type == "PLAYER" or style == "NameOnly" or style == "NameOnly-Unique" or style == "etotem")
 end
 
 function Widget:OnUnitAdded(widget_frame, unit)
-  local db = TidyPlatesThreat.db.profile.threat.art
+  local db = Addon.db.profile.threat.art
 
   if db.theme == "bar" then
     widget_frame.LeftTexture:ClearAllPoints()
@@ -137,8 +136,193 @@ function Widget:OnUnitAdded(widget_frame, unit)
   self:UpdateFrame(widget_frame, unit)
 end
 
+---------------------------------------------------------------------------------------------------
+-- Threat value calculation
+---------------------------------------------------------------------------------------------------
+
+local function GetUnitThreatValue(unitid, mob_unitid)
+  local is_tanking, status, scaled_percentage, _, threat_value = UnitDetailedThreatSituation(unitid, mob_unitid)
+  return is_tanking, status, threat_value
+end
+
+local function GetUnitThreatPercentage(unitid, mob_unitid)
+  local is_tanking, status, scaled_percentage, _, threat_value = UnitDetailedThreatSituation(unitid, mob_unitid)
+  return is_tanking, status, scaled_percentage
+end
+
+-- If player is tanking, this function will return the unit and its threat value that is second on the threat table
+-- If the player is not tanking, this funktion will return the tanking unit and its threat value
+local function GetTopThreatUnitBesidesPlayer(unitid, threat_value_func)
+  local top_unitid
+  local top_threat_value = 0
+
+  local group_type = (IsInRaid() and "raid") or "party"
+  local num_group_members = (group_type == "raid" and GetNumGroupMembers()) or GetNumSubgroupMembers()
+  for i = 1, num_group_members do
+    local index_str = tostring(i)
+    local group_unit_id = group_type .. index_str
+   
+    -- Only compare player's threat values to other group memebers, not to the player itself (in raid with GetNumGroupMembers)
+    local _, group_unit_threat_value
+    if not UnitIsUnit("player", group_unit_id) then
+      _, _, group_unit_threat_value = threat_value_func(group_unit_id, unitid)
+      if group_unit_threat_value and group_unit_threat_value > top_threat_value then
+        top_threat_value = group_unit_threat_value
+        top_unitid = group_unit_id
+      end
+    end
+
+    group_unit_id = group_type .."pet" .. index_str
+    _, _, group_unit_threat_value = threat_value_func(group_unit_id, unitid)
+    if group_unit_threat_value and group_unit_threat_value > top_threat_value then
+      top_threat_value = group_unit_threat_value
+      top_unitid = group_unit_id
+    end
+  end
+
+  local top_threat_unit_name = ""
+  if top_unitid and ShowSecondPlayersName then
+    top_threat_unit_name = TransliterateCyrillicLetters(UnitName(top_unitid)) .. ": "
+  end
+
+  return top_unitid, top_threat_value, top_threat_unit_name
+end
+
+local function GetTankThreatPercentage(unitid, db_threat_value)
+  if not IsInGroup() then return nil, nil end
+
+  local is_tanking, status, scaled_percentage, _, _ = UnitDetailedThreatSituation("player", unitid)
+  if status == nil then return nil, nil end
+
+  local threat_value_text = ""
+  local threat_value_delta = 0
+
+  if is_tanking then
+    -- Tanking, so show difference to the 2nd player on the threat table, like: -50%
+    local other_unitid, other_threat_value, other_threat_unit_name = GetTopThreatUnitBesidesPlayer(unitid, GetUnitThreatPercentage)
+    if other_unitid then
+      threat_value_delta = other_threat_value - scaled_percentage
+      threat_value_text = other_threat_unit_name
+    end
+
+    -- If tanking, but other player has higher threat then add a "+"
+    if threat_value_delta > 0 then
+      threat_value_text = threat_value_text .. "+"
+    end
+  else
+    -- Not tanking, so show own scaled percentage, like: 20% threat towards the currently tanking unit
+    threat_value_delta = scaled_percentage
+  end
+
+  threat_value_text = threat_value_text .. string_format("%.0f%%", threat_value_delta)
+
+  return status, threat_value_text
+end
+
+local function GetTankThreatValue(unitid, db_threat_value)
+  if not IsInGroup() then return nil, nil end
+
+  local is_tanking, status, scaled_percentage, _, threat_value = UnitDetailedThreatSituation("player", unitid)
+  if status == nil then return nil, nil end
+
+  local threat_value_text = ""
+  local threat_value_delta = 0
+
+  -- Tanking: - second
+  if is_tanking then
+    -- Tanking, so show difference to the 2nd player on the threat table, like: -1.5k
+    local other_unitid, other_threat_value, other_threat_unit_name = GetTopThreatUnitBesidesPlayer(unitid, GetUnitThreatValue)
+    if other_unitid then
+      threat_value_delta = other_threat_value - threat_value
+      threat_value_text = other_threat_unit_name
+    end
+
+    -- If tanking, but other player has higher threat then add a "+"
+    if threat_value_delta > 0 then
+      threat_value_text = threat_value_text .. "+"
+    end
+  else
+    -- Not tanking, so show own threat value, like: 1.4k threat towards the currently tanking unit
+    -- threat_value_delta = threat_value
+    -- Formula from ShafferZee: https://github.com/Backupiseasy/ThreatPlates/issues/285
+    if scaled_percentage ~= 0 then
+      threat_value_delta = threat_value - threat_value / (scaled_percentage / 100)
+    end
+  end
+
+  threat_value_text = threat_value_text .. Addon.Truncate(threat_value_delta)
+
+  return status, threat_value_text
+end
+
+local function GetThreatDelta(unitid, threat_value_func)
+  local is_tanking, status, threat_value = threat_value_func("player", unitid)
+
+  local threat_value_text = ""
+  local threat_value_delta = 0
+
+  if IsInGroup() then
+    -- If player is tanking, other unit will be the unit and its threat value that is second on the threat table
+    -- If the player is not tanking, other unit will be the tanking unit and its threat value
+    local other_unitid, other_threat_value, other_threat_unit_name = GetTopThreatUnitBesidesPlayer(unitid, threat_value_func)
+
+    if other_unitid then
+      threat_value_delta = other_threat_value - threat_value
+      threat_value_text = other_threat_unit_name
+    end
+
+    -- If player is tanking, delta is already < 0 and arithmetic sign is already -.
+    -- If the player is not tanking, detal is > 0 and we add the arithmetic sign +.
+    -- No arithmetic sign means that the player is not in a group and no delta is used.
+    if not is_tanking then
+     threat_value_text = threat_value_text .. "+"
+    end
+  else
+    -- If not in combat, show nothing. Otherwise show the unit's threat value as there are no other units involved 
+    -- in combat for which we can get a threat value
+    if status == nil then return nil, nil end
+
+    threat_value_delta = threat_value 
+  end
+
+  return threat_value_text, threat_value_delta
+end
+
+local function GetThreatValueDelta(unitid, db_threat_value)
+  local threat_value_text, threat_value_delta = GetThreatDelta(unitid, GetUnitThreatValue)
+  return threat_value_delta ~= nil, threat_value_text .. Addon.Truncate(threat_value_delta)
+end
+
+local function GetThreatPercentageDelta(unitid, db_threat_value)
+  local threat_value_text, threat_value_delta = GetThreatDelta(unitid, GetUnitThreatPercentage)
+  return threat_value_delta ~= nil, threat_value_text .. string_format("%.0f%%", threat_value_delta)
+end
+
+local THREAT_DETAILS_FUNTIONS = {
+  SCALED_PERCENTAGE = function(unitid)
+    local _, status, scaled_percentage, _, _ = UnitDetailedThreatSituation("player", unitid)
+    if status == nil then 
+      return nil, nil 
+    else
+      return status, string_format("%.0f%%", scaled_percentage)
+    end
+  end,
+  RAW_PERCENTAGE = function(unitid)
+    local _, status, _, raw_percentage, _ = UnitDetailedThreatSituation("player", unitid)
+    if status == nil then 
+      return nil, nil 
+    else
+      return status, string_format("%.0f%%", raw_percentage)
+    end
+  end,
+  TANK_PERCENTAGE = GetTankThreatPercentage,
+  TANK_VALUE = GetTankThreatValue,
+  THREAT_VALUE_DELTA = GetThreatValueDelta,
+  THREAT_PERCENTAGE_DELTA = GetThreatPercentageDelta,
+}
+
 function Widget:UpdateFrame(widget_frame, unit)
-  local db = TidyPlatesThreat.db.profile.threat
+  local db = Addon.db.profile.threat
 
   if not Addon:ShowThreatFeedback(unit) then
     widget_frame:Hide()
@@ -152,8 +336,7 @@ function Widget:UpdateFrame(widget_frame, unit)
     return
   end
 
-  local width, height = widget_frame:GetSize()
-  widget_frame.Percentage:SetSize(width, height)
+  widget_frame.Percentage:SetHeight(widget_frame:GetHeight())
 
   -- As the widget is enabled, textures or percentages must be enabled.
   local style = (Addon:PlayerRoleIsTank() and "tank") or "dps"
@@ -183,11 +366,12 @@ function Widget:UpdateFrame(widget_frame, unit)
     widget_frame.RightTexture:Hide()
   end
 
-  if Settings.ThreatPercentage.Show then
-    local _, _, scaledPercentage, _, _ = UnitDetailedThreatSituation("player", unit.unitid)
-    if scaledPercentage then
-      widget_frame.Percentage:SetText(string_format("%.0f%%", scaledPercentage))
-
+  local db_threat_value = Settings.ThreatPercentage
+  if db_threat_value.Show and (not db_threat_value.OnlyInGroups or IsInGroup()) then
+    local status, percentage_text = ThreatDetailsFunction(unit.unitid, db_threat_value)
+    if status ~= nil then
+      widget_frame.Percentage:SetText(percentage_text)
+  
       local color
       if Settings.ThreatPercentage.UseThreatColor then
         color = ThreatColors[style].threatcolor[threat_situation]
@@ -215,7 +399,11 @@ function Widget:UpdateLayout(widget_frame)
 end
 
 function Widget:UpdateSettings()
-  Settings = TidyPlatesThreat.db.profile.threatWidget
-  SettingsArt = TidyPlatesThreat.db.profile.threat.art
-  ThreatColors = TidyPlatesThreat.db.profile.settings
+  Settings = Addon.db.profile.threatWidget
+  SettingsArt = Addon.db.profile.threat.art
+  ThreatColors = Addon.db.profile.settings
+
+  ShowSecondPlayersName = Settings.ThreatPercentage.SecondPlayersName
+
+  ThreatDetailsFunction = THREAT_DETAILS_FUNTIONS[Settings.ThreatPercentage.Type]
 end
