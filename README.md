@@ -1,6 +1,6 @@
 ## 魔獸世界燃燒經典版(TBC)插件整合
 
-以彩虹UI整合包為基礎並新增/刪除插件，調整成個人較為常用的插件整合包。
+以彩虹 UI 整合包為基礎並新增/刪除插件，調整成個人較為常用的插件整合包。
 
 ---
 
@@ -41,9 +41,9 @@
 
 #### 團隊副本
 
-- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.30
+- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.33
 - 巫毒團隊框架 [VuhDo](https://www.curseforge.com/wow/addons/vuhdo) v3.132-tbcc
-- Nova世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.24
+- Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.24
 - 行事曆和副本進度 [ala’s Calendar](https://www.curseforge.com/wow/addons/alacalendar) v205r.220325b
 - 金團帳本 [RaidLedger](https://www.curseforge.com/wow/addons/raidledger) v1.9.5-v2.5.2
 - Nova 副本進度追蹤 [NovaInstanceTracker](https://www.curseforge.com/wow/addons/nova-instance-tracker) v1.22
@@ -61,7 +61,7 @@
 - 斷法通報 [Simple Interrupt Announce](https://www.curseforge.com/wow/addons/sia) v1.0.1
 - 嘲諷通報 [Simple Taunt Announce](https://www.curseforge.com/wow/addons/sta) 1.0.1
 - 德魯伊法力條 [Druid Bar Classic](https://www.curseforge.com/wow/addons/druid-bar-classic) v0.7.11
-- 5秒回魔監控 [FiveSecondRule](https://www.curseforge.com/wow/addons/fivesecondrule) v1.29
+- 5 秒回魔監控 [FiveSecondRule](https://www.curseforge.com/wow/addons/fivesecondrule) v1.29
 
 #### 戰鬥相關
 
@@ -93,7 +93,7 @@
 #### 物品裝備
 
 - 分類整合背包 [Combuctor](https://www.curseforge.com/wow/addons/combuctor) v9.1.4
-- 檢視銀行 BagBrother(含在Combuctor裡面)
+- 檢視銀行 BagBrother(含在 Combuctor 裡面)
 - 副本戰利品查詢 [AtlasLoot Classic](https://www.curseforge.com/wow/addons/atlaslootclassic) v2.4.1-bcc
 - 裝備屬性比較 [Pawn](https://www.curseforge.com/wow/addons/pawn) v2.5.34
 - 裝備管理員 [Wardrobe](https://www.curseforge.com/wow/addons/wardrobe-tbc) v1.0.10a-bcc

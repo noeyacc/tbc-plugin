@@ -2169,6 +2169,9 @@ function QuestieTBCQuestFixes:Load()
         [11162] = {
             [questKeys.extraObjectives] = {{nil, ICON_TYPE_EVENT, "Plant the Stonemaul Banner", 0, {{"object", 186336}}}},
         },
+        [11164] = {
+            [questKeys.preQuestSingle] = {11132},
+        },
         [11169] = {
             [questKeys.objectives] = {nil,nil,nil,nil,{{4344,4345},4344,"Totem Tests Performed"}},
         },
@@ -2181,6 +2184,9 @@ function QuestieTBCQuestFixes:Load()
         },
         [11177] = {
             [questKeys.nextQuestInChain] = 1218,
+        },
+        [11178] = {
+            [questKeys.startedBy] = {{23863},nil,{33102,},},
         },
         [11180] = {
             [questKeys.extraObjectives] = {{nil, ICON_TYPE_SLAY, "Information Gathered", 0, {{"monster", 23554},{"monster", 23555}}}},
