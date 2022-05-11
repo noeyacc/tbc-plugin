@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Brutallus", "DBM-Sunwell")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20210813015935")
+mod:SetRevision("20220511043833")
 mod:SetCreatureID(24882)
 mod:SetEncounterID(725, 2489)
 mod:DisableESCombatDetection()--ES fires for the RP event that has nothing to do with engaging boss
@@ -22,11 +22,12 @@ mod:RegisterEventsInCombat(
 )
 
 local warnMeteor		= mod:NewSpellAnnounce(45150, 3)
-local warnBurn			= mod:NewTargetAnnounce(46394, 3, nil, false, 2)
-local warnStomp			= mod:NewTargetAnnounce(45185, 3, nil, "Tank", 2)
+local warnBurn			= mod:NewTargetNoFilterAnnounce(46394, 3, nil, false, 2)--Off by default since it's spammy if handled wrong
+local warnStomp			= mod:NewTargetNoFilterAnnounce(45185, 3, nil, "Tank", 2)
 
 local specWarnMeteor	= mod:NewSpecialWarningStack(45150, nil, 4, nil, nil, 1, 6)
 local specWarnBurn		= mod:NewSpecialWarningYou(46394, nil, nil, nil, 1, 2)
+local yellBurnFades		= mod:NewShortFadesYell(46394)
 
 local timerMeteorCD		= mod:NewCDTimer(12, 45150, nil, nil, nil, 3)
 local timerStompCD		= mod:NewCDTimer(31, 45185, nil, nil, nil, 2)
@@ -79,6 +80,7 @@ function mod:SPELL_AURA_APPLIED(args)
 		if args:IsPlayer() then
 			specWarnBurn:Show()
 			specWarnBurn:Play("targetyou")
+			yellBurnFades:Countdown(60)
 		end
 		if self.Options.RangeFrame then
 			if DBM:UnitDebuff("player", args.spellName) then--You have debuff, show everyone
@@ -102,6 +104,9 @@ mod.SPELL_AURA_APPLIED_DOSE = mod.SPELL_AURA_APPLIED
 
 function mod:SPELL_AURA_REMOVED(args)
 	if args.spellId == 46394 then
+		if args:IsPlayer() then
+			yellBurnFades:Cancel()
+		end
 		if self.Options.BurnIcon then
 			self:SetIcon(args.destName, 0)
 		end

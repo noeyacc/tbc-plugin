@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Kil", "DBM-Sunwell")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220116041726")
+mod:SetRevision("20220511043833")
 mod:SetCreatureID(25315)
 mod:SetEncounterID(729, 2493)
 mod:SetModelID(23200)
@@ -17,7 +17,7 @@ mod:RegisterEventsInCombat(
 	"CHAT_MSG_MONSTER_YELL"
 )
 
-local warnBloom			= mod:NewTargetAnnounce(45641, 2)
+local warnBloom			= mod:NewTargetNoFilterAnnounce(45641, 2)
 local warnDarkOrb		= mod:NewAnnounce("WarnDarkOrb", 4, 45109)
 local warnDart			= mod:NewSpellAnnounce(45740, 3)
 local warnShield		= mod:NewSpellAnnounce(45848, 1)
@@ -41,8 +41,8 @@ local timerBlueOrb		= mod:NewTimer(37, "TimerBlueOrb", 45109, nil, nil, 5)
 
 local berserkTimer		= mod:NewBerserkTimer(900)
 
-mod:AddBoolOption("BloomIcon", true)
-mod:AddBoolOption("RangeFrame", true)
+mod:AddSetIconOption("BloomIcon", 45641, true, false, {4, 5, 6, 7, 8})
+mod:AddRangeFrameOption(10, 45641)
 
 local warnBloomTargets = {}
 local orbGUIDs = {}

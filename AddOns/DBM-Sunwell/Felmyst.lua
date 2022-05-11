@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Felmyst", "DBM-Sunwell")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220116041726")
+mod:SetRevision("20220511043833")
 mod:SetCreatureID(25038)
 mod:SetEncounterID(726, 2490)
 mod:SetModelID(22838)
@@ -38,8 +38,8 @@ local timerPhase			= mod:NewTimer(60, "TimerPhase", 31550, nil, nil, 6)
 
 local berserkTimer			= mod:NewBerserkTimer(600)
 
-mod:AddBoolOption("EncapsIcon", true)
-mod:AddBoolOption("VaporIcon", true)
+mod:AddSetIconOption("EncapsIcon", 45665, true, false, {7})
+mod:AddSetIconOption("VaporIcon", 45402, true, false, {8})
 
 mod.vb.breathCounter = 0
 
