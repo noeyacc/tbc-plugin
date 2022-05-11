@@ -362,6 +362,30 @@ local genericsLocales = {
         ["zhTW"] = "聲望",
         ["zhCN"] = "声望",
     },
+    ["Group"] = {
+        ["ptBR"] = "Grupo",
+        ["ruRU"] = "Группа",
+        ["deDE"] = "Gruppe",
+        ["koKR"] = nil,
+        ["esMX"] = "Grupo",
+        ["enUS"] = true,
+        ["zhCN"] = nil,
+        ["zhTW"] = nil,
+        ["esES"] = "Grupo",
+        ["frFR"] = "Groupe",
+    },
+    ["Raid"] = {
+        ["ptBR"] = "Raide",
+        ["ruRU"] = "Рейд",
+        ["deDE"] = "Schlachtzug",
+        ["koKR"] = nil,
+        ["esMX"] = "Banda",
+        ["enUS"] = true,
+        ["zhCN"] = nil,
+        ["zhTW"] = nil,
+        ["esES"] = "Banda",
+        ["frFR"] = "Raid",
+    },
 }
 
 for k, v in pairs(genericsLocales) do

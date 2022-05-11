@@ -67,7 +67,7 @@
 
 - MSBT 捲動戰鬥文字 [Mik’s Scrolling Battle Text](https://www.curseforge.com/wow/addons/mik-scrolling-battle-text) v5.7.152
 - 戰鬥統計 [Details](https://www.curseforge.com/wow/addons/details) v145
-- 仇恨統計 [ThreatClassic2](https://www.curseforge.com/wow/addons/threatclassic2) v2.43
+- 仇恨統計 [ThreatClassic2](https://www.curseforge.com/wow/addons/threatclassic2) v2.44
 - 施法條增強 [Quartz](https://www.curseforge.com/wow/addons/quartz) v3.6.9
 - 威力血條 [TidyPlates_ThreatPlates](https://wow.curseforge.com/projects/tidy-plates-threat-plates) v10.3.4
 - 血條浮動戰鬥文字 [Nameplate Scrolling Combat Text(NameplateSCT)](https://www.curseforge.com/wow/addons/nameplate-scrolling-combat-text) v1.9
@@ -111,7 +111,7 @@
 - 性感小地圖 [Sexy Map](https://www.curseforge.com/wow/addons/sexymap) v6-bcc+
 - 小地圖按鈕選單 [HidingBar](https://www.curseforge.com/wow/addons/hidingbar) v2.5.23
 - 小地圖按鈕選單 [MBB](https://www.curseforge.com/wow/addons/mbb-classic) v1.2.1
-- 任務清單 [Questie](https://www.curseforge.com/wow/addons/questie) v6.9.0
+- 任務清單 [Questie](https://www.curseforge.com/wow/addons/questie) v6.10.1
 - 稀有怪獸與牠們的產地 [SilverDragon](https://www.curseforge.com/wow/addons/silver-dragon) v20501.0
 <!-- - 導航箭頭 TomTom -->
 
