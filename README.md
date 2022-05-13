@@ -43,8 +43,8 @@
 
 - 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.35
 - 巫毒團隊框架 [VuhDo](https://www.curseforge.com/wow/addons/vuhdo) v3.134-tbcc
-- Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.24
-- 行事曆和副本進度 [ala’s Calendar](https://www.curseforge.com/wow/addons/alacalendar) v205r.220325b
+- Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.27
+- 行事曆和副本進度 [ala’s Calendar](https://www.curseforge.com/wow/addons/alacalendar) v205r.220511
 - 金團帳本 [RaidLedger](https://www.curseforge.com/wow/addons/raidledger) v1.9.5-v2.5.2
 - Nova 副本進度追蹤 [NovaInstanceTracker](https://www.curseforge.com/wow/addons/nova-instance-tracker) v1.22
 - MRT 合併 ExRT 舊資料 [MRT](https://www.curseforge.com/wow/addons/method-raid-tools) v4610
