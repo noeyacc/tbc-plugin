@@ -4536,6 +4536,51 @@ function SlashCmdList.NOVALUAOFFCMD(msg, editBox)
 	end
 end
 
+SLASH_NOVAPVPDAILYCMD1, SLASH_NOVAPVPDAILYCMD2 = '/pvpdailies', '/pvpdaily';
+function SlashCmdList.NOVAPVPDAILYCMD(msg, editBox)
+	NWB:print("PvP Daily Status:", nil, "[NWB]")
+	local completedString;
+	if (NWB.faction == "Horde") then
+		if (C_QuestLog.IsQuestFlaggedCompleted(10110)) then
+			completedString = "|cFF00C800Completed|r";
+		else
+			completedString = "|cFFFF2222Not Completed|r";
+		end
+		print("|cFF9CD6DEHellfire Towers: " .. completedString .. ".");
+		if (C_QuestLog.IsQuestFlaggedCompleted(11506)) then
+			completedString = "|cFF00C800Completed|r";
+		else
+			completedString = "|cFFFF2222Not Completed|r";
+		end
+		print("|cFF9CD6DETerokkar Towers: " .. completedString .. ".");
+		if (C_QuestLog.IsQuestFlaggedCompleted(11503)) then
+			completedString = "|cFF00C800Completed|r";
+		else
+			completedString = "|cFFFF2222Not Completed|r";
+		end
+		print("|cFF9CD6DENagrand Halaa: " .. completedString .. ".");
+	else
+		if (C_QuestLog.IsQuestFlaggedCompleted(10106)) then
+			completedString = "|cFF00C800Completed|r";
+		else
+			completedString = "|cFFFF2222Not Completed|r";
+		end
+		print("|cFF9CD6DEHellfire Towers: " .. completedString .. ".");
+		if (C_QuestLog.IsQuestFlaggedCompleted(11505)) then
+			completedString = "|cFF00C800Completed|r";
+		else
+			completedString = "|cFFFF2222Not Completed|r";
+		end
+		print("|cFF9CD6DETerokkar Towers: " .. completedString .. ".");
+		if (C_QuestLog.IsQuestFlaggedCompleted(11502)) then
+			completedString = "|cFF00C800Completed|r";
+		else
+			completedString = "|cFFFF2222Not Completed|r";
+		end
+		print("|cFF9CD6DENagrand Halaa: " .. completedString .. ".");
+	end
+end
+
 function NWB:debug(...)
 	local data = ...;
 	if (data and NWB.isDebug) then
@@ -5016,6 +5061,54 @@ function NWB:updateMinimapButton(tooltip, usingPanel)
 			else
 				tooltip:AddLine(NWB.chatColor .."|cFFFF6900Daily|r |cFF9CD6DE(|r" .. texture .. "|cFF9CD6DE)|r Unknown.");
 			end
+			local completedQuests = {};
+			if (NWB.faction == "Horde") then
+				if (C_QuestLog.IsQuestFlaggedCompleted(10110)) then
+					table.insert(completedQuests, "|cFF9CD6DE" .. L["Hellfire Towers"] .. ": |cFF00C800Completed|r" .. ".");
+				end
+				if (C_QuestLog.IsQuestFlaggedCompleted(11506)) then
+					table.insert(completedQuests, "|cFF9CD6DE" .. L["Terokkar Towers"] .. ": |cFF00C800Completed|r" .. ".");
+				end
+				if (C_QuestLog.IsQuestFlaggedCompleted(11503)) then
+					table.insert(completedQuests, "|cFF9CD6DE" .. L["Nagrand Halaa"] .. ":  |cFF00C800Completed|r" .. ".");
+				end
+			else
+				if (C_QuestLog.IsQuestFlaggedCompleted(10106)) then
+					table.insert(completedQuests, "|cFF9CD6DE" .. L["Hellfire Towers"] .. ": |cFF00C800Completed|r" .. ".");
+				end
+				if (C_QuestLog.IsQuestFlaggedCompleted(11505)) then
+					table.insert(completedQuests, "|cFF9CD6DE" .. L["Terokkar Towers"] .. ": |cFF00C800Completed|r" .. ".");
+				end
+				if (C_QuestLog.IsQuestFlaggedCompleted(11502)) then
+					table.insert(completedQuests, "|cFF9CD6DE" .. L["Nagrand Halaa"] .. ":  |cFF00C800Completed|r" .. ".");
+				end
+			end
+			if (next(completedQuests)) then
+				tooltip:AddLine(" ");
+				if (not tooltip.NWBSeparator2) then
+				    tooltip.NWBSeparator2 = tooltip:CreateTexture(nil, "BORDER");
+				    tooltip.NWBSeparator2:SetColorTexture(0.6, 0.6, 0.6, 0.85);
+				    tooltip.NWBSeparator2:SetHeight(0.9);
+				    tooltip.NWBSeparator2:SetPoint("LEFT", 10, 0);
+				    tooltip.NWBSeparator2:SetPoint("RIGHT", -10, 0);
+				end
+				tooltip.NWBSeparator2:SetPoint("TOP", _G[tooltip:GetName() .. "TextLeft" .. tooltip:NumLines()], "CENTER");
+				tooltip.NWBSeparator2:Show();
+				tooltip:AddLine("Completed PvP dailies:");
+				for k, v in ipairs(completedQuests) do
+					tooltip:AddLine(v);
+				end
+				tooltip:AddLine(" ");
+				if (not tooltip.NWBSeparator3) then
+				    tooltip.NWBSeparator3 = tooltip:CreateTexture(nil, "BORDER");
+				    tooltip.NWBSeparator3:SetColorTexture(0.6, 0.6, 0.6, 0.85);
+				    tooltip.NWBSeparator3:SetHeight(0.9);
+				    tooltip.NWBSeparator3:SetPoint("LEFT", 10, 0);
+				    tooltip.NWBSeparator3:SetPoint("RIGHT", -10, 0);
+				end
+				tooltip.NWBSeparator3:SetPoint("TOP", _G[tooltip:GetName() .. "TextLeft" .. tooltip:NumLines()], "CENTER");
+				tooltip.NWBSeparator3:Show();
+			end
 		end
 		tooltip:AddLine("|cFF9CD6DELeft-Click|r Timers");
 		tooltip:AddLine("|cFF9CD6DERight-Click|r Buffs");
@@ -5030,6 +5123,12 @@ function NWB:updateMinimapButton(tooltip, usingPanel)
 	else
 		if (tooltip.NWBSeparator) then
 			tooltip.NWBSeparator:Hide();
+		end
+		if (tooltip.NWBSeparator2) then
+			tooltip.NWBSeparator2:Hide();
+		end
+		if (tooltip.NWBSeparator3) then
+			tooltip.NWBSeparator3:Hide();
 		end
 	end
 end
@@ -9817,6 +9916,36 @@ function NWB:recalclayerFrame(isLogon, copyPaste)
 		else
 			text = text .. "\n" .. NWB.chatColor .."|cFFFF6900Daily|r |cFF9CD6DE(|r" .. texture .. "|cFF9CD6DE)|r Unknown.";
 		end
+		local completedQuests = {};
+		if (NWB.faction == "Horde") then
+			if (C_QuestLog.IsQuestFlaggedCompleted(10110)) then
+				table.insert(completedQuests, "|cFF9CD6DE" .. L["Hellfire Towers"] .. ": |cFF00C800Completed|r" .. ".");
+			end
+			if (C_QuestLog.IsQuestFlaggedCompleted(11506)) then
+				table.insert(completedQuests, "|cFF9CD6DE" .. L["Terokkar Towers"] .. ": |cFF00C800Completed|r" .. ".");
+			end
+			if (C_QuestLog.IsQuestFlaggedCompleted(11503)) then
+				table.insert(completedQuests, "|cFF9CD6DE" .. L["Nagrand Halaa"] .. ":  |cFF00C800Completed|r" .. ".");
+			end
+		else
+			if (C_QuestLog.IsQuestFlaggedCompleted(10106)) then
+				table.insert(completedQuests, "|cFF9CD6DE" .. L["Hellfire Towers"] .. ": |cFF00C800Completed|r" .. ".");
+			end
+			if (C_QuestLog.IsQuestFlaggedCompleted(11505)) then
+				table.insert(completedQuests, "|cFF9CD6DE" .. L["Terokkar Towers"] .. ": |cFF00C800Completed|r" .. ".");
+			end
+			if (C_QuestLog.IsQuestFlaggedCompleted(11502)) then
+				table.insert(completedQuests, "|cFF9CD6DE" .. L["Nagrand Halaa"] .. ":  |cFF00C800Completed|r" .. ".");
+			end
+		end
+		text = text .. "\n\n" .. NWB.chatColor .. L["Completed PvP dailies"] .. ":|r";
+		if (next(completedQuests)) then
+			for k, v in ipairs(completedQuests) do
+				text = text .. "\n" .. v;
+			end
+		else
+			text = text .. "\n|cFF9CD6DENone.|r";
+		end
 	end
 	if (copyPaste) then
 		--Remove newline chars from start and end of string.
@@ -10019,6 +10148,11 @@ function NWB:setCurrentLayerText(unit)
 		return;
 	end
 	--NWB:debug("Layer:", GUID);
+	if (zone == 1952) then
+		--This is for strict layer checks while recording terokkar tower timers.
+		NWB.lastTerokNPCID = npcID;
+	end
+	--This only works in capital cities past this point.
 	if (NWB.faction == "Horde" and (zone ~= 1454 or not npcID)) then
 		NWBlayerFrame.fs2:SetText("|cFF9CD6DE" .. string.format(L["layerMsg4"], "Orgrimmar") .. "|r");
 		return;
@@ -10317,7 +10451,7 @@ function NWB:mapCurrentLayer(unit)
 			end
 			local halt;
 			if (NWB.isTBC) then
-				if (NWB.realm == "Faerlina" or NWB.realm == "Firemaw" or NWB.realm == "Benediction") then
+				if (NWB.realm == "Faerlina" or NWB.realm == "Firemaw" or NWB.realm == "Benediction" or NWB.realm == "Gehennas") then
 					local layerOffset = NWB:getLayerOffset(NWB.lastKnownLayerMapID, nil, zoneID);
 					if (layerOffset and layerOffset > 150) then
 						halt = true;
@@ -10613,11 +10747,11 @@ function NWB:resetLayerData()
 		NWB.data.tbcPDT = nil;
 		NWB.db.global.resetDailyData = false;
 	end
-	if (NWB.db.global.resetLayers8) then
+	if (NWB.db.global.resetLayers9) then
 		NWB:debug("resetting layer data");
 		NWB.data.layers = {};
 		NWB.data.layerMapBackups = {};
-		NWB.db.global.resetLayers8 = false;
+		NWB.db.global.resetLayers9 = false;
 	end
 end
 

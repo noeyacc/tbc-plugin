@@ -41,9 +41,9 @@
 
 #### 團隊副本
 
-- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.35
+- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.36
 - 巫毒團隊框架 [VuhDo](https://www.curseforge.com/wow/addons/vuhdo) v3.134-tbcc
-- Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.27
+- Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.28
 - 行事曆和副本進度 [ala’s Calendar](https://www.curseforge.com/wow/addons/alacalendar) v205r.220511
 - 金團帳本 [RaidLedger](https://www.curseforge.com/wow/addons/raidledger) v1.9.5-v2.5.2
 - Nova 副本進度追蹤 [NovaInstanceTracker](https://www.curseforge.com/wow/addons/nova-instance-tracker) v1.22

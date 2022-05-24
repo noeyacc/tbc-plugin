@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Felmyst", "DBM-Sunwell")
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220511043833")
+mod:SetRevision("20220517051252")
 mod:SetCreatureID(25038)
 mod:SetEncounterID(726, 2490)
 mod:SetModelID(22838)
@@ -18,8 +18,8 @@ mod:RegisterEventsInCombat(
 	"UNIT_SPELLCAST_SUCCEEDED"
 )
 
-local warnEncaps			= mod:NewTargetAnnounce(45665, 4)
-local warnVapor				= mod:NewTargetAnnounce(45402, 3)
+local warnEncaps			= mod:NewTargetNoFilterAnnounce(45665, 4)
+local warnVapor				= mod:NewTargetNoFilterAnnounce(45402, 3)
 local warnPhase				= mod:NewAnnounce("WarnPhase", 1, 31550)
 
 local specWarnGas			= mod:NewSpecialWarningSpell(45855, "Healer", nil, nil, 1, 2)

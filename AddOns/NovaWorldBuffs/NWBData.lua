@@ -181,7 +181,7 @@ function NWB:OnCommReceived(commPrefix, string, distribution, sender)
 			NWB:doNpcWalkingMsg(type, layer, sender);
 		end
 	end
-	if (tonumber(remoteVersion) < 2.27) then
+	if (tonumber(remoteVersion) < 2.28) then
 		if (cmd == "requestData" and distribution == "GUILD") then
 			if (not NWB:getGuildDataStatus()) then
 				NWB:sendSettings("GUILD");
@@ -3268,6 +3268,12 @@ f:RegisterEvent("AREA_POIS_UPDATED");
 f:SetScript('OnEvent', function(self, event, ...)
 	if (event == "PLAYER_ENTERING_WORLD" ) then
 		lastPew = GetServerTime();
+		local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+		if (zone == 1952) then
+			--Make a NPC retarget be required when entering terok to record timers.
+			NWB.lastTerokNPCID = nil;
+			--NWB:debug("entered world terokkar");
+		end
 	elseif (event == "ZONE_CHANGED_NEW_AREA" ) then
 		lastZoneChange = GetServerTime();
 	elseif (event == "UPDATE_UI_WIDGET" ) then
@@ -3293,14 +3299,20 @@ f:SetScript('OnEvent', function(self, event, ...)
 			end
 		end]]
 	elseif (event == "AREA_POIS_UPDATED") then
+		local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
+		if (lastZone ~= 1952 and zone == 1952) then
+			--Make a NPC retarget be required when entering terok to record timers.
+			NWB.lastTerokNPCID = nil;
+			--NWB:debug("entered terokkar");
+		end
 		if (UnitOnTaxi("player")) then
 			lastZone = nil;
 			return;
 		end
-		local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
 		--If we came from terokkar to shat then share data we found, this only sends terokkar timer nothing else.
 		if (lastZone == 1952 and zone == 1955) then
 			C_Timer.After(14, function()
+			
 				local _, _, zone = NWB.dragonLib:GetPlayerZonePosition();
 				if (zone == 1955 and GetServerTime() - lastZoneSend > 120) then
 					NWB:sendData("YELL", nil, nil, true, true, "terokkar");
@@ -3344,8 +3356,13 @@ end
 local firstTerokkarData = true;
 local lastSendData, lastSelfTimestamp = 0, 0;
 local timestampTemp, GetServerTimeTemp, controlTypeTemp, waitingTerok;
+local terokCache;
 function NWB:getTerokkarData()
 	if (not NWB.isTBC) then
+		return;
+	end
+	if (NWB.isLayered and not NWB.lastTerokNPCID) then
+		--NWB:debug("no last terok npc ID");
 		return;
 	end
 	local neutral = C_UIWidgetManager.GetIconAndTextWidgetVisualizationInfo(3097);
@@ -3505,7 +3522,7 @@ function NWB:getTerokkarData()
 					--NWB:debug(timestamp, NWB.data.layers[layer]["terokTowers"], timestamp - NWB.data.layers[layer]["terokTowers"])
 					if (timestamp - NWB.data.layers[layer]["terokTowers"] > -1800) then
 						local halt;
-						if (NWB.realm == "Faerlina" or NWB.realm == "Firemaw" or NWB.realm == "Benediction") then
+						if (NWB.realm == "Faerlina" or NWB.realm == "Firemaw" or NWB.realm == "Benediction" or NWB.realm == "Gehennas") then
 							local layerOffset = NWB:getLayerOffset(layer, 1952);
 							if (layerOffset and layerOffset > 150) then
 								halt = true;
@@ -3519,7 +3536,7 @@ function NWB:getTerokkarData()
 								sendData = true;
 							end
 							--print(NWB.data.layers[layer]["terokTowers"] - GetServerTime(), firstTerokkarData, timestamp - GetServerTime())
-							--NWB:debug("set terokkar timer layered2", timestamp, controlType, GetServerTime());
+							--NWB:debug("set terokkar timer stage reached", timestamp, controlType, GetServerTime());
 							
 							--Slight delay to try counter a bug with the widget updating more than once at the same time and with diff times.
 							--In observations when the widget gives wrong timer it updates 4 times in the same second.
@@ -3532,18 +3549,35 @@ function NWB:getTerokkarData()
 							if (not waitingTerok) then
 								C_Timer.After(2, function()
 									waitingTerok = false
-									NWB.data.layers[layer]["terokTowers"] = timestampTemp;
-									NWB.data.layers[layer]["terokTowersTime"] = GetServerTimeTemp;
-									NWB.data.layers[layer]["terokFaction"] = controlTypeTemp;
-									lastTerokkarUpdate = GetServerTime();
-									if (timestamp - GetServerTime() > 900) then
-										NWB.data.layers[layer]["terokTowers10"] = true;
+									--Aimed at fixing a new thing Blizzard seems to be doing, forcing layer changes in crowded areas with no group joined and no event to tell it happened.
+									--Keep a cache of the last timer and check if it's changed by too much, must be another layer or we left the zone for extended time if it has.
+									if (terokCache and (timestampTemp > terokCache + 100 or timestampTemp < terokCache - 100)) then
+										--NWB:debug("Possible forced layer change in Terokkar Forest.");
+										--No recording until a new mob is targeted.
+										NWB.lastKnownLayerMapID = 0;
+										NWB.lastKnownLayerMapIDBackup = 0;
+										NWB.lastKnownLayerMapID_Mapping = 0;
+										NWB.currentZoneID = 0;
+										NWB.lastTerokNPCID = nil;
+										terokCache = nil;
+									--Make sure a cache exists.
+									--2 updates in a row needed to set a timer.
+									elseif (terokCache) then
+										--NWB:debug("setting terokkar timer layered", timestamp, controlType, GetServerTime());
+										NWB.data.layers[layer]["terokTowers"] = timestampTemp;
+										NWB.data.layers[layer]["terokTowersTime"] = GetServerTimeTemp;
+										NWB.data.layers[layer]["terokFaction"] = controlTypeTemp;
+										lastTerokkarUpdate = GetServerTime();
+										if (timestamp - GetServerTime() > 900) then
+											NWB.data.layers[layer]["terokTowers10"] = true;
+										end
+										if (sendData and GetServerTime() - lastSendData > 175) then
+											lastSendData = GetServerTime();
+											NWB:sendData("YELL", nil, nil, true, true, "terokkar");
+											NWB:sendData("GUILD", nil, nil, true, true, "terokkar");
+										end
 									end
-									if (sendData and GetServerTime() - lastSendData > 175) then
-										lastSendData = GetServerTime();
-										NWB:sendData("YELL", nil, nil, true, true, "terokkar");
-										NWB:sendData("GUILD", nil, nil, true, true, "terokkar");
-									end
+									terokCache = timestampTemp;
 								end)
 							end
 							waitingTerok = true;
@@ -3551,7 +3585,7 @@ function NWB:getTerokkarData()
 					end
 				end
 			else
-				--NWB:debug("set terokkar timer", timestamp);
+				--NWB:debug("setting terokkar timer unlayered", timestamp);
 				local sendData;
 				if (NWB.data["terokTowers"] and NWB.data["terokTowers"] - GetServerTime() < 0 and not firstTerokkarData
 						and timestamp - GetServerTime() > 20700) then
