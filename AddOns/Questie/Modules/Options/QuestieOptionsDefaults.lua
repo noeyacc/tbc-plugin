@@ -57,6 +57,12 @@ function QuestieOptionsDefaults:Load()
             enableTooltipsQuestLevel = true,
             enableMapIcons = true,
             enableMiniMapIcons = true,
+            questieShutUp = false,
+
+            -- TBC Isle of Quel'Danas
+            isleOfQuelDanasPhase = 1,
+            isIsleOfQuelDanasPhaseReminderDisabled = false,
+            --
 
             -- Tracker Settings Tab
             autoTrackQuests = true,
@@ -122,8 +128,10 @@ function QuestieOptionsDefaults:Load()
             autoModifier = "shift",
             acceptTrivial = false,
             questAnnounceChannel = "group",
+            questAnnounceItems = true,
             questAnnounceAccepted = false,
             questAnnounceAbandoned = false,
+            questAnnounceObjectives = true,
             questAnnounceCompleted = false,
             isTrackerExpanded = true,
             hideUnexploredMapIcons = false,

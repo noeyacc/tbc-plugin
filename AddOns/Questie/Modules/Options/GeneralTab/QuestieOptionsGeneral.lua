@@ -3,6 +3,8 @@
 -------------------------
 ---@type QuestieQuest
 local QuestieQuest = QuestieLoader:ImportModule("QuestieQuest");
+---@type IsleOfQuelDanas
+local IsleOfQuelDanas = QuestieLoader:ImportModule("IsleOfQuelDanas");
 ---@type QuestieOptions
 local QuestieOptions = QuestieLoader:ImportModule("QuestieOptions");
 ---@type QuestieOptionsDefaults
@@ -18,8 +20,6 @@ QuestieOptions.tabs.general = {...}
 local optionsDefaults = QuestieOptionsDefaults:Load()
 
 local _GetShortcuts
-local _GetAnnounceChannels
-local _IsAnnounceDisabled
 
 function QuestieOptions.tabs.general:Initialize()
     return {
@@ -247,7 +247,37 @@ function QuestieOptions.tabs.general:Initialize()
                     },
                 },
             },
-            Spacer_A = QuestieOptionsUtils:Spacer(1.22),
+            Spacer_A1 = QuestieOptionsUtils:Spacer(2.1, (not Questie.IsTBC)),
+            isleOfQuelDanasPhase = {
+                type = "select",
+                order = 2.5,
+                width = 1.5,
+                hidden = (not Questie.IsTBC),
+                values = IsleOfQuelDanas.localizedPhaseNames,
+                style = 'dropdown',
+                name = function() return l10n("Isle of Quel'Danas Phase") end,
+                desc = function() return l10n("Select the phase fitting your realm progress on the Isle of Quel'Danas"); end,
+                disabled = function() return (not Questie.IsTBC) end,
+                get = function() return Questie.db.global.isleOfQuelDanasPhase; end,
+                set = function(_, key)
+                    Questie.db.global.isleOfQuelDanasPhase = key
+                    QuestieQuest:SmoothReset()
+                end,
+            },
+            isleOfQuelDanasPhaseReminder = {
+                type = "toggle",
+                order = 2.6,
+                hidden = (not Questie.IsTBC),
+                name = function() return l10n('Disable Phase reminder'); end,
+                desc = function() return l10n("Enable or disable the reminder on login to set the Isle of Quel'Danas phase"); end,
+                disabled = function() return (not Questie.IsTBC) end,
+                width = 1,
+                get = function () return Questie.db.global.isIsleOfQuelDanasPhaseReminderDisabled; end,
+                set = function (_, value)
+                    Questie.db.global.isIsleOfQuelDanasPhaseReminderDisabled = value
+                end,
+            },
+            Spacer_A = QuestieOptionsUtils:Spacer(2.9, (not Questie.IsTBC)),
             minimapButtonEnabled = {
                 type = "toggle",
                 order = 3,
@@ -331,90 +361,6 @@ function QuestieOptions.tabs.general:Initialize()
                 end,
             },
             --Spacer_B = QuestieOptionsUtils:Spacer(1.73),
-            questAnnounceChannel = {
-                type = "select",
-                order = 9,
-                values = _GetAnnounceChannels(),
-                style = 'dropdown',
-                name = function() return l10n('Announce quest updates via chat') end,
-                desc = function() return l10n('Announce quest updates to other players in your group or raid'); end,
-                get = function() return Questie.db.char.questAnnounceChannel; end,
-                set = function(_, key)
-                    Questie.db.char.questAnnounceChannel = key
-                end,
-            },
-            questAnnounceEvents = {
-                type = "group",
-                order = 10,
-                inline = true,
-                name = function() return l10n('Announce quest updates:'); end,
-                args = {
-                    questAnnounceAccepted = {
-                        type = "toggle",
-                        order = 1,
-                        name = function() return l10n('Quest accepted'); end,
-                        desc = function() return l10n('Announce quest acceptance to other players'); end,
-                        width = 1.5,
-                        disabled = function() return _IsAnnounceDisabled(); end,
-                        get = function () return Questie.db.char.questAnnounceAccepted; end,
-                        set = function (_, value)
-                            Questie.db.char.questAnnounceAccepted = value
-                        end,
-                    },
-                    questAnnounceAbandoned = {
-                        type = "toggle",
-                        order = 2,
-                        name = function() return l10n('Quest abandoned'); end,
-                        desc = function() return l10n('Announce quest abortion to other players'); end,
-                        width = 1.5,
-                        disabled = function() return _IsAnnounceDisabled(); end,
-                        get = function () return Questie.db.char.questAnnounceAbandoned; end,
-                        set = function (_, value)
-                            Questie.db.char.questAnnounceAbandoned = value
-                        end,
-                    },
-                    questAnnounceObjectives = {
-                        type = "toggle",
-                        order = 3,
-                        name = function() return l10n('Objective completed'); end,
-                        desc = function() return l10n('Announce completed objectives to other players'); end,
-                        width = 1.5,
-                        disabled = function() return _IsAnnounceDisabled(); end,
-                        get = function () return Questie.db.char.questAnnounceObjectives; end,
-                        set = function (_, value)
-                            Questie.db.char.questAnnounceObjectives = value
-                        end,
-                    },
-                    questAnnounceCompleted = {
-                        type = "toggle",
-                        order = 4,
-                        name = function() return l10n('Quest completed'); end,
-                        desc = function() return l10n('Announce quest completion to other players'); end,
-                        width = 1.5,
-                        disabled = function() return _IsAnnounceDisabled(); end,
-                        get = function () return Questie.db.char.questAnnounceCompleted; end,
-                        set = function (_, value)
-                            Questie.db.char.questAnnounceCompleted = value
-                        end,
-                    },
-                },
-            },
-            Spacer_B = QuestieOptionsUtils:HorizontalSpacer(1.722, 0.5),
-            shareQuestsNearby = {
-                type = "toggle",
-                order = 11,
-                name = function() return l10n('Share quest progress with nearby players'); end,
-                desc = function() return l10n("Your quest progress will be periodically sent to nearby players. Disabling this doesn't affect sharing progress with party members."); end,
-                disabled = function() return false end,
-                width = 1.7,
-                get = function () return not Questie.db.global.disableYellComms end,
-                set = function (info, value)
-                    Questie.db.global.disableYellComms = not value
-                    if not value then
-                        QuestieLoader:ImportModule("QuestieComms"):RemoveAllRemotePlayers()
-                    end
-                end,
-            },
             quest_options = {
                 type = "header",
                 order = 12,
@@ -535,18 +481,4 @@ _GetShortcuts = function()
         ['alt'] = l10n('Alt'),
         ['disabled'] = l10n('Disabled'),
     }
-end
-
-_GetAnnounceChannels = function()
-    return {
-        ['disabled'] = l10n('Disabled'),
-        ['group'] = l10n('Group'),
-        ['raid'] = l10n('Raid'),
-        ['both'] = l10n('Both'),
-    }
-end
-
----@return boolean
-_IsAnnounceDisabled = function()
-    return Questie.db.char.questAnnounceChannel == nil or Questie.db.char.questAnnounceChannel == "disabled";
 end

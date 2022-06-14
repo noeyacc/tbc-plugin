@@ -36,6 +36,8 @@ local QuestieCorrections = QuestieLoader:ImportModule("QuestieCorrections")
 local QuestieMenu = QuestieLoader:ImportModule("QuestieMenu")
 ---@type QuestieQuest
 local QuestieQuest = QuestieLoader:ImportModule("QuestieQuest")
+---@type IsleOfQuelDanas
+local IsleOfQuelDanas = QuestieLoader:ImportModule("IsleOfQuelDanas")
 ---@type QuestieEventHandler
 local QuestieEventHandler = QuestieLoader:ImportModule("QuestieEventHandler")
 ---@type QuestieJourney
@@ -44,6 +46,8 @@ local QuestieJourney = QuestieLoader:ImportModule("QuestieJourney")
 local HBDHooks = QuestieLoader:ImportModule("HBDHooks")
 ---@type ChatFilter
 local ChatFilter = QuestieLoader:ImportModule("ChatFilter")
+---@type QuestieShutUp
+local QuestieShutUp = QuestieLoader:ImportModule("QuestieShutUp")
 ---@type Hooks
 local Hooks = QuestieLoader:ImportModule("Hooks")
 ---@type QuestieValidateGameCache
@@ -69,6 +73,8 @@ QuestieInit.Stages[1] = function() -- run as a coroutine
         l10n:SetUILocale(GetLocale());
     end
 
+    QuestieShutUp:ToggleFilters(Questie.db.global.questieShutUp)
+
     Questie:Debug(Questie.DEBUG_CRITICAL, "[Questie:OnInitialize] Questie addon loaded")
 
     coroutine.yield()
@@ -76,6 +82,8 @@ QuestieInit.Stages[1] = function() -- run as a coroutine
 
     coroutine.yield()
     Migration:Migrate()
+
+    IsleOfQuelDanas.Initialize() -- This has to happen before option init
 
     QuestieProfessions:Init()
 
@@ -180,6 +188,12 @@ QuestieInit.Stages[3] = function() -- run as a coroutine
         end)
     end
 
+    if Questie.IsTBC and (not Questie.db.global.isIsleOfQuelDanasPhaseReminderDisabled) then
+        C_Timer.After(2, function()
+            Questie:Print(l10n("Current active phase of Isle of Quel'Danas is '%s'. Check the General settings to change the phase or disable this message.", IsleOfQuelDanas.localizedPhaseNames[Questie.db.global.isleOfQuelDanasPhase]))
+        end)
+    end
+
     QuestieMenu:OnLogin()
 
     if Questie.db.global.debugEnabled then
@@ -193,9 +207,6 @@ QuestieInit.Stages[3] = function() -- run as a coroutine
         local isPastDailyReset = Questie.db.char.lastDailyRequestResetTime < GetQuestResetTime();
 
         if lastRequestWasYesterday or isPastDailyReset then
-            -- We send empty Reputable events to ask for the current daily quests. Other users of the addon will answer if they have better data.
-            C_ChatInfo.SendAddonMessage("REPUTABLE", "send:1.21-bcc::::::::::", "GUILD");
-            C_ChatInfo.SendAddonMessage("REPUTABLE", "send:1.21-bcc::::::::::", "YELL");
             Questie.db.char.lastDailyRequestDate = date("%d-%m-%y");
             Questie.db.char.lastDailyRequestResetTime = GetQuestResetTime();
         end
