@@ -41,7 +41,7 @@
 
 #### 團隊副本
 
-- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.36
+- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.37
 - 巫毒團隊框架 [VuhDo](https://www.curseforge.com/wow/addons/vuhdo) v3.134-tbcc
 - Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.28
 - 行事曆和副本進度 [ala’s Calendar](https://www.curseforge.com/wow/addons/alacalendar) v205r.220511
@@ -66,7 +66,7 @@
 #### 戰鬥相關
 
 - MSBT 捲動戰鬥文字 [Mik’s Scrolling Battle Text](https://www.curseforge.com/wow/addons/mik-scrolling-battle-text) v5.7.152
-- 戰鬥統計 [Details](https://www.curseforge.com/wow/addons/details) v145
+- 戰鬥統計 [Details](https://www.curseforge.com/wow/addons/details) v146
 - 仇恨統計 [ThreatClassic2](https://www.curseforge.com/wow/addons/threatclassic2) v2.44
 - 施法條增強 [Quartz](https://www.curseforge.com/wow/addons/quartz) v3.6.9
 - 威力血條 [TidyPlates_ThreatPlates](https://wow.curseforge.com/projects/tidy-plates-threat-plates) v10.3.4

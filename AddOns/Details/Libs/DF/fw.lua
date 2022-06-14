@@ -1,6 +1,6 @@
 
 
-local dversion = 282
+local dversion = 317
 local major, minor = "DetailsFramework-1.0", dversion
 local DF, oldminor = LibStub:NewLibrary (major, minor)
 
@@ -71,9 +71,95 @@ function DF.IsTBCWow()
 	return false
 end
 
-function DF.UnitGroupRolesAssigned (unitId)
-	if (UnitGroupRolesAssigned) then
-		return UnitGroupRolesAssigned (unitId)
+local roleBySpecTextureName = {
+	DruidBalance = "DAMAGER",
+	DruidFeralCombat = "DAMAGER",
+	DruidRestoration = "HEALER",
+
+	HunterBeastMastery = "DAMAGER",
+	HunterMarksmanship = "DAMAGER",
+	HunterSurvival = "DAMAGER",
+
+	MageArcane = "DAMAGER",
+	MageFrost = "DAMAGER",
+	MageFire = "DAMAGER",
+
+	PaladinCombat = "DAMAGER",
+	PaladinHoly = "HEALER",
+	PaladinProtection = "TANK",
+
+	PriestHoly = "HEALER",
+	PriestDiscipline = "HEALER",
+	PriestShadow = "DAMAGER",
+
+	RogueAssassination = "DAMAGER",
+	RogueCombat = "DAMAGER",
+	RogueSubtlety = "DAMAGER",
+
+	ShamanElementalCombat = "DAMAGER",
+	ShamanEnhancement = "DAMAGER",
+	ShamanRestoration = "HEALER",
+
+	WarlockCurses = "DAMAGER",
+	WarlockDestruction = "DAMAGER",
+	WarlockSummoning = "DAMAGER",
+
+	WarriorArm = "DAMAGER",
+	WarriorArms = "DAMAGER",
+	WarriorFury = "DAMAGER",
+	WarriorProtection = "TANK",
+}
+
+--classic, tbc and wotlk role guesser based on the weights of each talent tree
+function DF:GetRoleByClassicTalentTree()
+	if (not DF.IsTimewalkWoW()) then
+		return "NONE"
+	end
+
+	--amount of tabs existing
+	local numTabs = GetNumTalentTabs() or 3
+
+	--store the background textures for each tab
+	local pointsPerSpec = {}
+
+	for i = 1, (MAX_TALENT_TABS or 3) do
+		if (i <= numTabs) then
+			--tab information
+			local name, iconTexture, pointsSpent, fileName = GetTalentTabInfo(i)
+			if (name) then
+				tinsert (pointsPerSpec, {name, pointsSpent, fileName})
+			end
+		end
+	end
+
+	local MIN_SPECS = 4
+
+	--put the spec with more talent point to the top
+	table.sort(pointsPerSpec, function (t1, t2) return t1[2] > t2[2] end)
+
+	--get the spec with more points spent
+	local spec = pointsPerSpec[1]
+	if (spec and spec [2] >= MIN_SPECS) then
+		local specName = spec[1]
+		local spentPoints = spec[2]
+		local specTexture = spec[3]
+
+		local role = roleBySpecTextureName[specTexture]
+		return role or "NONE"
+	end
+end
+
+function DF.UnitGroupRolesAssigned(unitId)
+	if (not DF.IsTimewalkWoW()) then --Was function exist check. TBC has function, returns NONE. -Flamanis 5/16/2022
+		local role = UnitGroupRolesAssigned(unitId)
+
+		if (role == "NONE" and UnitIsUnit(unitId, "player")) then
+			local specializationIndex = GetSpecialization() or 0
+			local id, name, description, icon, role, primaryStat = GetSpecializationInfo(specializationIndex)
+			return id and role or "NONE"
+		end
+
+		return role
 	else
 		--attempt to guess the role by the player spec
 		local classLoc, className = UnitClass(unitId)
@@ -92,7 +178,8 @@ function DF.UnitGroupRolesAssigned (unitId)
 			end
 		end
 
-		return "NONE"
+		local role = DF:GetRoleByClassicTalentTree()
+		return role
 	end
 end
 
@@ -340,14 +427,14 @@ function DF.table.reverse (t)
 end
 
 --> copy from table2 to table1 overwriting values
-function DF.table.copy (t1, t2)
-	for key, value in pairs (t2) do 
-		if (key ~= "__index") then
+function DF.table.copy(t1, t2)
+	for key, value in pairs(t2) do
+		if (key ~= "__index" and key ~= "__newindex") then
 			if (type (value) == "table") then
-				t1 [key] = t1 [key] or {}
-				DF.table.copy (t1 [key], t2 [key])
+				t1[key] = t1[key] or {}
+				DF.table.copy(t1[key], t2[key])
 			else
-				t1 [key] = value
+				t1[key] = value
 			end
 		end
 	end
@@ -355,13 +442,13 @@ function DF.table.copy (t1, t2)
 end
 
 --> copy from table2 to table1 overwriting values but do not copy data that cannot be compressed
-function DF.table.copytocompress (t1, t2)
-	for key, value in pairs (t2) do
+function DF.table.copytocompress(t1, t2)
+	for key, value in pairs(t2) do
 		if (key ~= "__index" and type(value) ~= "function") then
 			if (type(value) == "table") then
 				if (not value.GetObjectType) then
-					t1 [key] = t1 [key] or {}
-					DF.table.copytocompress(t1 [key], t2 [key])
+					t1[key] = t1[key] or {}
+					DF.table.copytocompress(t1[key], t2[key])
 				end
 			else
 				t1 [key] = value
@@ -697,6 +784,28 @@ function DF:trim (s)
 	return from > #s and "" or s:match(".*%S", from)
 end
 
+--truncated revoming at a maximum of 10 character from the string
+function DF:TruncateTextSafe(fontString, maxWidth)
+	local text = fontString:GetText()
+	local numIterations = 10
+
+	while (fontString:GetStringWidth() > maxWidth) do
+		text = strsub(text, 1, #text-1)
+		fontString:SetText(text)
+		if (#text <= 1) then
+			break
+		end
+
+		numIterations = numIterations - 1
+		if (numIterations <= 0) then
+			break
+		end
+	end
+
+	text = DF:CleanTruncateUTF8String(text)
+	fontString:SetText(text)
+end
+
 function DF:TruncateText (fontString, maxWidth)
 	local text = fontString:GetText()
 	
@@ -759,6 +868,48 @@ function DF.SortOrder3R (t1, t2)
 	return t1[3] < t2[3]
 end
 
+--return a list of spells from the player spellbook
+function DF:GetSpellBookSpells()
+    local spellNamesInSpellBook = {}
+
+    for i = 1, GetNumSpellTabs() do
+        local tabName, tabTexture, offset, numSpells, isGuild, offspecId = GetSpellTabInfo(i)
+
+        if (offspecId == 0) then
+            offset = offset + 1
+            local tabEnd = offset + numSpells
+
+            for j = offset, tabEnd - 1 do
+                local spellType, spellId = GetSpellBookItemInfo(j, "player")
+
+                if (spellId) then
+                    if (spellType ~= "FLYOUT") then
+                        local spellName = GetSpellInfo(spellId)
+                        if (spellName) then
+                            spellNamesInSpellBook[spellName] = true
+                        end
+                    else
+                        local _, _, numSlots, isKnown = GetFlyoutInfo(spellId)
+                        if (isKnown and numSlots > 0) then
+                            for k = 1, numSlots do
+                                local spellID, overrideSpellID, isKnown = GetFlyoutSlotInfo(spellId, k)
+                                if (isKnown) then
+                                    local spellName = GetSpellInfo(spellID)
+                                    spellNamesInSpellBook[spellName] = true
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    return spellNamesInSpellBook
+end
+
+------------------------------
+--flash animation
 local onFinish = function (self)
 	if (self.showWhenDone) then
 		self.frame:SetAlpha (1)
