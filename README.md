@@ -41,7 +41,7 @@
 
 #### 團隊副本
 
-- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.37
+- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.38
 - 巫毒團隊框架 [VuhDo](https://www.curseforge.com/wow/addons/vuhdo) v3.134-tbcc
 - Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.28
 - 行事曆和副本進度 [ala’s Calendar](https://www.curseforge.com/wow/addons/alacalendar) v205r.220511
@@ -53,7 +53,7 @@
 
 #### 職業專屬
 
-- 一鍵驅散 [Decursive](https://www.curseforge.com/wow/addons/decursive) v2.7.8.5
+- 一鍵驅散 [Decursive](https://www.curseforge.com/wow/addons/decursive) v2.7.8.6
 - 薩滿圖騰快捷列 [TotemTimers](https://www.curseforge.com/wow/addons/totemtimers-classic) v2.0.3
 - 天賦模擬器 [ala’s Talent Emu](https://www.curseforge.com/wow/addons/alatalentemu) v205r.220325
 - 法師變羊監控 [Sheep Monitor](https://www.curseforge.com/wow/addons/sheepmonitor) v1.24a

@@ -1,33 +1,22 @@
 # <DBM> Outlands
 
-## [2.5.37](https://github.com/DeadlyBossMods/DBM-BCC/tree/2.5.37) (2022-06-07)
-[Full Changelog](https://github.com/DeadlyBossMods/DBM-BCC/compare/2.5.36...2.5.37) [Previous Releases](https://github.com/DeadlyBossMods/DBM-BCC/releases)
+## [2.5.38](https://github.com/DeadlyBossMods/DBM-BCC/tree/2.5.38) (2022-06-21)
+[Full Changelog](https://github.com/DeadlyBossMods/DBM-BCC/compare/2.5.37...2.5.38) [Previous Releases](https://github.com/DeadlyBossMods/DBM-BCC/releases)
 
-- prep new TBC tag  
-- Attempt to fix some bugs with wipe detection not being fast in classic, especialy on twins.  
-- GUI: Colorized TColor dropdown (#128) Better UI/UX for TColor dropdown, since the assigned color names are not representative.  
-- fix remapping bug  
-- swp/kalecgos: add health to custom frame (#5)  
-- set new alpha cycle  
-- Bump version  
-- toc bump  
-- Fix https://github.com/DeadlyBossMods/DBM-BCC/issues/4  
-- Add proper detection of HoA difficulty indices  
-- Fix boss spelling  
-- adjust darktouch stack count by feedback.  
-- Fixed a bug where the informational nerf was applyed to voice pack sounds even if the setting wasn't enabed Informational nerf now also disables the range checker, since the range checker uses information not normally available to player (it basically exploits a bug blizzard never fixed in item check code). As such, it goes beyond the scope of providing information avaialble to base UI and should be included in the nerf.  
-- Update localization.cn.lua (#126)  
-- Update zhTW (#125)  
-- Update koKR (#124)  
-- Update localization.ru.lua (#122)  
-- Update localization.ru.lua (#123)  
-- Update localization.ru.lua (#121)  
-- Also remap adds alerts to only use \"adds are coming\" when in \"informational only\" mode.  
-- Fixed a bug where filtered role specla announcements still played voice alerts Fixed a bug where the soak filter type wasn't filtering alerts that contain a soak position Added a new optiont to completely disable instructional alerts/audio. This is WIP (especially on voice pack end) but the goal is to provide ability to make DBM purely informational and do literally zero handholding or instruction what so ever. This will likely become the default (and maybe even mandatory if blizzard wills it) in the future when it's complete and no longer WIP.  
-- Missed a line  
-- Add combat log redundancy to twins to ensure alerts and timers don't go missing if locales are  
-- Update zhTW (#118)  
-- Update localization.ru.lua (#120) Translation of some phrases.  
-- Update localization.cn.lua (#119)  
-- Update koKR (#117)  
-- Bump alphas  
+- prep new tags  
+- Fix /dbm hud arrow not working (arithmetic on nil) #133  
+- Update localization.ru.lua (#132) Add a few phrases.  
+- Refactor GetEnemyUnitIdByGUID to be more inclusive, then use it in IsValidWarning object. This, in turn, allows filtering for units affecting combat in trash modules to be far more effective at identifying combat affecting units. Should result in far less filtereed warnings against mobs you're actually fighting in modules that use strict filtering.  
+- Code tweak to last  
+- Made unit target scanner more robust by addressing two core issues. 1. When not in a group it basically didn't work, because it failed to consider that when solo there won't actually be a target swap, you'l just always be \"the tank\". Now if not in group it'll execute \"tanks allowed\" permission on scan completion and still give a target warning (you). 2. The extra validation checks when in group, were also broken in that they only considered raids, not 5 mans. This is why dungeon mods using the better UNIT\_TARGET monitoring method never actually had working target scans. Every time a 5 man dungeon got a report of target scan not working on this better method I just swapped method believing it was a methodology problem, but I know better now and this should also be fixed and allow the better target scanning method to be more widely used in 5 man dungeons.  
+- Update localization.cn.lua (#131)  
+- flag alpha icons with updated text  
+- Update koKR (#130)  
+- Update zhTW (#129)  
+- Merge pull request #7 from venuatu/kj  
+    swp/kj: add armageddon warnings  
+- Tiny cleanup  
+- swp/kj: add armageddon warnings  
+- Add missing localized icon text, as well as fixed bug where another one of them wasn't actually used yet.  
+- Added some missing difficulty indices  
+- Bump tbc alpha  

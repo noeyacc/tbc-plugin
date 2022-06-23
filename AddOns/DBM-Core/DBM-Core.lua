@@ -67,24 +67,24 @@ local function showRealDate(curseDate)
 end
 
 DBM = {
-	Revision = parseCurseDate("20220607184526"),
+	Revision = parseCurseDate("20220621041941"),
 }
 
 local fakeBWVersion, fakeBWHash
 local bwVersionResponseString = "V^%d^%s"
 -- The string that is shown as version
 if isRetail then
-	DBM.DisplayVersion = "9.2.20 alpha"
-	DBM.ReleaseRevision = releaseDate(2022, 5, 31) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
-	fakeBWVersion, fakeBWHash = 241, "710129e"
+	DBM.DisplayVersion = "9.2.20"
+	DBM.ReleaseRevision = releaseDate(2022, 6, 21) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	fakeBWVersion, fakeBWHash = 243, "d58ab26"
 elseif isClassic then
-	DBM.DisplayVersion = "1.14.22 alpha"
-	DBM.ReleaseRevision = releaseDate(2022, 5, 11) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
-	fakeBWVersion, fakeBWHash = 38, "5e831f6"
+	DBM.DisplayVersion = "1.14.22"
+	DBM.ReleaseRevision = releaseDate(2022, 6, 21) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	fakeBWVersion, fakeBWHash = 41, "287b8dd"
 elseif isBCC then
-	DBM.DisplayVersion = "2.5.37"
-	DBM.ReleaseRevision = releaseDate(2022, 6, 7) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
-	fakeBWVersion, fakeBWHash = 38, "5e831f6"
+	DBM.DisplayVersion = "2.5.38"
+	DBM.ReleaseRevision = releaseDate(2022, 6, 21) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	fakeBWVersion, fakeBWHash = 41, "287b8dd"
 end
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
 
@@ -2363,17 +2363,22 @@ do
 		return raid[name] and raid[name].id
 	end
 
+	local mobUids = {
+		"boss1", "boss2", "boss3", "boss4", "boss5", "boss6", "boss7", "boss8", "boss9", "boss10",
+		"mouseover", "target", "focus", "focustarget", "targettarget", "mouseovertarget",
+		"party1target", "party2target", "party3target", "party4target",
+		"raid1target", "raid2target", "raid3target", "raid4target", "raid5target", "raid6target", "raid7target", "raid8target", "raid9target", "raid10target",
+		"raid11target", "raid12target", "raid13target", "raid14target", "raid15target", "raid16target", "raid17target", "raid18target", "raid19target", "raid20target",
+		"raid21target", "raid22target", "raid23target", "raid24target", "raid25target", "raid26target", "raid27target", "raid28target", "raid29target", "raid30target",
+		"raid31target", "raid32target", "raid33target", "raid34target", "raid35target", "raid36target", "raid37target", "raid38target", "raid39target", "raid40target",
+		"nameplate1", "nameplate2", "nameplate3", "nameplate4", "nameplate5", "nameplate6", "nameplate7", "nameplate8", "nameplate9", "nameplate10",
+		"nameplate11", "nameplate12", "nameplate13", "nameplate14", "nameplate15", "nameplate16", "nameplate17", "nameplate18", "nameplate19", "nameplate20",
+		"nameplate21", "nameplate22", "nameplate23", "nameplate24", "nameplate25", "nameplate26", "nameplate27", "nameplate28", "nameplate29", "nameplate30",
+		"nameplate31", "nameplate32", "nameplate33", "nameplate34", "nameplate35", "nameplate36", "nameplate37", "nameplate38", "nameplate39", "nameplate40"
+	}
+
 	function DBM:GetEnemyUnitIdByGUID(guid)
-		for i = 1, 10 do
-			local unitId = "boss"..i
-			local guid2 = UnitGUID(unitId)
-			if guid == guid2 then
-				return unitId
-			end
-		end
-		local idType = (IsInRaid() and "raid") or "party"
-		for i = 0, GetNumGroupMembers() do
-			local unitId = ((i == 0) and "target") or idType..i.."target"
+		for _, unitId in ipairs(mobUids) do
 			local guid2 = UnitGUID(unitId)
 			if guid == guid2 then
 				return unitId
@@ -5553,7 +5558,7 @@ function DBM:GetCurrentInstanceDifficulty()
 	local _, instanceType, difficulty, difficultyName, _, _, _, _, instanceGroupSize = GetInstanceInfo()
 	if difficulty == 0 or difficulty == 172 or (difficulty == 1 and instanceType == "none") or (C_Garrison and C_Garrison:IsOnGarrisonMap()) then--draenor field returns 1, causing world boss mod bug.
 		return "worldboss", RAID_INFO_WORLD_BOSS.." - ", difficulty, instanceGroupSize, 0
-	elseif difficulty == 1 or difficulty == 173 or difficulty == 184 then--5 man Normal Dungeon
+	elseif difficulty == 1 or difficulty == 173 or difficulty == 184 or difficulty == 150 then--5 man Normal Dungeon
 		return "normal5", difficultyName.." - ", difficulty, instanceGroupSize, 0
 	elseif difficulty == 2 or difficulty == 174 then--5 man Heroic Dungeon
 		return "heroic5", difficultyName.." - ", difficulty, instanceGroupSize, 0
@@ -5574,7 +5579,7 @@ function DBM:GetCurrentInstanceDifficulty()
 		return "normal40", difficultyName.." - ",difficulty, instanceGroupSize, 0
 	elseif difficulty == 11 then--Heroic Scenario (mostly Mists of pandaria)
 		return "heroicscenario", difficultyName.." - ",difficulty, instanceGroupSize, 0
-	elseif difficulty == 12 then--Normal Scenario (mostly Mists of pandaria)
+	elseif difficulty == 12 or difficulty == 152 then--Normal Scenario (mostly Mists of pandaria and Visions of Nzoth scenarios)
 		return "normalscenario", difficultyName.." - ",difficulty, instanceGroupSize, 0
 	elseif difficulty == 14 then--Flexible Normal Raid
 		return "normal", difficultyName.." - ", difficulty, instanceGroupSize, 0
@@ -6808,11 +6813,9 @@ function bossModPrototype:IsValidWarning(sourceGUID, customunitID, loose)
 	if customunitID then
 		if UnitExists(customunitID) and UnitGUID(customunitID) == sourceGUID and UnitAffectingCombat(customunitID) then return true end
 	else
-		for uId in DBM:GetGroupMembers() do
-			local target = uId.."target"
-			if UnitExists(target) and UnitGUID(target) == sourceGUID and UnitAffectingCombat(target) then return true end
-			local targettwo = uId.."targettarget"
-			if UnitExists(targettwo) and UnitGUID(targettwo) == sourceGUID and UnitAffectingCombat(targettwo) then return true end
+		local unitId = DBM:GetEnemyUnitIdByGUID(sourceGUID)
+		if UnitExists(unitId) and UnitAffectingCombat(unitId) then
+			return true
 		end
 	end
 	return false
@@ -10291,6 +10294,10 @@ function bossModPrototype:AddSetIconOption(name, spellId, default, iconType, ico
 		end
 		self.findFastestComputer[#self.findFastestComputer + 1] = name
 		self.localization.options[name] = L.AUTO_ICONS_OPTION_NPCS:format(spellId)
+	elseif iconType == 6 then
+		self.localization.options[name] = L.AUTO_ICONS_OPTION_TARGETS_ALPHA:format(spellId)
+	elseif iconType == 7 then
+		self.localization.options[name] = L.AUTO_ICONS_OPTION_TARGETS_ROSTER:format(spellId)
 	else--Type 0 (Generic for targets)
 		self.localization.options[name] = L.AUTO_ICONS_OPTION_TARGETS:format(spellId)
 	end
