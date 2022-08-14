@@ -2,7 +2,7 @@
 local mod	= DBM:NewMod("Thaddius", "DBM-Naxx", 2)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220511043833")
+mod:SetRevision("20220729190739")
 mod:SetCreatureID(15928)
 mod:SetEncounterID(1120)
 mod:SetModelID(16137)
@@ -27,7 +27,10 @@ local timerNextShift		= mod:NewCDTimer(25.9, 28089, nil, nil, nil, 2, nil, DBM_C
 local timerShiftCast		= mod:NewCastTimer(3, 28089, nil, nil, nil, 5)
 local timerThrow			= mod:NewCDTimer(20.6, 28338, nil, nil, nil, 5, nil, DBM_COMMON_L.TANK_ICON)
 
-mod:AddDropdownOption("ArrowsEnabled", {"Never", "TwoCamp", "ArrowsRightLeft", "ArrowsInverse"}, "ArrowsRightLeft", "misc")
+if not DBM.Options.GroupOptionsBySpell then
+	mod:AddMiscLine(DBM_CORE_L.OPTION_CATEGORY_DROPDOWNS)
+end
+mod:AddDropdownOption("ArrowsEnabled", {"Never", "TwoCamp", "ArrowsRightLeft", "ArrowsInverse"}, "ArrowsRightLeft", "misc", nil, 28089)
 
 local currentCharge
 local down = 0
@@ -63,13 +66,13 @@ function mod:UNIT_AURA()
 	if self.vb.phase ~=2 or (GetTime() - lastShift) > 5 or (GetTime() - lastShift) < 3 then return end
 	local charge
 	local i = 1
-	while DBM:UnitDebuff("player", i) do
-		local _, icon, count = DBM:UnitDebuff("player", i)
+	while UnitDebuff("player", i) do
+		local _, icon, count, _, _, _, _, _, _, _, _, _, _, _, _, count2 = UnitDebuff("player", i)
 		if icon == "Interface\\Icons\\Spell_ChargeNegative" or icon == 135768 then--Not sure if classic will return data ID or path, so include both
-			if count > 1 then return end
+			if (count2 or count) > 1 then return end
 			charge = L.Charge1
 		elseif icon == "Interface\\Icons\\Spell_ChargePositive" or icon == 135769 then--Not sure if classic will return data ID or path, so include both
-			if count > 1 then return end
+			if (count2 or count) > 1 then return end
 			charge = L.Charge2
 		end
 		i = i + 1

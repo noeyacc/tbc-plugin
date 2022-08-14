@@ -41,7 +41,7 @@
 
 #### 團隊副本
 
-- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.38
+- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.42
 - 巫毒團隊框架 [VuhDo](https://www.curseforge.com/wow/addons/vuhdo) v3.136-tbcc
 - Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.28
 - 行事曆和副本進度 [ala’s Calendar](https://www.curseforge.com/wow/addons/alacalendar) v205r.220511
@@ -111,7 +111,7 @@
 - 性感小地圖 [Sexy Map](https://www.curseforge.com/wow/addons/sexymap) v6-bcc+
 - 小地圖按鈕選單 [HidingBar](https://www.curseforge.com/wow/addons/hidingbar) v2.5.23
 - 小地圖按鈕選單 [MBB](https://www.curseforge.com/wow/addons/mbb-classic) v1.2.1
-- 任務清單 [Questie](https://www.curseforge.com/wow/addons/questie) v6.12.2
+- 任務清單 [Questie](https://www.curseforge.com/wow/addons/questie) v6.14.0
 - 稀有怪獸與牠們的產地 [SilverDragon](https://www.curseforge.com/wow/addons/silver-dragon) v20501.0
 <!-- - 導航箭頭 TomTom -->
 

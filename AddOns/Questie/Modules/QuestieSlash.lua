@@ -16,8 +16,12 @@ local QuestieMap = QuestieLoader:ImportModule("QuestieMap")
 ---@type l10n
 local l10n = QuestieLoader:ImportModule("l10n")
 
+function QuestieSlash.RegisterSlashCommands()
+    Questie:RegisterChatCommand("questieclassic", QuestieSlash.HandleCommands)
+    Questie:RegisterChatCommand("questie", QuestieSlash.HandleCommands)
+end
 
-function QuestieSlash:HandleCommands(input)
+function QuestieSlash.HandleCommands(input)
     input = string.trim(input, " ");
 
     local commands = {}
@@ -99,7 +103,7 @@ function QuestieSlash:HandleCommands(input)
     end
 
     if mainCommand == "tomap" then
-        if subCommand == nil then
+        if not subCommand then
             subCommand = UnitName("target")
         end
 
@@ -135,6 +139,9 @@ function QuestieSlash:HandleCommands(input)
         local questCount = 0
         for _, _ in pairs(Questie.db.char.complete) do
             questCount = questCount + 1
+        end
+        if GetDailyQuestsCompleted then
+            questCount = questCount - GetDailyQuestsCompleted() -- We don't care about daily quests
         end
         SendChatMessage(l10n("has completed a total of %d quests", questCount), "EMOTE")
         return

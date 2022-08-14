@@ -1,7 +1,7 @@
 local mod	= DBM:NewMod("Faerlina", "DBM-Naxx", 1)
 local L		= mod:GetLocalizedStrings()
 
-mod:SetRevision("20220511043833")
+mod:SetRevision("20220724003814")
 mod:SetCreatureID(15953)
 mod:SetEncounterID(1110)
 mod:SetModelID(15940)
@@ -35,7 +35,6 @@ end
 function mod:SPELL_AURA_APPLIED(args)
 	--if args:IsSpellID(28798, 54100) then -- Frenzy
 	if args.spellId == 28798 and args:IsDestTypeHostile() then -- Frenzy
-		warnEnrageNow:Show()
 		self.vb.enraged = true
 		--if self:IsTanking("player", "boss1", nil, true) then
 		if self:IsTanking("player", nil, nil, nil, args.destGUID) then--Basically, HAS to be bosses current target
