@@ -68,6 +68,7 @@ TotemTimers.SpellIDs = {
     NaturesSwiftness = 16188,
     Riptide = 61295,
     ShamanisticRage = 30823,
+    TidalForce = 55198,
     Thunderstorm = 51490,
     WindShear = 57994,
 
@@ -239,7 +240,6 @@ TotemTimers.TotemCooldowns = {
         SpellIDs.ManaTide,
     },
     [FIRE_TOTEM_SLOT] = {
-        SpellIDs.FireNova,
         SpellIDs.FireElemental,
     },
     [AIR_TOTEM_SLOT] = {
@@ -298,6 +298,12 @@ TotemTimers.WeaponEnchants = {
     [543] = SpellIDs.Flametongue,
     [1683] = SpellIDs.Flametongue,
     [2637] = SpellIDs.Flametongue,
+    [3345] = SpellIDs.EarthlivingWeapon,
+    [3346] = SpellIDs.EarthlivingWeapon,
+    [3347] = SpellIDs.EarthlivingWeapon,
+    [3348] = SpellIDs.EarthlivingWeapon,
+    [3349] = SpellIDs.EarthlivingWeapon,
+    [3350] = SpellIDs.EarthlivingWeapon,
 }
 
 for i = 3018, 3044 do TotemTimers.WeaponEnchants[i] = SpellIDs.RockbiterWeapon end

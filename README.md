@@ -1,4 +1,4 @@
-## 魔獸世界燃燒經典版(TBC)插件整合
+## 魔獸世界巫妖王之怒經典版(WLK)插件整合
 
 以彩虹 UI 整合包為基礎並新增/刪除插件，調整成個人較為常用的插件整合包。
 
@@ -29,7 +29,7 @@
 
 - 冷卻時間 [OmniCC](https://www.curseforge.com/wow/addons/omni-cc) v9.2.0
 - 射程著色 [tullaRange](https://www.curseforge.com/wow/addons/tullarange) v9.2.0
-- 達美樂快捷列 [Dominos](https://www.curseforge.com/wow/addons/dominos) v9.2.2
+- 達美樂快捷列 [Dominos](https://www.curseforge.com/wow/addons/dominos) v9.3.4
 
 #### 商人拍賣
 
@@ -41,8 +41,8 @@
 
 #### 團隊副本
 
-- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v2.5.42
-- 巫毒團隊框架 [VuhDo](https://www.curseforge.com/wow/addons/vuhdo) v3.136-tbcc
+- 首領技能警報 [DBM](https://www.curseforge.com/wow/addons/deadly-boss-mods) v3.4.8-wrath
+- 巫毒團隊框架 [VuhDo](https://www.curseforge.com/wow/addons/vuhdo) v3.137-wotlkc
 - Nova 世界增益監控 [Nova World Buffs](https://www.curseforge.com/wow/addons/nova-world-buffs) v2.28
 - 行事曆和副本進度 [ala’s Calendar](https://www.curseforge.com/wow/addons/alacalendar) v205r.220511
 - 金團帳本 [RaidLedger](https://www.curseforge.com/wow/addons/raidledger) v1.9.5-v2.5.2
@@ -54,7 +54,7 @@
 #### 職業專屬
 
 - 一鍵驅散 [Decursive](https://www.curseforge.com/wow/addons/decursive) v2.7.8.6
-- 薩滿圖騰快捷列 [TotemTimers](https://www.curseforge.com/wow/addons/totemtimers-classic) v2.0.3
+- 薩滿圖騰快捷列 [TotemTimers](https://www.curseforge.com/wow/addons/totemtimers-classic) v3.0.2
 - 天賦模擬器 [ala’s Talent Emu](https://www.curseforge.com/wow/addons/alatalentemu) v205r.220325
 - 法師變羊監控 [Sheep Monitor](https://www.curseforge.com/wow/addons/sheepmonitor) v1.24a
 - 能量條增強 [NugEnergy](https://www.curseforge.com/wow/addons/nugenergy) v9.0.9
@@ -66,8 +66,8 @@
 #### 戰鬥相關
 
 - MSBT 捲動戰鬥文字 [Mik’s Scrolling Battle Text](https://www.curseforge.com/wow/addons/mik-scrolling-battle-text) v5.7.152
-- 戰鬥統計 [Details](https://www.curseforge.com/wow/addons/details) v146
-- 仇恨統計 [ThreatClassic2](https://www.curseforge.com/wow/addons/threatclassic2) v2.44
+- 戰鬥統計 [Details](https://www.curseforge.com/wow/addons/details) DetailsRetail.v9.2.7.10018.146
+- 仇恨統計 [ThreatClassic2](https://www.curseforge.com/wow/addons/threatclassic2) v2.45
 - 施法條增強 [Quartz](https://www.curseforge.com/wow/addons/quartz) v3.6.9
 - 威力血條 [TidyPlates_ThreatPlates](https://wow.curseforge.com/projects/tidy-plates-threat-plates) v10.3.4
 - 血條浮動戰鬥文字 [Nameplate Scrolling Combat Text(NameplateSCT)](https://www.curseforge.com/wow/addons/nameplate-scrolling-combat-text) v1.9
@@ -82,7 +82,7 @@
 
 - 插件控制台 [Ease Addon Controller](https://www.curseforge.com/wow/addons/easeaddoncontroller) v1.0.5-20170330
 - 功能資訊列 [XIV_Databar](https://www.curseforge.com/wow/addons/xiv_databar_classic) v2.5.2.1
-- 功能百寶箱 [Leatrix Plus](https://www.curseforge.com/wow/addons/leatrix-plus-bcc) v2.5.96
+- 功能百寶箱 [Leatrix Plus](https://www.curseforge.com/wow/addons/leatrix-plus-bcc) v3.0.02
 - 我的增益/減益效果 [ShinyBuffs](https://www.wowinterface.com/downloads/info19418-ShinyBuffs.html) 1.2.2a-bcc
 - 移動和縮放視窗 [Drift](https://www.curseforge.com/wow/addons/drift) v1.0.25
 - 角色視窗詳細屬性 [CharacterStatsClassic](https://www.curseforge.com/wow/addons/characterstatsclassic) v1.2.4
@@ -103,9 +103,10 @@
 
 #### 地圖任務
 
-- 副本地圖（含相關模組）[Atlas](https://www.curseforge.com/wow/addons/atlas) v1.50.04
-  - 經典版副本地圖 [Atlas Classic WoW](https://www.curseforge.com/wow/addons/atlas-classicwow) v1.50.02
-  - 燃燒版本副本地圖 [Atlas Burning Crusade](https://www.curseforge.com/wow/addons/atlas-burningcrusade) v1.50.02
+- 副本地圖（含相關模組）[Atlas](https://www.curseforge.com/wow/addons/atlas) v1.51.06
+  - 經典版副本地圖 [Atlas Classic WoW](https://www.curseforge.com/wow/addons/atlas-classicwow) v1.51.02
+  - 燃燒版本副本地圖 [Atlas Burning Crusade](https://www.curseforge.com/wow/addons/atlas-burningcrusade) v1.51.02
+  - 巫妖王版本副本地圖 [Atlas Wrath of the Lich King](https://www.curseforge.com/wow/addons/atlas-wrathofthelichking) v1.51.02
 - 世界地圖增強 [Leatrix Maps](https://www.curseforge.com/wow/addons/leatrix-maps-bcc) v2.5.95
 - 地圖標記 [Handy Notes](https://www.curseforge.com/wow/addons/handynotes) v1.6.5
 - 性感小地圖 [Sexy Map](https://www.curseforge.com/wow/addons/sexymap) v6-bcc+
@@ -125,7 +126,7 @@
 
 #### 進階使用
 
-- WA 技能提醒 [WeakAuras](https://www.curseforge.com/wow/addons/weakauras-2) v3.7.14+
+- WA 技能提醒 [WeakAuras](https://www.curseforge.com/wow/addons/weakauras-2) v4.0.3
 - 錯誤收集器 [Bug Grabber & Bug Sack](https://www.curseforge.com/wow/addons/bugsack) v9.2.2
 - 進階介面選項 [Advanced Interface Options](https://www.curseforge.com/wow/addons/advancedinterfaceoptions) v1.6.0
 - 巨集指令 InterruptedIn
@@ -139,7 +140,7 @@
 
 #### 聊天社交
 
-- 聊天按鈕和功能增強 TinyChat
+- 聊天按鈕和功能增強 [TinyChat](https://classic.miliui.com/show/46/8) v3.4.0.1
 - 快速複製文字 [Copy Anything](https://www.curseforge.com/wow/addons/copy-anything) v1.1.9
 - 聊天視窗美化 [Glass](https://www.curseforge.com/wow/addons/glass) v1.8.0-bcc
 - 魔獸世界即時通 [WIM](https://www.curseforge.com/wow/addons/wim-3) v3.9.1
