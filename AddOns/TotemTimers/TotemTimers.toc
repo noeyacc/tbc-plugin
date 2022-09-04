@@ -1,7 +1,7 @@
-## Interface: 20503
+## Interface: 30400
 ## Title: TotemTimers
 ## Author:  Xianghar
-## Version: 2.0.3
+## Version: 3.0.0
 ## SavedVariables: TotemTimers_GlobalSettings, TotemTimers_Profiles
 ## OptionalDeps: Masque
 ## LoadManagers: AddonLoader
@@ -9,11 +9,8 @@
 ## X-Curse-Project-ID: 339602
 ## X-WoWI-ID: 25223
 
-
-
 embeds.xml
 
-TotemData.lua
 localization\localization.lua
 localization\localization.ge.lua
 localization\localization.fr.lua
@@ -25,25 +22,35 @@ localization\localization.ko.lua
 localization\localization.br.lua
 localization\localization.it.lua
 localization\localization.esmx.lua
-Animation.lua
-Bindings.lua
+
 XiTimers.lua
 XiTimers.xml
-ToolTips.lua
+
+wrath\TotemData.lua
+TotemTimers.xml
+TotemTimers.lua
+
+Spells.lua
+
+Animation.lua
+Bindings.lua
 ToolTips.lua
 TotemSets.xml
 TotemSets.lua
 TTActionBars.lua
 DefaultSettings.lua
 Settings.lua
-Spells.lua
 SetupTimers.lua
+MultiSpell.lua
 SetupTrackers.lua
+Ankh.lua
+Shield.lua
+EarthShield.lua
+Weapon.lua
 EnhanceCDs.lua
-TotemTimers.xml
-TotemTimers.lua
 Warnings.lua
 Masque.lua
+
 GUI\localization.lua
 GUI\localization.ge.lua
 GUI\localization.ru.lua
@@ -61,5 +68,7 @@ GUI\Trackers.lua
 GUI\EnhanceCDs.lua
 GUI\Messages.lua
 GUI\Totems.lua
+GUI\Sets.lua
 GUI\Profiles.lua
+
 

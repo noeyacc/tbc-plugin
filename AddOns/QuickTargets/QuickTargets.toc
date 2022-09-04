@@ -1,7 +1,0 @@
-## Interface: 20502
-## Title: QuickTargets
-## Title-zhTW: |cffFF7F00[副本]|r 快速上標
-## Notes-zhTW: QuickTargets |n快速幫目標加上骷髏、叉叉、星星、月亮...等標記圖示，只要按一下快速鍵!|n|cffffd200使用方法：|r先在Esc>按鍵設定>插件>快速上標，設定好快速鍵 (預設為 Shift+F)。|n把滑鼠指向要上標的對象，按下快速鍵直接上標。多按幾下快速鍵可以循環切換不同的標記圖示。
-## DefaultState: disabled
-## Author: Zozie
-QuickTargets.lua

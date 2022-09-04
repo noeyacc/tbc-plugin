@@ -1,3 +1,30 @@
+3.0.0
+    - Added spell data for WOTLK
+    - Added multicast button (Call of Elements etc.)
+2.3.2
+    - Fix for weapon tracker double spell buttons
+2.3.1
+    - Fixed castsequence macro
+2.3.0
+    - One addon for tbc and vanilla
+    - Added tbc features to vanilla like totem range or downranking windfury
+    - Added settings for weapon buff expiration warnings
+    - Fixed resetting frame positions not working for timer arrangement set to "loose"
+    - Fixed changing icons of inactive totem timers on weapon swap
+2.2.2
+    - Fixed lua error when showing tooltips
+2.2.1
+    - Default out ouf combat opacity is now 1
+    - Set tooltips and colored timer bars use the same colors
+2.2
+    - Added option to downrank Windfury Totem to rank 1
+    - Added separate setting for out of combat opacity for combat cooldowns
+    - Added option to hide combat cooldowns out of combat
+2.1.1
+    - Added option to rename totem sets
+2.1
+    - Set button tooltips show totems
+    - Fixed setting for out of combat opacity
 2.0.3
     - Fixed Chain Lightning Button for Elemental Shamans
 2.0.2
@@ -10,7 +37,7 @@
     - Stop Pulse animation can be enabled separately for totem timers, trackers and combat cooldowns
     - Added #showtooltips to macro
 1.19.1
-    - Changed Erthbind and Tremor Totems to pulse every 3 seconds
+    - Changed Earthbind and Tremor Totems to pulse every 3 seconds
     - Changed "Stop Pulse" option to be off by default
 1.19
     - Fixed red flash for expiring timers

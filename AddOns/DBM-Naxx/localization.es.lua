@@ -1,4 +1,4 @@
-if GetLocale() ~= "esES" then return end
+if GetLocale() ~= "esES" and GetLocale() ~= "esMX" then return end
 local L
 
 -----------------
@@ -105,10 +105,7 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull				= "¡Muere, intruso!",
-	AddsYell			= "¡Levantaos, soldados míos! ¡Levantaos y luchad una vez más!",
-	Adds				= "invoca a guerreros esqueletos!",
-	AddsTwo				= "alza más esqueletos!"
+	Pull				= "¡Muere, intruso!"
 })
 
 ----------------------
@@ -215,7 +212,7 @@ L:SetMiscLocalization({
 L:SetOptionLocalization({
 	WarningChargeChanged	= "Mostrar aviso especial cuando tu polaridad cambie",
 	WarningChargeNotChanged	= "Mostrar aviso especial cuando tu polaridad no cambie",
-	ArrowsEnabled			= "Mostrar flechas (estrategia típica de dos grupos)",
+	AirowEnabled			= "Mostrar flechas (estrategia típica de dos grupos)",
 	ArrowsRightLeft			= "Mostrar flechas de izquierda y derecha (estrategia de cuatro grupos; muestra la flecha izquierda si cambia la polaridad, y la derecha si no cambia)",
 	ArrowsInverse			= "Mostrar flechas de izquierda y derecha inversas (estrategia de cuatro grupos; muestra la flecha derecha si cambia la polaridad, y la izquierda si no cambia)"
 })
@@ -301,6 +298,7 @@ L:SetGeneralLocalization({
 
 L:SetOptionLocalization({
 	WarningMarkSoon				= "Mostrar aviso previo para las marcas",
+	WarningMarkNow				= "Mostrar aviso para las marcas",
 	SpecialWarningMarkOnPlayer	= "Mostrar aviso especial cuando estés afectado por más de cuatro marcas"
 })
 
@@ -309,6 +307,7 @@ L:SetTimerLocalization({
 
 L:SetWarningLocalization({
 	WarningMarkSoon				= "Marca %d en 3 s",
+	WarningMarkNow				= "Marca %d",
 	SpecialWarningMarkOnPlayer	= "%s: %s"
 })
 
@@ -334,8 +333,6 @@ L:SetOptionLocalization({
 	WarningLanded		= "Anunciar cambio a fase en tierra",
 	TimerAir			= "Mostrar temporizador para el cambio a fase aérea",
 	TimerLanding		= "Mostrar temporizador para el cambio a fase en tierra",
-	TimerIceBlast		= "Mostrar temporizador para $spell:28524",
-	WarningDeepBreath	= "Mostrar aviso especial para $spell:28524",
 	WarningIceblock		= "Gritar cuando te afecte $spell:28522"
 })
 
@@ -347,14 +344,12 @@ L:SetMiscLocalization({
 L:SetWarningLocalization({
 	WarningAirPhaseSoon	= "Fase aérea en 10 s",
 	WarningAirPhaseNow	= "Fase aérea",
-	WarningLanded		= "Fase en tierra",
-	WarningDeepBreath	= "Aliento de Escarcha"
+	WarningLanded		= "Fase en tierra"
 })
 
 L:SetTimerLocalization({
 	TimerAir		= "Fase aérea",
-	TimerLanding	= "Fase en tierra",
-	TimerIceBlast	= "Aliento de Escarcha"
+	TimerLanding	= "Fase en tierra"
 })
 
 ----------------

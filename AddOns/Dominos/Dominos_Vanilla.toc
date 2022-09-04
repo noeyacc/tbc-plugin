@@ -1,0 +1,45 @@
+## Interface: 11403
+## Title: Dominos
+## Notes: A main actionbar replacement
+## Notes-zhCN: 一种动作条替换方案
+## Author: Tuller
+## Version: 9.3.4
+## SavedVariables: DominosDB
+## OptionalDeps: Ace3, LibKeyBound-1.0, LibSharedMedia-3.0, Masque, FlyPaper, LibDualSpec-1.0
+# stuff required for the addon to work
+embeds.xml
+localization.xml
+Dominos.lua
+core\helpers.lua
+core\barStates.lua
+core\shadowUIParent.lua
+core\frame.lua
+core\buttonBar.lua
+core\bindableButton.lua
+core\fadeManager.lua
+core\overrideController.lua
+core\overrideController.bcc.lua
+core\tooltipController.lua
+# builtin bars
+bars\actionButtonMixin.lua
+bars\actionButtons.lua
+bars\actionBar.lua
+bars\actionBarMenu.lua
+bars\actionBarModule.lua
+bars\petBar.lua
+bars\stanceBar.lua
+bars\bagBar.lua
+bars\menuBar.lua
+bars\possessBar.lua
+bars\vehicleBar.lua
+bars\extraAbilityBar.lua
+bars\totemBar.lua
+# stuff you should be able to comment out and still have Dominos work
+plugins\slashCommands.lua
+plugins\launcher.lua
+plugins\blizzardHider.lua
+plugins\buttonThemer.lua
+plugins\multiActionBarFixer.lua
+plugins\multiActionBarFixer.classic.lua
+plugins\quickBindings.lua
+plugins\getActionReagentUses.lua

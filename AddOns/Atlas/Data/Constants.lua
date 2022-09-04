@@ -1,4 +1,4 @@
--- $Id: Constants.lua 394 2022-03-01 14:06:04Z arithmandar $
+-- $Id: Constants.lua 400 2022-07-23 10:38:27Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -61,6 +61,7 @@ ATLAS_OLD_TYPE = false
 ATLAS_OLD_ZONE = false
 ATLAS_MAX_MENUITEMS = 30
 ATLAS_MODULE_MENUS = 0
+ATLAS_PLUGIN_MENUS = 0
 ATLAS_DROPDOWN_TYPES = {}
 
 ATLAS_GAMETOOLTIP_ORIGINAL_SCALE = GameTooltip:GetScale()

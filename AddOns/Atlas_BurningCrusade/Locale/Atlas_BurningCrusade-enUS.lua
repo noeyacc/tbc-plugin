@@ -1,4 +1,4 @@
--- $Id: Atlas_BurningCrusade-enUS.lua 55 2022-02-02 17:13:50Z arithmandar $
+-- $Id: Atlas_BurningCrusade-enUS.lua 67 2022-07-18 14:48:40Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -565,6 +565,20 @@ L["Zungam"] = "Zungam"
 	L["Claw"] = "Claw"
 	L["The Black Stalker"] = "The Black Stalker"
 
+	--Caverns of Time Entrance
+	L["Steward of Time <Keepers of Time>"] = "Steward of Time <Keepers of Time>"
+	L["Alexston Chrome <Tavern of Time>"] = "Alexston Chrome <Tavern of Time>"
+	L["Yarley <Armorer>"] = "Yarley <Armorer>"
+	L["Bortega <Reagents & Poison Supplies>"] = "Bortega <Reagents & Poison Supplies>"
+	L["Alurmi <Keepers of Time Quartermaster>"] = "Alurmi <Keepers of Time Quartermaster>"
+	L["Galgrom <Provisioner>"] = "Galgrom <Provisioner>"
+	L["Zaladormu"] = "Zaladormu"
+	L["Soridormi <The Scale of Sands>"] = "Soridormi <The Scale of Sands>"
+	L["Arazmodu <The Scale of Sands>"] = "Arazmodu <The Scale of Sands>"
+	L["Andormu <Keepers of Time>"] = "Andormu <Keepers of Time>"
+	L["Nozari <Keepers of Time>"] = "Nozari <Keepers of Time>"
+	L["Anachronos <Keepers of Time>"] = "Anachronos <Keepers of Time>"
+	
 	--Caverns of Time: Hyjal (Entrance)
 	L["Indormi <Keeper of Ancient Gem Lore>"] = "Indormi <Keeper of Ancient Gem Lore>";
 	L["Tydormu <Keeper of Lost Artifacts>"] = "Tydormu <Keeper of Lost Artifacts>";
@@ -816,5 +830,38 @@ L["Zungam"] = "Zungam"
 	L["Master Engineer Telonicus"] = "Master Engineer Telonicus"
 	L["Grand Astromancer Capernian"] = "Grand Astromancer Capernian"
 	L["Lord Sanguinar"] = "Lord Sanguinar"
+	
+	--Zul'Aman
+	L["Vol'jin"] = "Vol'jin";
+	L["Witch Doctor T'wansi"] = "Witch Doctor T'wansi";
+	L["Blood Guard Hakkuz <Darkspear Elite>"] = "Blood Guard Hakkuz <Darkspear Elite>";
+	L["Voodoo Pile"] = "Voodoo Pile";
+	L["Bakkalzu"] = "Bakkalzu";
+	L["Hazlek"] = "Hazlek";
+	L["The Map of Zul'Aman"] = "The Map of Zul'Aman";
+	L["Norkani"] = "Norkani";
+	L["Kasha"] = "Kasha";
+	L["Thurg"] = "Thurg";
+	L["Gazakroth"] = "Gazakroth";
+	L["Lord Raadan"] = "Lord Raadan";
+	L["Darkheart"] = "Darkheart";
+	L["Alyson Antille"] = "Alyson Antille";
+	L["Slither"] = "Slither";
+	L["Fenstalker"] = "Fenstalker";
+	L["Koragg"] = "Koragg";
+	L["Zungam"] = "Zungam";
+	L["Forest Frogs"] = "Forest Frogs";
+	L["Eulinda <Reagents>"] = "Eulinda <Reagents>";
+	L["Harald <Food Vendor>"] = "Harald <Food Vendor>";
+	L["Arinoth"] = "Arinoth";
+	L["Kaldrick"] = "Kaldrick";
+	L["Lenzo"] = "Lenzo";
+	L["Mawago"] = "Mawago";
+	L["Melasong"] = "Melasong";
+	L["Melissa"] = "Melissa";
+	L["Micah"] = "Micah";
+	L["Relissa"] = "Relissa";
+	L["Rosa"] = "Rosa";
+	L["Tyllan"] = "Tyllan";
 
 end

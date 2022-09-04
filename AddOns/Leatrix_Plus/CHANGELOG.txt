@@ -1,3 +1,135 @@
+3.0.02 - 31st August 2022
+- For 'Enhance quest log' ('Interface'), there is a new setting that lets you choose whether the quest log should be taller or not.
+- Fix for 'Enhance minimap' calendar button #2.
+- Added some flight times.  There are now 3541 flight times stored in Leatrix Plus for Wrath Classic.
+
+3.0.01 - 31st August 2022
+- Added a new option 'Manage durability' ('Frames').  If enabled, you can move and scale the armored man durability frame.
+- Fixed an issue with 'Enhance minimap' missing calendar button.
+- Fixed an issue with 'Enhance quest log' incorrect quest title.
+- Added some flight times.  There are now 3539 flight times stored in Leatrix Plus for Wrath Classic.
+
+3.0.00 - 29th August 2022
+- Welcome to Wrath of the Lich King!
+- Removed BCC transitional code.
+- Added a new option called 'Manage timer' ('Frames').  The 'Manage frames' option no longer includes the timer bar.
+- For 'Enhance minimap' ('Interface'), added a new setting that will allow you to adjust the minimap cluster scale without it affecting the minimap scale.
+- Removed the 'Hide the clock' setting (part of 'Enhance minimap') and the 'Show free bag slots' setting as they are now both included in the default UI (interface settings display menu).
+- Tweaks to the ElvUI locks.
+- Added a few flight times.  There are now 3521 flight times stored in Leatrix Plus for Wrath Classic.
+
+2.5.120 - 24th August 2022
+- The 'Hide action button text' option ('Text') is now two options - 'Hide keybind text' and 'Hide macro text'.
+- For 'Show flight times' ('Interface'), you can now control whether flight report windows are shown using a new setting in the configuration panel.
+- If you use ElvUI, Leatrix Plus options which are not compatible with specific ElvUI modules will now be disabled and locked while those ElvUI modules are enabled.  The option tooltip will tell you which ElvUI module is causing the Leatrix Plus option to be disabled.  Disabling the relevant ElvUI module will make the Leatrix Plus setting available again.
+- Fixed a minor issue with 'Show Wowhead links' ('Interface') and Questie which sometimes caused the quest link to not be updated.
+- Wrath: For 'Enhance quest log' ('Interface'), quest levels are now shown in the quest details pane in addition to the quest list.
+- Added lots and lots of flight times.  There are now 3515 flight times stored in Leatrix Plus for BCC and Wrath Classic.
+
+2.5.119 - 17th August 2022
+- Wrath: Added a new option 'Hide alerts' ('Frames').  If checked, alert frames will not be shown.  When you earn an achievement, a message will be shown in chat instead (just like retail).
+- Wrath: Added Northrend zone and dungeon music to the media section.  Most of the dungeon tracks are sound kits.
+- Wrath: For 'Accept resurrection' ('Automation'), you will not accept a resurrection request automatically if you are in the Thaddius fight (Naxxramas) and someone in your group has a positive or negative charge.
+- For 'Show flight times' ('Interface'), the flight progress bar will now always hide when you land.  The flight report window will now show if the minimum time difference between the saved flight time and the actual flight time is 15 seconds (up from 5).
+- Fixed a minor issue with 'Show cooldowns' ('Interface') which caused buff spell IDs to show in debuff tooltips.
+- Added a massive number of flight times.  There are now 3476 flight times stored in Leatrix Plus for BCC and Wrath Classic.
+
+2.5.118 - 10th August 2022
+- Updated for Wrath of the Lich King Beta.
+- Wrath: Show Wowhead links (Interface) will now show achievement links as well as quest links.
+- Wrath: Show druid power bar is disabled since it's now included in the default UI.
+- If you use 'Automate quests' ('Automation') with a Mac, you can now assign the override key to be the command key if you wish.
+- Added a massive number of flight times.  There are now 2959 flight times stored in Leatrix Plus for BCC and Wrath Classic.
+- For Wrath, it's best to use alpha releases during Wrath Beta/prepatch so that you get the latest development updates.  To switch to alpha releases, open CurseForge App, right-click Leatrix Plus in your Wrath addon listing and change release type to Alpha.  You can change it back to Release once Wrath is live for everyone.
+
+2.5.117 - 3rd August 2022
+- Added lots of flight times.  There are now 2551 flight times stored in Leatrix Plus for BCC.
+- Leatrix Plus will be updated for Wrath Classic in August 2022.
+
+2.5.116 - 27th July 2022
+- For 'Enhance minimap', added a new setting to hide the tracking button while the pointer is not over the minimap.  The clock and zone text bar will now be shown on top when using square minimap.  Some structural changes to the code.
+- Added lots of flight times.  There are now 2530 flight times stored in Leatrix Plus for BCC.
+- Leatrix Plus will now attempt to run on Wrath Beta but note that it hasn't been tested and there are no Wrath features yet.
+
+2.5.115 - 20th July 2022
+- Removed the compatibility fix for ClassicCodex addon.
+- Added lots of flight times.  There are now 2507 flight times stored in Leatrix Plus for BCC.
+
+2.5.114 - 13th July 2022
+- For 'Enhance tooltip' ('Interface'), there is a new setting to hide the health bar.  It's disabled by default.
+- Added lots of flight times.  There are now 2492 flight times stored in Leatrix Plus for BCC.
+
+2.5.113 - 6th July 2022
+- Added lots of flight times.  There are now 2473 flight times stored in Leatrix Plus for BCC.
+
+2.5.112 - 29th June 2022
+- In the game key bindings menu, you can now set a keybind to announce rares in chat.  Target a creature, press your keybind and detals of your target will be shown in the General chat channel.  These details include your target's name, health percentage remaining and coordinates.
+- Added lots of flight times.  There are now 2455 flight times stored in Leatrix Plus for BCC.
+
+2.5.111 - 22nd June 2022
+- In the game key bindings menu, you can now set a keybind to show a web link for whatever your pointer is over (as long as it has a tooltip).  For example, if you have an item in your bag and you don't know what it's for, hover your pointer over it so the item tooltip shows up then press your defined hotkey.  A Wowhead link will show in a copy-friendly window.  Press CTRL/C to copy the link then paste it into your browser.
+- In the game key bindings menu, you can now set a keybind to toggle Leatrix Plus.  The 'Enable hotkey' command has been removed.
+- The '/ltp id' command now runs the web link keybind function so if you don't want to set a keybind, you can enter '/ltp id' instead.
+- Added lots of flight times.  There are now 2431 flight times stored in Leatrix Plus for BCC.
+
+2.5.110 - 15th June 2022
+- The 'Manage frames', 'Manage buffs', 'Manage widget' and 'Manage focus' settings ('Frames') now show a frame alignment grid when moving the frames (there is a button in each configuration panel to toggle the grid).  You can now drag the frames with the left button to position them freely or with the right button to position them using snap-to-grid.
+- Added lots of flight times.  There are now 2416 flight times stored in Leatrix Plus for BCC.
+
+2.5.109 - 8th June 2022
+- For 'Show flight times', you can now change the position, scale and width of the flight progress bar using a new configuration panel.  You can also remove the progress bar background and destination text if you wish.  The flight progress bar is now noninteractive so you can click through it as if it isn't there.  If you wish to manually close the flight progress bar, there is a new Close Bar button in the configuration panel.  These new settings give you a lot of customisation options.  For example, if you set the width to the minimum, hide the background and hide the destination, you can have a neat little flight timer in the corner of the screen.
+- Added lots of flight times.  There are now 2402 flight times stored in Leatrix Plus for BCC.
+
+2.5.108 - 1st June 2022
+- For 'Enhance trainers' ('Interface'), you can now disable the train all skills button if you wish using a new setting in the configuration panel.
+- For 'Mute game sounds' ('System'), the 'Mechstriders' setting will no longer mute mechanostrider footstep sounds.  There is a new setting called 'Mechsteps' that will mute footstep sounds for mechanical mounts.
+- Added lots of flight times.  There are now 2383 flight times stored in Leatrix Plus for BCC.
+
+2.5.107 - 25th May 2022
+- Added a new option 'Show ready timer' ('Interface').  If checked, a timer will be shown under the PvP encounter ready frame so that you know how long you have left to click the enter button.
+- Added lots of flight times.  There are now 2359 flight times stored in Leatrix Plus for BCC.
+
+2.5.106 - 18th May 2022
+- For 'Enhance quest log' ('Interface'), the quest log is now taller.
+- For 'Enhance professions' ('Interface'), the professions frame is now taller.
+- For 'Enhance trainers' ('Interface'), the skill trainer frame is now taller.  Also fixed a cosmetic bug with the position of the beast training cost column.
+- If you are using ElvUI, 'Show Wowhead links' ('Interface') will now place links inside the quest log frame rather than above it.  For 'Enhance professions', the search box and 'Have materials' checkbox have been repositioned.
+- Added some flight times.  There are now 2340 flight times stored in Leatrix Plus for BCC.
+
+2.5.105 - 12th May 2022
+- Corrected a very popular flight route and added flight times.  There are now 2329 flight times stored in Leatrix Plus for BCC.
+
+2.5.104 - 12th May 2022
+- For 'Sell junk automatically' ('Automation'), you can now exclude specific junk items from being sold.  There is an exclusion list in the configuration panel where you can enter your own item IDs (separated by commas).  Item IDs will be shown in item tooltips while the configuration panel is showing.
+- If you try to use 'Enhance minimap' ('Interface') and ElvUI Minimap together, you will now be asked which one you want to use on startup.  Choosing Leatrix Plus will disable ElvUI's minimap module.  Choosing ElvUI will disable Leatrix Plus 'Enhance minimap' setting.
+- Added flight times.  There are now 2326 flight times stored in Leatrix Plus for BCC.
+
+2.5.103 - 5th May 2022
+- Added lots of flight times.  There are now 2314 flight times stored in Leatrix Plus for BCC.
+
+2.5.102 - 27th April 2022
+- Added lots of flight times.  There are now 2295 flight times stored in Leatrix Plus for BCC.
+
+2.5.101 - 20th April 2022
+- Added lots of flight times.  There are now 2265 flight times stored in Leatrix Plus for BCC.
+
+2.5.100 - 13th April 2022
+- For 'Enhance minimap' ('Interface'), if you use 'Hide addon buttons' or 'Combine addon buttons' but you want some buttons to remain visible around the minimap, you can now do so using a new 'Buttons' editor in the configuration panel.  Just follow the directions in the Help button.  The 'Exclude BugSack' setting has been removed since you can now add BugSack to the 'Buttons' panel to achieve the same result.
+- Added lots of flight times.  There are now 2180 flight times stored in Leatrix Plus for BCC.
+
+2.5.99 - 6th April 2022
+- Fixed an issue with 'Show bag search box' ('Interface') which caused a Lua error after opening a guild bank.
+- Added flight times.  There are now 2105 flight times stored in Leatrix Plus for BCC.
+
+2.5.98 - 6th April 2022
+- The 'Enhance dressup' option now shows a toggle stats button in the character frame.  You can either click this button or middle-click the character frame to toggle stats.  For new Leatrix Plus users, stats are now shown by default.
+- Added lots of flight times.  There are now 2102 flight times stored in Leatrix Plus for BCC.
+
+2.5.97 - 30th March 2022
+- If 'Enhance trainers' ('Interface') is enabled, a 'Train All' button will now be shown in the skill trainer frame allowing you to train all available skills in one click.
+- Added a compatibility fix for 'Enhance professions' when using the 'Classic Profession Filter' addon so that you can see the search box in the craft frame (used for enchanting).
+- Added lots of flight times.  There are now 2075 flight times stored in Leatrix Plus for BCC.
+
 2.5.96 - 25th March 2022
 - Fixed an issue with 'Enhance professions' ('Interface') which caused the new search box to be obscured.
 - Added lots of flight times.  There are now 2051 flight times stored in Leatrix Plus for BCC.

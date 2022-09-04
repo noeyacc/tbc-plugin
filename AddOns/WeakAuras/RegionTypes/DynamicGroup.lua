@@ -1,4 +1,4 @@
-if not WeakAuras.IsCorrectVersion() then return end
+if not WeakAuras.IsLibsOK() then return end
 local AddonName, Private = ...
 
 local WeakAuras = WeakAuras
@@ -79,7 +79,7 @@ local controlPointFunctions = {
 }
 
 local function createControlPoint(self)
-  local controlPoint = CreateFrame("FRAME", nil, self.parent)
+  local controlPoint = CreateFrame("Frame", nil, self.parent)
   Mixin(controlPoint, controlPointFunctions)
 
   controlPoint:SetWidth(16)
@@ -91,7 +91,7 @@ end
 
 local function releaseControlPoint(self, controlPoint)
   controlPoint:Hide()
-  controlPoint:ClearAnchorPoint()
+  controlPoint:SetAnchorPoint(self.parent.selfPoint)
   local regionData = controlPoint.regionData
   if regionData then
     if self.parent.anchorPerUnit == "UNITFRAME" then
@@ -103,14 +103,14 @@ local function releaseControlPoint(self, controlPoint)
 end
 
 local function create(parent)
-  local region = CreateFrame("FRAME", nil, parent)
+  local region = CreateFrame("Frame", nil, parent)
   region.regionType = "dynamicgroup"
   region:SetSize(16, 16)
   region:SetMovable(true)
   region.sortedChildren = {}
   region.controlledChildren = {}
   region.updatedChildren = {}
-  local background = CreateFrame("frame", nil, region, BackdropTemplateMixin and "BackdropTemplate")
+  local background = CreateFrame("Frame", nil, region, "BackdropTemplate")
   region.background = background
   region.selfPoint = "TOPLEFT"
   region.controlPoints = CreateObjectPool(createControlPoint, releaseControlPoint)
@@ -1084,6 +1084,11 @@ local function modify(parent, region, data)
       controlPoint:SetShown(show and frame ~= WeakAuras.HiddenFrames)
       controlPoint:SetWidth(regionData.dimensions.width)
       controlPoint:SetHeight(regionData.dimensions.height)
+      if data.anchorFrameParent then
+        controlPoint:SetParent(frame == "" and self.relativeTo or frame)
+      else
+        controlPoint:SetParent(self)
+      end
       if self.anchorPerUnit == "UNITFRAME" then
         Private.dyngroup_unitframe_monitor[regionData] = frame
       end

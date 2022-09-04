@@ -17,7 +17,7 @@ L:SetOptionLocalization({
 L:SetMiscLocalization({
 	ArachnophobiaTimer	= "Arachnophobie",
 	Pull1				= "Rennt! Das bringt das Blut in Wallung!",
-	Pull2				= "Nur einmal kosten..."
+	Pull2				= "Nur einmal kosten..." --needs to be verified (wowhead-captured translation)
 })
 
 ----------------------------
@@ -40,7 +40,7 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull					= "Kniet nieder, Wurm!"
+	Pull					= "Kniet nieder, Wurm!" --needs to be verified (wowhead-captured translation)
 })
 
 ---------------
@@ -164,7 +164,7 @@ L:SetOptionLocalization({
 
 L:SetMiscLocalization({
 	yell1			= "Flickwerk spielen möchte!",
-	yell2			= "Kel’thuzad macht Flickwerk zu seinem Abgesandten von Krieg!"
+	yell2			= "Kel’Thuzad macht Flickwerk zu seinem Abgesandten des Kriegs!"
 })
 
 -----------------
@@ -207,7 +207,7 @@ L:SetMiscLocalization({
 L:SetOptionLocalization({
 	WarningChargeChanged	= "Spezialwarnung, wenn deine Polarität gewechselt hat",
 	WarningChargeNotChanged	= "Spezialwarnung, wenn deine Polarität nicht gewechselt hat",
-	ArrowsEnabled			= "Zeige Pfeile (normale \"2-Camps\"-Strategie)",
+	AirowEnabled			= "Zeige Pfeile (normale \"2-Camps\"-Strategie)",
 	ArrowsRightLeft			= "Zeige Links-/Rechtspfeil für die \"4-Camps\"-Strategie<br/>(Linkspfeil bei Polaritätsänderung, Rechtspfeil bei keiner Änderung)",
 	ArrowsInverse			= "Umgedrehte \"4-Camps\"-Strategie<br/>(Rechtspfeil bei Polaritätsänderung, Linkspfeil bei keiner Änderung)"
 })
@@ -247,7 +247,7 @@ L:SetWarningLocalization({
 L = DBM:GetModLocalization("Gothik")
 
 L:SetGeneralLocalization({
-	name = "Gothik der Seelenjäger"
+	name = "Gothik der Ernter"
 })
 
 L:SetOptionLocalization({
@@ -293,6 +293,7 @@ L:SetGeneralLocalization({
 
 L:SetOptionLocalization({
 	WarningMarkSoon				= "Zeige Vorwarnung für Mal",
+	WarningMarkNow				= "Zeige Warnung für Mal",
 	SpecialWarningMarkOnPlayer	= "Spezialwarnung, wenn sich ein Mal mehr als 4-mal auf dir stapelt"
 })
 
@@ -301,6 +302,7 @@ L:SetTimerLocalization({
 
 L:SetWarningLocalization({
 	WarningMarkSoon				= "Mal %d in 3 Sekunden",
+	WarningMarkNow				= "Mal %d",
 	SpecialWarningMarkOnPlayer	= "%s: %s"
 })
 
@@ -325,9 +327,7 @@ L:SetOptionLocalization({
 	WarningAirPhaseNow	= "Zeige Warnung, wenn Saphiron abhebt",
 	WarningLanded		= "Zeige Warnung, wenn Saphiron landet",
 	TimerAir			= "Zeige Zeit bis nächste Luftphase",
-	TimerLanding		= "Zeige Zeit bis nächste Bodenphase",
-	TimerIceBlast		= "Zeige Zeit bis $spell:28524",
-	WarningDeepBreath	= "Spezialwarnung für $spell:28524"
+	TimerLanding		= "Zeige Zeit bis nächste Bodenphase"
 })
 
 L:SetMiscLocalization({
@@ -337,14 +337,12 @@ L:SetMiscLocalization({
 L:SetWarningLocalization({
 	WarningAirPhaseSoon	= "Luftphase in 10 Sek",
 	WarningAirPhaseNow	= "Luftphase",
-	WarningLanded		= "Bodenphase",
-	WarningDeepBreath	= "Frostatem"
+	WarningLanded		= "Bodenphase"
 })
 
 L:SetTimerLocalization({
 	TimerAir		= "Nächste Luftphase",
-	TimerLanding	= "Nächste Bodenphase",
-	TimerIceBlast	= "Frostatem"
+	TimerLanding	= "Nächste Bodenphase"
 })
 
 ------------------
@@ -364,7 +362,7 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Yell = "Diener, Jünger, Soldaten der eisigen Finsternis! Folgt dem Ruf von Kel'Thuzad!"
+	Yell = "Lakaien, Diener, Soldaten der eisigen Finsternis! Folgt dem Ruf von Kel'Thuzad!"
 })
 
 L:SetWarningLocalization({

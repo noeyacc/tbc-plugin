@@ -1,0 +1,6 @@
+## Interface: 20504
+## Title: Dominos Extras
+## Notes: Makes additional frames movable
+## Author: Tuller (with help from Goranaws)
+## Dependencies: Dominos
+## DefaultState: disabled

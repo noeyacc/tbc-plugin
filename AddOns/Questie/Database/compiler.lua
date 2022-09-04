@@ -259,16 +259,21 @@ QuestieDBCompiler.readers = {
             QuestieDBCompiler.readers["u24pair"](stream),
         }
 
-        local creditCount = stream:ReadByte()
-        if creditCount > 0 then
-            local creditList = {}
-            for i=1,creditCount do
-                creditList[i] = stream:ReadInt24()
-            end
-            local rootNPCId = stream:ReadInt24()
-            local rootNPCName = stream:ReadTinyStringNil()
-            ret[5] = {creditList, rootNPCId, rootNPCName}
+        local count = stream:ReadByte()
+        if count == 0 then
+            return ret
         end
+
+        local killobjectives = {}
+        for i=1, count do
+            local creditCount = stream:ReadByte()
+            local creditList = {}
+            for j=1, creditCount do
+                creditList[j] = stream:ReadInt24()
+            end
+            killobjectives[i] = {creditList, stream:ReadInt24(), stream:ReadTinyStringNil()}
+        end
+        ret[5] = killobjectives
 
         return ret
     end,
@@ -540,13 +545,22 @@ QuestieDBCompiler.writers = {
             QuestieDBCompiler.writers["objective"](stream, value[2])
             QuestieDBCompiler.writers["objective"](stream, value[3])
             QuestieDBCompiler.writers["u24pair"](stream, value[4])
-            if value[5] and value[5][1] and value[5][1][1] then
-                stream:WriteByte(#value[5][1])
-                for _, v in pairs(value[5][1]) do
-                    stream:WriteInt24(v)
+
+            local killobjectives = value[5]
+            if type(killobjectives) == "table" and #killobjectives > 0 then
+                stream:WriteByte(#killobjectives)
+                for i=1, #killobjectives do -- iterate over all killobjectives
+                    local killobjective = killobjectives[i]
+                    local npcIds = killobjective[1]
+                    assert(type(npcIds) == "table", "killobjective's npcids is not a table.")
+                    assert(#npcIds > 0, "killOojective has 0 npcIDs.")
+                    stream:WriteByte(#npcIds) -- write count of creatureIDs
+                    for j=1, #npcIds do
+                        stream:WriteInt24(npcIds[j]) -- write creatureID
+                    end
+                    stream:WriteInt24(killobjective[2]) -- write baseCreatureID
+                    stream:WriteTinyString(killobjective[3] or "") -- write baseCreatureText
                 end
-                stream:WriteInt24(value[5][2])
-                stream:WriteTinyString(value[5][3] or "")
             else
                 stream:WriteByte(0)
             end
@@ -675,10 +689,12 @@ QuestieDBCompiler.skippers = {
         QuestieDBCompiler.skippers["objective"](stream)
         QuestieDBCompiler.skippers["objective"](stream)
         QuestieDBCompiler.skippers["u24pair"](stream)
-        local count = stream:ReadByte()
+        local count = stream:ReadByte() -- killobjectives
         if count > 0 then
-            stream._pointer = stream._pointer + count * 3 + 3
-            QuestieDBCompiler.skippers["u8string"](stream)
+            for _=1, count do
+                stream._pointer = stream:ReadByte() * 3 + 3 + stream._pointer
+                stream._pointer = stream:ReadByte() + stream._pointer
+            end
         end
     end,
     ["reflist"] = function(stream)

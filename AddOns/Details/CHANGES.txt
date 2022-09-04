@@ -1,34 +1,22 @@
-tag 96a7ba640c2a7b5e302f4258340961dfd245cd01 DetailsRetail.9.0.5.8637.145
+tag 4da0b460463e4b40fa12a222ffe4df409d61dc41 DetailsRetail.v9.2.7.10018.146
 Author:	Tercio Jose <terciob19@hotmail.com>
-Date:	Tue Jun 22 17:01:04 2021 -0300
+Date:	Wed Aug 31 19:15:29 2022 -0300
 
-commit b596445acefd31b32e51a81a115ba69795574db1
+commit 27ca0d6df73caa348f61ca1e3b95c7e33a050e31
 Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Tue Jun 22 17:00:09 2021 -0300
+Date:   Wed Aug 31 19:15:06 2022 -0300
 
-    Packr Utility on Coach mode and Vanguard massive update
+    Version Bump
 
-commit 8b2501309f15dfa3605d702cefa963c87af01745
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Tue Jun 15 23:10:37 2021 -0300
+commit 57bc1895a68c20dec674bee86c0f882eb4d50076
+Author: Colton Schlosser <1498529+cltnschlosser@users.noreply.github.com>
+Date:   Wed Aug 31 17:10:58 2022 -0500
 
-    Another wave of changes on Vanguard
+    Fix IsWotLKWow typo
 
-commit 7d17a69c1a5b27edbbea76aeab449c5bac0c0ed3
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Mon Jun 14 15:55:29 2021 -0300
+commit 57bc1895a68c20dec674bee86c0f882eb4d50076
+Author: Colton Schlosser <1498529+cltnschlosser@users.noreply.github.com>
+Date:   Wed Aug 31 17:10:58 2022 -0500
 
-     Vanguard updated to 2021
-
-commit 39aa5f0e7782b0cc5187f87337d6146f8af4cb08
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Mon Jun 14 15:55:10 2021 -0300
-
-    Make plugins be in the list of displays
-
-commit bd1700b5f11ae1d117a0c4ccba9475f0d96f8961
-Author: Tercio Jose <terciob19@hotmail.com>
-Date:   Thu Jun 10 12:09:28 2021 -0300
-
-    general fixes for game client versions
+    Fix IsWotLKWow typo
 

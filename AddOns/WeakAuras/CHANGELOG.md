@@ -1,36 +1,87 @@
-# [3.7.14](https://github.com/WeakAuras/WeakAuras2/tree/3.7.14) (2022-03-20)
+# [4.0.3](https://github.com/WeakAuras/WeakAuras2/tree/4.0.3) (2022-08-18)
 
-[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/3.7.13...3.7.14)
+[Full Changelog](https://github.com/WeakAuras/WeakAuras2/compare/4.0.2...4.0.3)
 
 ## Highlights
 
- - bug fixes 
+ - Group Leader load option
+- Specialization filter for BT2, Health, Power triggers
+- Lots of updates and feature additions for Wrath Classic
+- Your usual amount of bug fixes 
 
 ## Commits
 
-Adam Wendelin (1):
+InfusOnWoW (11):
 
-- Add slam rank 5 to spells resetting swing
+- Make setting distribute spaced with 0 "work"
+- Document workaround with a link to WoWUIBugs
+- BT2: Fix stale/wrong information in multi-tracking states
+- PositionOptions: Hide AnchorPoint if a aura is in a dynamic group
+- Provide Specialization filter for BT2, Health, Power triggers
+- Fix typo
+- Fix "Since apply/refresh" checks for Show on always auras
+- Fix warnings for protected frames
+- Fix invalid rects that cause Glows not being applied properly
+- Add a debug log functionality for custom coded auras
+- Add a "Group Leader" load option
 
-InfusOnWoW (4):
+Jason Herbert (1):
 
-- Fix nil error in UnitPlayerControlledFixed
-- Fix Class coloring for units that are far away
-- DBM: Fix nil error for paused timers
-- Change order of Types and Prototypes.lua loading
+- Add rune type triggers for wrath
+
+Stanzilla (4):
+
+- TOC Bump for Patch 9.2.7
+- Fix Wrath toc
+- CI: Add Wrath package
+- Add Wrath versions to TOC
 
 asakawa (1):
 
-- add a tooltip for unit selections in status triggers
+- Add a framework for custom triggers to watch other triggers
 
-mrbuds (8):
+emptyrivers (3):
 
-- BW/DBM Timer triggers: fix handling of remainingTime with paused timers, fixes #3537
-- Threat Situation trigger: add boss & nameplate support add a migration for unitThreat to unit statesParameter is now "unit"
-- Revert "Adjust {rt#} replacement to be compatible with DBM extended raid marks" raid target > 8 was removed in 9.2 https://wowpedia.fandom.com/wiki/Patch_9.2.0/API_changes
-- Spell Known trigger: add inverse option, fixes #3533
-- Combat Log trigger: add spellSchool filter, fixes #3529
-- Character state bcc: revert hastepercent change, fixes #3516
-- bufftrigger boss unit fix
-- more fixes to support boss units up to 10
+- new feature string
+- teach group options how to not Merge
+- do more nil checks
+
+hexaheart (1):
+
+- Fix an error on SetTextureOrAtlas behavior
+
+mrbuds (32):
+
+- move encounter & zoneId list stuff from Prototypes.lua to a per extension Types_<version>.lua
+- Wrath: Listen to event PLAYER_TALENT_UPDATE for talent & spell known load conditions & triggers, fixes #3729
+- Switch to single build mode (#3722)
+- Fix spell cooldown trigger: ignore rune cooldown, on wrath
+- Death Knight wrath template update
+- Update bug_report.yml
+- Fix set parent to anchor when frame is an empty string
+- Custom Option deleting entry of an array prompt a confirmation dialog
+- Add "Cooldown > Hide Timer Text" condition on Icon region
+- add "Set Parent to Anchor" option to dynamic group's grouped by frame
+- use bcc's modelpath on wrath
+- wrath templates (WIP)
+- Fix (temporary?) for WeakAuras.IsCorrectVersion and wrongTargetMessage for wrath
+- Reorganise version checks
+- Restore vehicle load condition for wrath
+- Make "Spell Known" load condition work with pet abilities
+- Fix number formaters with custom code
+- disable swing timer trigger for wrath
+- Assigned Role load condition & trigger filter for wrath
+- prepare wrath templates
+- update encounter ids for wrath
+- support 10 & 25 players heroic raids for instance_type load condition
+- Fix version check for Wrath
+- Faction Reputation trigger: handle paragons and improve friendship
+- Fix aura trigger UI positioning for BCC & Classic
+- Remove old newFeatureStrings from 2020-2021
+- Position setting: use 9slice widget and moved some options
+- Aura trigger: fix role option
+- Threat Situation trigger: add unitexist check
+- swing timer: reset ranged & melee swings on Feign Death
+- TBC: fix "Instance Type", "Raid Role", "Group Leader" load conditions
+- fix health trigger on classic era
 

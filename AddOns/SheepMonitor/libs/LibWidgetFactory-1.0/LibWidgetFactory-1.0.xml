@@ -1,5 +1,0 @@
-<Ui xmlns="http://www.blizzard.com/wow/ui/">
-	<Script file="libs\LibStub.lua"/>
-	<Include file="libs\AceGUI-3.0\AceGUI-3.0.xml" />
-	<Script file="LibWidgetFactory-1.0.lua"/>
-</Ui>

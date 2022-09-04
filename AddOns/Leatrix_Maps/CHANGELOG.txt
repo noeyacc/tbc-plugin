@@ -1,3 +1,67 @@
+3.0.05 - 1st September 2022
+- Added points of interest.
+
+3.0.04 - 31st August 2022
+- File layout fix and Eastern Plaguelands fix #2.
+
+3.0.02 - 31st August 2022
+- Fixed an issue with Eastern Plaguelands explored map showing unexplored areas.
+
+3.0.01 - 31st August 2022
+- Added some points of interest icons.
+- Fixed an issue which caused a texture to be shown behind the map if the map border was enabled and map opacity was not 100%.
+
+3.0.00 - 29th August 2022
+- Welcome to Wrath of the Lich King!
+- Removed BCC transitional code.
+- Added Utgarde Keep icon.
+
+2.5.120 - 24th August 2022
+- Wrath: For 'Show dungeons and raids', the Northrend dungeon icons now show level information (recommended dungeon level, minimum level required to enter and meeting stone level, where known).
+
+2.5.119 - 17th August 2022
+- Wrath: Added new flight points in Tirisfal Glades and Western Plaguelands.
+- Wrath: The 'Show spirit healers' setting is disabled.
+
+2.5.118 - 10th August 2022
+- Updated for Wrath Classic.
+- Wrath: The Northrend zone menu is now available (when logged into BCC, the menu will be disabled).
+- Wrath: All the Northrend zones are revealed and show points of interest if the settings are enabled.
+- For Wrath, it's best to use alpha releases during Wrath Beta/prepatch so that you get the latest development updates.  To switch to alpha releases, open CurseForge App, right-click Leatrix Maps in your Wrath addon listing and change release type to Alpha.  You can change it back to Release once Wrath is live for everyone.
+
+2.5.117 - 3rd August 2022
+- Leatrix Maps will be updated for Wrath Beta during August 2022.
+
+2.5.116 - 27th July 2022
+- For 'Unlock map frame', added a fix for Demodal preventing the map frame from being moved to the top edge of the screen.
+- Leatrix Maps for BCC will now attempt to run on Wrath Beta but note that it hasn't been tested and there are no Wrath features yet.
+
+2.5.115 - 20th July 2022
+- Fixed a minor cosmetic issue with 'Show zone menus' which may have sometimes caused menus to overlap.  Added skins for ElvUI.
+
+2.5.114 - 13th July 2022
+- Added a new setting 'Show zone menus'.  If enabled, continent and zone dropdown menus will be shown in the map frame allowing you to see the current map zone and change it as you wish.  It's enabled by default.
+- For 'Show zone crossings', Mulgore and Thunder Bluff maps now show north and south zone crossing arrows.
+- For 'Show dungeons and raids', Blackrock Mountain, Caverns of Time and Coilfang Reservoir icons will now show minimum levels for each of the dungeons and raids included.
+
+2.5.111 - 22nd June 2022
+- In the game key bindings menu, you can now set a keybind to toggle Leatrix Maps.
+
+2.5.109 - 8th June 2022
+- Added 'Ravenholdt Manor' zone crossing to Hillsbrad Foothills and Alterac Mountains maps.
+
+2.5.96 - 30th March 2022
+- For developers, you can now configure Leatrix Maps from your own addon or script using the following as a guide:
+
+-- Ensure Leatrix Maps does not replace LeaMapsDB on next reload
+SlashCmdList["Leatrix_Maps"]("nosave")
+-- Clear the settings database (optional but recommended)
+wipe(LeaMapsDB)
+-- Configure the settings (add any settings you like here)
+LeaMapsDB["NoMapBorder"] = "On"
+-- Reload the UI to apply the settings
+ReloadUI()
+
 2.5.95 - 23rd March 2022
 - Updated for game version 2.5.4.
 

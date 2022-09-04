@@ -24,8 +24,8 @@ L:SetOptionLocalization({
 
 L:SetMiscLocalization({
 	ArachnophobiaTimer	= "Арахнофобия",
-	Pull1				= "Бегите, бегите! Я люблю горячую кровь!",
-	Pull2				= "Посмотрим, какие вы на вкус!"
+	Pull1				= "Yes, run! It makes the blood pump faster!",
+	Pull2				= "Just a little taste..."
 })
 
 ----------------------------
@@ -48,7 +48,7 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull					= "Склонитесь передо мной, черви!"--Not actually pull trigger, but often said on pull
+	Pull					= "Kneel before me, worm!"--Not actually pull trigger, but often said on pull
 })
 
 ---------------
@@ -106,7 +106,7 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull				= "Смерть чужакам!"
+	Pull				= "Die, trespasser!"
 })
 
 --------------------------
@@ -134,7 +134,7 @@ L:SetOptionLocalization({
 })
 
 L:SetMiscLocalization({
-	Pull				= "Теперь вы принадлежите мне!"
+	Pull				= "You are mine now."
 })
 
 ---------------
@@ -213,7 +213,7 @@ L:SetMiscLocalization({
 L:SetOptionLocalization({
 	WarningChargeChanged	= "Предупреждение, когда ваша полярность изменена",
 	WarningChargeNotChanged	= "Предупреждение, когда ваша полярность не изменена",
-	ArrowsEnabled			= "Отображать стрелки (обычная \"2-сторонняя\" стратегия)",
+	AirowEnabled			= "Отображать стрелки (обычная \"2-сторонняя\" стратегия)",
 	ArrowsRightLeft			= "Стрелки влево/вправо для \"4-сторонней\" стратегии",
 	ArrowsInverse			= "Обратная \"4-сторонняя\" стратегия (вправо, если полярность изменена, влево, если нет)"
 })
@@ -299,6 +299,7 @@ L:SetGeneralLocalization({
 
 L:SetOptionLocalization({
 	WarningMarkSoon				= "Предупреждать перед следующими знаками",
+	WarningMarkNow				= "Предупреждение для знаков",
 	SpecialWarningMarkOnPlayer	= "Спец-предупреждение, когда >4 знаков на вас"
 })
 
@@ -307,6 +308,7 @@ L:SetTimerLocalization({
 
 L:SetWarningLocalization({
 	WarningMarkSoon				= "Знак %d через 3 секунды",
+	WarningMarkNow				= "Знак %d",
 	SpecialWarningMarkOnPlayer	= "%s: %s"
 })
 
@@ -332,8 +334,6 @@ L:SetOptionLocalization({
 	WarningLanded		= "Объявлять Наземную фазу",
 	TimerAir			= "Отсчет времени до Воздушной фазы",
 	TimerLanding		= "Отсчет времени до приземления",
-	TimerIceBlast		= "Отсчет времени до Ледяного дыхания",
-	WarningDeepBreath	= "Специальное объявление Ледяного Дыхания",
 	WarningIceblock		= "Кричать, когда вы в Ледяной глыбе"
 })
 
@@ -345,14 +345,12 @@ L:SetMiscLocalization({
 L:SetWarningLocalization({
 	WarningAirPhaseSoon	= "Воздушная фаза через 10 секунд",
 	WarningAirPhaseNow	= "Воздушная фаза",
-	WarningLanded		= "Сапфирон приземляется",
-	WarningDeepBreath	= "Ледяное дыхание"
+	WarningLanded		= "Сапфирон приземляется"
 })
 
 L:SetTimerLocalization({
 	TimerAir		= "Воздушная фаза",
-	TimerLanding	= "Приземление",
-	TimerIceBlast	= "Ледяное дыхание"
+	TimerLanding	= "Приземление"
 })
 
 ------------------

@@ -1,4 +1,4 @@
--- $Id: Data.lua 87 2022-03-23 15:32:36Z arithmandar $
+-- $Id: Data.lua 89 2022-07-23 14:45:08Z arithmandar $
 --[[
 
 	Atlas, a World of Warcraft instance map browser
@@ -28,6 +28,7 @@
 local _G = getfenv(0)
 local pairs = _G.pairs
 -- Libraries
+local GetBuildInfo = _G.GetBuildInfo
 -- ----------------------------------------------------------------------------
 -- AddOn namespace.
 -- ----------------------------------------------------------------------------
@@ -41,14 +42,19 @@ local ALIL = Atlas_IngameLocales
 local Atlas = LibStub("AceAddon-3.0"):GetAddon("Atlas")
 local addon = Atlas:GetModule(private.module_name)
 
-local WoWClassicEra, WoWClassicTBC, WoWRetail
-local wowtocversion  = select(4, GetBuildInfo())
-if wowtocversion < 20000 then
+-- Determine WoW TOC Version
+local WoWClassicEra, WoWClassicTBC, WoWWOTLKC, WoWRetail
+local wowversion  = select(4, GetBuildInfo())
+if wowversion < 20000 then
 	WoWClassicEra = true
-elseif wowtocversion > 19999 and wowtocversion < 90000 then 
+elseif wowversion < 30000 then 
 	WoWClassicTBC = true
-else
+elseif wowversion < 40000 then 
+	WoWWOTLKC = true
+elseif wowversion > 90000 then
 	WoWRetail = true
+else
+	-- n/a
 end
 
 local function Atlas_GetBossName(bossname, encounterID, creatureIndex)

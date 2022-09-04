@@ -1,5 +1,42 @@
 # Dominos Changelog
 
+## 9.3.4
+
+* (Classic) Fix OverrideController related errors
+
+## 9.3.3
+
+* (Retail) Fix issues with the talking head bar not loading
+
+## 9.3.2
+
+* Use Dominos_Encounter.toc instead of Dominos_Encounter_Mainline.toc for compatibility
+
+## 9.3.1
+
+* Fix packaging for multiple game versions
+
+## 9.3.0
+
+* Packaged as a universal addon
+* (WotLK) Update expansion level detection
+
+## 9.3.0-beta3
+
+* (WotLK) Fix the shadowdance state
+* (Vanilla) Fix a crash due to no override bar
+
+## 9.3.0-beta2
+
+* (WotLK) Fixed a load issue with the new totem bar
+* (WotLK) Disabled the pet bar when possessing a target
+
+## 9.3.0-beta1
+
+* First pass at support for WotLK classic:
+  * Turned on the full vehicle UI for WotLK (NEEDS TESTING)
+  * Made the Blizzard totem bar movable
+
 ## 9.2.2
 
 * Fixed some packaging issues

@@ -69,27 +69,27 @@ local function showRealDate(curseDate)
 end
 
 DBM = {
-	Revision = parseCurseDate("20220802031754"),
+	Revision = parseCurseDate("20220830040233"),
 }
 
 local fakeBWVersion, fakeBWHash
 local bwVersionResponseString = "V^%d^%s"
 -- The string that is shown as version
 if isRetail then
-	DBM.DisplayVersion = "9.2.24"
-	DBM.ReleaseRevision = releaseDate(2022, 8, 1) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "9.2.32 alpha"
+	DBM.ReleaseRevision = releaseDate(2022, 8, 23) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 	fakeBWVersion, fakeBWHash = 243, "d58ab26"
 elseif isClassic then
-	DBM.DisplayVersion = "1.14.26"
+	DBM.DisplayVersion = "1.14.27 alpha"
 	DBM.ReleaseRevision = releaseDate(2022, 8, 1) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 	fakeBWVersion, fakeBWHash = 41, "287b8dd"
 elseif isBCC then
-	DBM.DisplayVersion = "2.5.42"
+	DBM.DisplayVersion = "2.6.0 alpha"--When TBC returns (and it will one day). It'll probably be game version 2.6
 	DBM.ReleaseRevision = releaseDate(2022, 8, 1) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 	fakeBWVersion, fakeBWHash = 41, "287b8dd"
 elseif isWrath then
-	DBM.DisplayVersion = "3.4.6"
-	DBM.ReleaseRevision = releaseDate(2022, 8, 1) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
+	DBM.DisplayVersion = "3.4.7"
+	DBM.ReleaseRevision = releaseDate(2022, 8, 29) -- the date of the latest stable version that is available, optionally pass hours, minutes, and seconds for multiple releases in one day
 	fakeBWVersion, fakeBWHash = 41, "287b8dd"
 end
 DBM.HighestRelease = DBM.ReleaseRevision --Updated if newer version is detected, used by update nags to reflect critical fixes user is missing on boss pulls
@@ -505,14 +505,16 @@ end
 local LibStub = _G["LibStub"]
 local LibSpec
 do
-	if isRetail then
-		LibSpec = LibStub("LibSpecialization")
-		local function update(specID, _, _, playerName)
-			if raid[playerName] then
-				raid[playerName].specID = specID
+	if isRetail and LibStub then
+		LibSpec = LibStub("LibSpecialization", true)
+		if LibSpec then
+			local function update(specID, _, _, playerName)
+				if raid[playerName] then
+					raid[playerName].specID = specID
+				end
 			end
+			LibSpec:Register(DBM, update)
 		end
-		LibSpec:Register(DBM, update)
 	end
 end
 
@@ -1473,7 +1475,7 @@ do
 			if type(DBM_MinimapIcon) ~= "table" then
 				DBM_MinimapIcon = {}
 			end
-			if LibStub("LibDBIcon-1.0", true) then
+			if LibStub and LibStub("LibDBIcon-1.0", true) then
 				LibStub("LibDBIcon-1.0"):Register("DBM", private.dataBroker, DBM_MinimapIcon)
 			end
 			local soundChannels = tonumber(GetCVar("Sound_NumChannels")) or 24--if set to 24, may return nil, Defaults usually do
@@ -1697,7 +1699,13 @@ do
 					"PLAYER_SPECIALIZATION_CHANGED",
 					"SCENARIO_COMPLETED"
 				)
-			else -- WoTLKC, BCC and Classic
+			elseif isWrath then -- WoTLKC
+				self:RegisterEvents(
+					"UNIT_HEALTH_FREQUENT mouseover target focus player",--Still exists in classic and non frequent is slow and less reliable
+					"CHARACTER_POINTS_CHANGED",
+					"PLAYER_TALENT_UPDATE"
+				)
+			else -- BCC and Classic
 				self:RegisterEvents(
 					"UNIT_HEALTH_FREQUENT mouseover target focus player",--Still exists in classic and non frequent is slow and less reliable
 					"CHARACTER_POINTS_CHANGED"
@@ -3185,8 +3193,8 @@ function DBM:PLAYER_SPECIALIZATION_CHANGED()
 		end
 	end
 end
-
 DBM.CHARACTER_POINTS_CHANGED = DBM.PLAYER_SPECIALIZATION_CHANGED -- Classic/BCC support
+DBM.PLAYER_TALENT_UPDATE = DBM.PLAYER_SPECIALIZATION_CHANGED -- Wrath support
 
 do
 	local function AcceptPartyInvite()
@@ -3260,48 +3268,34 @@ do
 	local legionZones = {[1712]=true,[1520]=true,[1530]=true,[1676]=true,[1648]=true}
 	local bfaZones = {[1861]=true,[2070]=true,[2096]=true,[2164]=true,[2217]=true}
 	local challengeScenarios = {[1148]=true,[1698]=true,[1710]=true,[1703]=true,[1702]=true,[1684]=true,[1673]=true,[1616]=true,[2215]=true}
-	local pvpZones = {[30]=true,[489]=true,[529]=true,[559]=true,[562]=true,[566]=true,[572]=true,[617]=true,[618]=true,[628]=true,[726]=true,[727]=true,[761]=true,[968]=true,[980]=true,[998]=true,[1105]=true,[1134]=true,[1681]=true,[1803]=true,[2107]=true,[2118]=true,[2177]=true,[2197]=true}
-	local oldDungeons = {
-		[48]=true,[230]=true,[429]=true,[389]=true,[34]=true,--Classic
-		[540]=true,[558]=true,[556]=true,[555]=true,[542]=true,[546]=true,[545]=true,[547]=true,[553]=true,[554]=true,[552]=true,[557]=true,[269]=true,[560]=true,[543]=true,[585]=true,--BC
-		[619]=true,[601]=true,[595]=true,[600]=true,[604]=true,[602]=true,[599]=true,[576]=true,[578]=true,[574]=true,[575]=true,[608]=true,[658]=true,[632]=true,[668]=true,[650]=true,--Wrath
-		[755]=true,[645]=true,[36]=true,[670]=true,[644]=true,[33]=true,[643]=true,[725]=true,[657]=true,[309]=true,[859]=true,[568]=true,[938]=true,[940]=true,[939]=true,[646]=true,--Cata
-		[960]=true,[961]=true,[959]=true,[962]=true,[994]=true,[1011]=true,[1007]=true,[1001]=true,[1004]=true,--MoP
-		[1182]=true,[1175]=true,[1208]=true,[1195]=true,[1279]=true,[1176]=true,[1209]=true,[1358]=true,--WoD
-		[1501]=true,[1466]=true,[1456]=true,[1477]=true,[1458]=true,[1516]=true,[1571]=true,[1492]=true,[1544]=true,[1493]=true,[1651]=true,[1677]=true,[1753]=true--Legion
-		--[1763]=true,[1754]=true,[1762]=true,[1864]=true,[1822]=true,[1877]=true,[1594]=true,[1841]=true,[1771]=true,[1862]=true,[2097]=true--BfA Dungeons
-	}
+	local pvpZones = {[30]=true,[489]=true,[529]=true,[559]=true,[562]=true,[566]=true,[572]=true,[617]=true,[618]=true,[628]=true,[726]=true,[727]=true,[761]=true,[968]=true,[980]=true,[998]=true,[1105]=true,[1134]=true,[1170]=true,[1504]=true,[1505]=true,[1552]=true,[1681]=true,[1672]=true,[1803]=true,[1825]=true,[1911]=true,[2106]=true,[2107]=true,[2118]=true,[2167]=true,[2177]=true,[2197]=true,[2245]=true,[2373]=true,[2509]=true,[2511]=true,[2547]=true,[2563]=true}
 	--This never wants to spam you to use mods for trivial content you don't need mods for.
 	--It's intended to suggest mods for content that's relevant to your level (TW, leveling up in dungeons, or even older raids you can't just roll over)
-	function DBM:CheckAvailableMods()
+	function DBM:CheckAvailableMods(wipeNag)
 		if _G["BigWigs"] or modAdvertisementShown then return end--If they are running two boss mods at once, lets assume they are only using DBM for a specific feature (such as brawlers) and not nag
 		if isRetail then
-			local timeWalking = C_PlayerInfo.IsPlayerInChromieTime() or difficultyIndex == 24 or difficultyIndex == 33
-			if oldDungeons[LastInstanceMapID] and (timeWalking or playerLevel < 50) and not GetAddOnInfo("DBM-Party-BC") then
-				AddMsg(self, L.MOD_AVAILABLE:format("DBM Old Dungeon mods"))
-				modAdvertisementShown = true
-			elseif (classicZones[LastInstanceMapID] or bcZones[LastInstanceMapID]) and (timeWalking or playerLevel < 31) and not GetAddOnInfo("DBM-BlackTemple") then
-				AddMsg(self, L.MOD_AVAILABLE:format("DBM BC/Vanilla mods"))
-				modAdvertisementShown = true
-			elseif wrathZones[LastInstanceMapID] and (timeWalking or playerLevel < 31) and not GetAddOnInfo("DBM-Ulduar") then
-				AddMsg(self, L.MOD_AVAILABLE:format("DBM Wrath of the Lich King mods"))
-				modAdvertisementShown = true
-			elseif cataZones[LastInstanceMapID] and (timeWalking or playerLevel < 36) and not GetAddOnInfo("DBM-Firelands") then
-				AddMsg(self, L.MOD_AVAILABLE:format("DBM Cataclysm mods"))
-				modAdvertisementShown = true
-			elseif mopZones[LastInstanceMapID] and (timeWalking or playerLevel < 36) and not GetAddOnInfo("DBM-SiegeOfOrgrimmarV2") then
-				AddMsg(self, L.MOD_AVAILABLE:format("DBM Mists of Pandaria mods"))
-				modAdvertisementShown = true
-			elseif wodZones[LastInstanceMapID] and (timeWalking or playerLevel < 41) and not GetAddOnInfo("DBM-HellfireCitadel") then
-				AddMsg(self, L.MOD_AVAILABLE:format("DBM Warlords of Draenor mods"))
-				modAdvertisementShown = true
-			elseif legionZones[LastInstanceMapID] and (timeWalking or playerLevel < 51) and not GetAddOnInfo("DBM-AntorusBurningThrone") then--Technically 45 level with quish, but because of tuning you need need mods even at 50
-				AddMsg(self, L.MOD_AVAILABLE:format("DBM Legion mods"))
-				modAdvertisementShown = true
-			elseif bfaZones[LastInstanceMapID] and (timeWalking or playerLevel < 61) and not GetAddOnInfo("DBM-Nyalotha") then--Technically 50, but tuning and huge loss of player power, zones are even HARDER at 60
-				AddMsg(self, L.MOD_AVAILABLE:format("DBM Battle for Azeroth mods"))
-				modAdvertisementShown = true
-			elseif challengeScenarios[LastInstanceMapID] and not GetAddOnInfo("DBM-Challenges") then
+			if not self:IsTrivial() then
+				if wipeNag then--Disable message after one wipe nag, don't want to rub in a person is wiping, just nudge (once) that a mod might help
+					modAdvertisementShown = true
+				end
+				if instanceDifficultyBylevel[LastInstanceMapID] and instanceDifficultyBylevel[LastInstanceMapID][2] == 2 and not GetAddOnInfo("DBM-Party-BC") then
+					AddMsg(self, L.MOD_AVAILABLE:format("DBM Dungeon mods"))
+				elseif (classicZones[LastInstanceMapID] or bcZones[LastInstanceMapID]) and not GetAddOnInfo("DBM-BlackTemple") then
+					AddMsg(self, L.MOD_AVAILABLE:format("DBM BC/Vanilla mods"))
+				elseif wrathZones[LastInstanceMapID] and not GetAddOnInfo("DBM-Ulduar") then
+					AddMsg(self, L.MOD_AVAILABLE:format("DBM Wrath of the Lich King mods"))
+				elseif cataZones[LastInstanceMapID] and not GetAddOnInfo("DBM-Firelands") then
+					AddMsg(self, L.MOD_AVAILABLE:format("DBM Cataclysm mods"))
+				elseif mopZones[LastInstanceMapID] and not GetAddOnInfo("DBM-SiegeOfOrgrimmarV2") then
+					AddMsg(self, L.MOD_AVAILABLE:format("DBM Mists of Pandaria mods"))
+				elseif wodZones[LastInstanceMapID] and not GetAddOnInfo("DBM-HellfireCitadel") then
+					AddMsg(self, L.MOD_AVAILABLE:format("DBM Warlords of Draenor mods"))
+				elseif legionZones[LastInstanceMapID] and not GetAddOnInfo("DBM-AntorusBurningThrone") then--Technically 45 level with quish, but because of tuning you need need mods even at 50
+					AddMsg(self, L.MOD_AVAILABLE:format("DBM Legion mods"))
+				elseif bfaZones[LastInstanceMapID] and not GetAddOnInfo("DBM-Nyalotha") then--Technically 50, but tuning and huge loss of player power, zones are even HARDER at 60
+					AddMsg(self, L.MOD_AVAILABLE:format("DBM Battle for Azeroth mods"))
+				end
+			elseif challengeScenarios[LastInstanceMapID] and not GetAddOnInfo("DBM-Challenges") then--No trivial check on challenge scenarios
 				AddMsg(self, L.MOD_AVAILABLE:format("DBM-Challenges"))
 				modAdvertisementShown = true
 			end
@@ -3366,7 +3360,7 @@ do
 		-- This Bypasses Same ID check because we still need to recheck this on keystone difficulty check
 		if not self.Options.RecordOnlyBosses then
 			if LastInstanceType == "raid" or LastInstanceType == "party" then
-				self:StartLogging(0, nil)
+				self:StartLogging(0)
 			else
 				self:StopLogging()
 			end
@@ -3437,7 +3431,7 @@ do
 
 	function DBM:CHALLENGE_MODE_RESET()
 		if not self.Options.RecordOnlyBosses then
-			self:StartLogging(0, nil, true)
+			self:StartLogging(0)
 		end
 	end
 
@@ -4057,7 +4051,7 @@ do
 	guildSyncHandlers["GCB"] = function(_, modId, ver, difficulty, difficultyModifier, name)
 		if not DBM.Options.ShowGuildMessages or not difficulty then return end
 		if not ver or ver ~= "3" then return end--Ignore old versions
-		if DBM:AntiSpam(10, "GCB") then
+		if DBM:AntiSpam(isRetail and 10 or 20, "GCB") then
 			if IsInInstance() then return end--Simple filter, if you are inside an instance, just filter it, if not in instance, good to go.
 			difficulty = tonumber(difficulty)
 			if not DBM.Options.ShowGuildMessagesPlus and difficulty == 8 then return end
@@ -4088,7 +4082,7 @@ do
 	guildSyncHandlers["GCE"] = function(_, modId, ver, wipe, time, difficulty, difficultyModifier, name, wipeHP)
 		if not DBM.Options.ShowGuildMessages or not difficulty then return end
 		if not ver or ver ~= "6" then return end--Ignore old versions
-		if DBM:AntiSpam(5, "GCE") then
+		if DBM:AntiSpam(isRetail and 10 or 20, "GCE") then
 			if IsInInstance() then return end--Simple filter, if you are inside an instance, just filter it, if not in instance, good to go.
 			difficulty = tonumber(difficulty)
 			if not DBM.Options.ShowGuildMessagesPlus and difficulty == 8 then return end
@@ -4393,7 +4387,7 @@ do
 		if not combatInitialized then return end
 		if dbmIsEnabled and combatInfo[LastInstanceMapID] then
 			for _, v in ipairs(combatInfo[LastInstanceMapID]) do
-				if v.type:find("combat") and not v.noRegenDetection then
+				if v.type:find("combat") and not v.noRegenDetection and not (#inCombat > 0 and v.noMultiBoss) then
 					if v.multiMobPullDetection then
 						for _, mob in ipairs(v.multiMobPullDetection) do
 							if checkForPull(mob, v) then
@@ -4524,6 +4518,9 @@ do
 				sendSync("EE", encounterID.."\t"..success.."\t"..v.id.."\t"..(v.revision or 0))
 				return
 			end
+		end
+		if not success then
+			self:CheckAvailableMods(true)
 		end
 	end
 
@@ -4903,7 +4900,7 @@ do
 			--process global options
 			self:HideBlizzardEvents(1)
 			if self.Options.RecordOnlyBosses then
-				self:StartLogging(0, nil)
+				self:StartLogging(0)
 			end
 			if self.Options.HideObjectivesFrame and mod.addon.type ~= "SCENARIO" and (not isRetail or GetNumTrackedAchievements() == 0) and difficultyIndex ~= 8 and not InCombatLockdown() then
 				if isRetail then
@@ -4999,7 +4996,7 @@ do
 					end
 				end
 				if self.Options.oRA3AnnounceConsumables and _G["oRA3Frame"] then
-					local oRA3 = LibStub("AceAddon-3.0"):GetAddon("oRA3", true)
+					local oRA3 = LibStub and LibStub("AceAddon-3.0"):GetAddon("oRA3", true)
 					if oRA3 then
 						local consumables = oRA3:GetModule("Consumables", true)
 						if consumables then
@@ -5021,7 +5018,7 @@ do
 							local check = not statusGuildDisabled and (isRetail and ((difficultyIndex == 8 or difficultyIndex == 14 or difficultyIndex == 15 or difficultyIndex == 16) and InGuildParty()) or difficultyIndex ~= 1 and DBM:GetNumGuildPlayersInZone() >= 10) -- Classic
 							if check and not self.Options.DisableGuildStatus then--Only send relevant content, not guild beating down lich king or LFR.
 								self:Unschedule(delayedGCSync, modId)
-								self:Schedule(1.5, delayedGCSync, modId, difficultyIndex, difficultyModifier, name)
+								self:Schedule(isRetail and 1.5 or 3, delayedGCSync, modId, difficultyIndex, difficultyModifier, name)
 							end
 						end
 					end
@@ -5195,7 +5192,7 @@ do
 								usedDifficultyIndex ~= 1 and DBM:GetNumGuildPlayersInZone() >= 10 -- Classic
 							if check and not self.Options.DisableGuildStatus then
 								self:Unschedule(delayedGCSync, modId)
-								self:Schedule(1.5, delayedGCSync, modId, usedDifficultyIndex, difficultyModifier, name, strFromTime(thisTime), wipeHP)
+								self:Schedule(isRetail and 1.5 or 3, delayedGCSync, modId, usedDifficultyIndex, difficultyModifier, name, strFromTime(thisTime), wipeHP)
 							end
 						end
 					end
@@ -5301,7 +5298,7 @@ do
 					local check = not statusGuildDisabled and (isRetail and ((usedDifficultyIndex == 8 or usedDifficultyIndex == 14 or usedDifficultyIndex == 15 or usedDifficultyIndex == 16) and InGuildParty()) or usedDifficultyIndex ~= 1 and DBM:GetNumGuildPlayersInZone() >= 10) -- Classic
 					if not scenario and thisTimeString and check and not self.Options.DisableGuildStatus and updateNotificationDisplayed == 0 then
 						self:Unschedule(delayedGCSync, modId)
-						self:Schedule(1.5, delayedGCSync, modId, usedDifficultyIndex, difficultyModifier, name, thisTimeString)
+						self:Schedule(isRetail and 1.5 or 3, delayedGCSync, modId, usedDifficultyIndex, difficultyModifier, name, thisTimeString)
 					end
 					self:Schedule(1, self.AddMsg, self, msg)
 				end
@@ -5457,33 +5454,34 @@ do
 		if self.Options.LogCurrentMPlus and (difficultyIndex or 0) == 8 then
 			return true
 		end
-		--Timewalking or Chromie Time Raid
-		if self.Options.LogTWRaids and (C_PlayerInfo.IsPlayerInChromieTime and C_PlayerInfo.IsPlayerInChromieTime() or difficultyIndex == 24 or difficultyIndex == 33) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 3) then
+		--Timewalking or Chromie Time raid
+		if self.Options.LogTWRaids and (C_PlayerInfo.IsPlayerInChromieTime and C_PlayerInfo.IsPlayerInChromieTime() or difficultyIndex == 24 or difficultyIndex == 33) and (instanceDifficultyBylevel[LastInstanceMapID] and instanceDifficultyBylevel[LastInstanceMapID][2] == 3) then
 			return true
 		end
 		--Timewalking or Chromie Time Dungeon
-		if self.Options.LogTWDungeons and (C_PlayerInfo.IsPlayerInChromieTime and C_PlayerInfo.IsPlayerInChromieTime() or difficultyIndex == 24 or difficultyIndex == 33) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 2) then
+		if self.Options.LogTWDungeons and (C_PlayerInfo.IsPlayerInChromieTime and C_PlayerInfo.IsPlayerInChromieTime() or difficultyIndex == 24 or difficultyIndex == 33) and (instanceDifficultyBylevel[LastInstanceMapID] and instanceDifficultyBylevel[LastInstanceMapID][2] == 2) then
 			return true
 		end
 
 		--Now we do checks relying on pre coded trivial check table
-		if self.Options.LogCurrentMythicRaids and instanceDifficultyBylevel[LastInstanceMapID] and (instanceDifficultyBylevel[LastInstanceMapID][1] >= playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 3) and difficultyIndex == 16 then
+		--Current level Mythic raid
+		if self.Options.LogCurrentMythicRaids and instanceDifficultyBylevel[LastInstanceMapID] and (instanceDifficultyBylevel[LastInstanceMapID][1] >= playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID] and instanceDifficultyBylevel[LastInstanceMapID][2] == 3) and difficultyIndex == 16 then
 			return true
 		end
-		--Current player level non mythic raid
+		--Current player level non Mythic raid
 		if self.Options.LogCurrentRaids and instanceDifficultyBylevel[LastInstanceMapID] and (instanceDifficultyBylevel[LastInstanceMapID][1] >= playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 3) and difficultyIndex ~= 16 then
 			return true
 		end
 		--Trivial raid (ie one below players level)
-		if self.Options.LogTrivialRaids and (instanceDifficultyBylevel[LastInstanceMapID][1] < playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 3) then
+		if self.Options.LogTrivialRaids and instanceDifficultyBylevel[LastInstanceMapID] and (instanceDifficultyBylevel[LastInstanceMapID][1] < playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 3) then
 			return true
 		end
-		--Current level mythic dungeon
-		if self.Options.LogCurrentMythicZero and (instanceDifficultyBylevel[LastInstanceMapID][1] >= playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 2) and difficultyIndex == 23 then
+		--Current level Mythic dungeon
+		if self.Options.LogCurrentMythicZero and instanceDifficultyBylevel[LastInstanceMapID] and (instanceDifficultyBylevel[LastInstanceMapID][1] >= playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 2) and difficultyIndex == 23 then
 			return true
 		end
-		--Current level heroic dungeon
-		if self.Options.LogCurrentHeroic and (instanceDifficultyBylevel[LastInstanceMapID][1] >= playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 2) and (difficultyIndex == 2 or difficultyIndex == 174) then
+		--Current level Heroic dungeon
+		if self.Options.LogCurrentHeroic and instanceDifficultyBylevel[LastInstanceMapID] and (instanceDifficultyBylevel[LastInstanceMapID][1] >= playerLevel) and (instanceDifficultyBylevel[LastInstanceMapID][2] == 2) and (difficultyIndex == 2 or difficultyIndex == 174) then
 			return true
 		end
 
@@ -5701,15 +5699,18 @@ do
 	local LSMMediaCacheBuilt, sharedMediaFileCache, validateCache = false, {}, {}
 
 	local function buildLSMFileCache()
-		local hashtable = LibStub("LibSharedMedia-3.0", true):HashTable("sound")
-		local keytable = {}
-		for k in next, hashtable do
-			tinsert(keytable, k)
+		local LSM = LibStub and LibStub("LibSharedMedia-3.0", true)
+		if LSM then
+			local hashtable = LSM:HashTable("sound")
+			local keytable = {}
+			for k in next, hashtable do
+				tinsert(keytable, k)
+			end
+			for i = 1, #keytable do
+				sharedMediaFileCache[hashtable[keytable[i]]] = true
+			end
+			LSMMediaCacheBuilt = true
 		end
-		for i = 1, #keytable do
-			sharedMediaFileCache[hashtable[keytable[i]]] = true
-		end
-		LSMMediaCacheBuilt = true
 	end
 
 	function DBM:ValidateSound(path, log, ignoreCustom)
@@ -6724,6 +6725,12 @@ function bossModPrototype:SetStage(stage)
 	end
 end
 
+function bossModPrototype:AffixEvent(eventType, stage, timeAdjust, spellDebit)
+	if self.inCombat then--Safety, in event mod manages to run any phase change calls out of combat/during a wipe we'll just safely ignore it
+		fireEvent("DBM_AffixEvent", self, self.id, eventType, self.multiEncounterPullDetection and self.multiEncounterPullDetection[1] or self.encounterId, stage or 1, timeAdjust, spellDebit)--Mod, modId, type (0 end, 1, begin, 2, timerExtend), Encounter Id (if available), stage, amount of time to extend to, spellDebit, whether to subtrack the previous extend arg from next timer
+	end
+end
+
 --------------
 --  Events  --
 --------------
@@ -6827,6 +6834,11 @@ end
 function bossModPrototype:IsMythic()
 	local diff = savedDifficulty or DBM:GetCurrentInstanceDifficulty()
 	return diff == "mythic" or diff == "challenge5" or diff == "mythicisland"
+end
+
+function bossModPrototype:IsMythicPlus()
+	local diff = savedDifficulty or DBM:GetCurrentInstanceDifficulty()
+	return diff == "challenge5"
 end
 
 function bossModPrototype:IsEvent()
@@ -10655,6 +10667,9 @@ function bossModPrototype:RegisterCombat(cType, ...)
 	if self.noRegenDetection then
 		info.noRegenDetection = self.noRegenDetection
 	end
+	if self.noMultiBoss then
+		info.noMultiBoss = self.noMultiBoss
+	end
 	if self.WBEsync then
 		info.WBEsync = self.WBEsync
 	end
@@ -10780,6 +10795,13 @@ function bossModPrototype:DisableRegenDetection()
 	self.noRegenDetection = true
 	if self.combatInfo then
 		self.combatInfo.noRegenDetection = true
+	end
+end
+
+function bossModPrototype:DisableMultiBossPulls()
+	self.noMultiBoss = true
+	if self.combatInfo then
+		self.combatInfo.noMultiBoss = true
 	end
 end
 
