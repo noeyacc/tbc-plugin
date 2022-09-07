@@ -53,7 +53,7 @@
 
 #### 職業專屬
 
-- 一鍵驅散 [Decursive](https://www.curseforge.com/wow/addons/decursive) v2.7.8.6
+- 一鍵驅散 [Decursive](https://www.curseforge.com/wow/addons/decursive) v2.7.8.7
 - 薩滿圖騰快捷列 [TotemTimers](https://www.curseforge.com/wow/addons/totemtimers-classic) v3.0.2
 - 天賦模擬器 [ala’s Talent Emu](https://www.curseforge.com/wow/addons/alatalentemu) v205r.220325
 - 法師變羊監控 [Sheep Monitor](https://www.curseforge.com/wow/addons/sheepmonitor) v1.24a
@@ -68,7 +68,7 @@
 - MSBT 捲動戰鬥文字 [Mik’s Scrolling Battle Text](https://www.curseforge.com/wow/addons/mik-scrolling-battle-text) v5.7.152
 - 戰鬥統計 [Details](https://www.curseforge.com/wow/addons/details) DetailsRetail.v9.2.7.10018.146
 - 仇恨統計 [ThreatClassic2](https://www.curseforge.com/wow/addons/threatclassic2) v2.45
-- 施法條增強 [Quartz](https://www.curseforge.com/wow/addons/quartz) v3.6.9
+- 施法條增強 [Quartz](https://www.curseforge.com/wow/addons/quartz) v3.6.12
 - 威力血條 [TidyPlates_ThreatPlates](https://wow.curseforge.com/projects/tidy-plates-threat-plates) v10.3.4
 - 血條浮動戰鬥文字 [Nameplate Scrolling Combat Text(NameplateSCT)](https://www.curseforge.com/wow/addons/nameplate-scrolling-combat-text) v1.9
 - 血條技能冷卻監控 [NameplateCooldowns](https://www.curseforge.com/wow/addons/nameplatecooldowns) v20501.9-release
@@ -95,7 +95,7 @@
 - 分類整合背包 [Combuctor](https://www.curseforge.com/wow/addons/combuctor) v9.1.4
 - 檢視銀行 BagBrother(含在 Combuctor 裡面)
 - 副本戰利品查詢 [AtlasLoot Classic](https://www.curseforge.com/wow/addons/atlaslootclassic) v2.4.1-bcc
-- 裝備屬性比較 [Pawn](https://www.curseforge.com/wow/addons/pawn) v2.5.34
+- 裝備屬性比較 [Pawn](https://www.curseforge.com/wow/addons/pawn) v2.6.2
 - 裝備管理員 [Wardrobe](https://www.curseforge.com/wow/addons/wardrobe-tbc) v1.0.10a-bcc
 - 裝備觀察 [TinyInspect](https://www.curseforge.com/wow/addons/itemlevel-anywhere) v1.0.3
 - 超強信箱 [Postal](https://www.curseforge.com/wow/addons/postal) v3.7.8bcc
